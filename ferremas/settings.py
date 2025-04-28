@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-60gx)fedy5u0f!3tc7a*4y$xjmv+$4p2@!o)&r)82*3da!7(yl'
 
 # Importante: pon DEBUG en False para producción.
-DEBUG = True ## se pone True en local, y antes de subirlo SI O SI EN FALSE (produccion)
+DEBUG = False ## se pone True en local, y antes de subirlo SI O SI EN FALSE (produccion)
 
 # Define los dominios permitidos para producción (en este caso, el dominio de Railway)
 ALLOWED_HOSTS = ['prueba-propia-ferremas-production.up.railway.app', '127.0.0.1', 'localhost']
@@ -100,7 +100,9 @@ USE_TZ = True  # Habilitar el uso de zonas horarias
 # Configuración para los archivos estáticos (CSS, JS, imágenes)
 STATIC_URL = '/static/'  # URL para servir los archivos estáticos
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Directorios donde se encuentran los archivos estáticos
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directorio donde se recopilarán los archivos estáticos (usado en producción con collectstatic)
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directorio donde se recopilarán los 
+#STATIC_ROOT = BASE_DIR / 'staticfiles' #testeo para diseño de pagina
+#archivos estáticos (usado en producción con collectstatic)
 
 # Tipo de campo por defecto para los identificadores de las tablas de la base de datos
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
