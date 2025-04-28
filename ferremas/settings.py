@@ -102,15 +102,15 @@ USE_I18N = True  # Habilitar internacionalización
 USE_TZ = True  # Habilitar el uso de zonas horarias
 
 # Configuración para los archivos estáticos (CSS, JS, imágenes)
-STATIC_URL = '/staticfiles/'  # URL para servir los archivos estáticos
+STATIC_URL = '/static/'  # URL para servir los archivos estáticos
 #STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Directorios donde se encuentran los archivos estáticos
 
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'staticfiles'),  # Tu carpeta de archivos estáticos propia
-    os.path.join(BASE_DIR, 'myvenv', 'Lib', 'site-packages', 'jazzmin', 'staticfiles')  # Ruta a los archivos estáticos de Jazzmin
+    os.path.join(BASE_DIR, 'static'),  # Tu carpeta de archivos estáticos propia
+    os.path.join(BASE_DIR, 'myvenv', 'Lib', 'site-packages', 'jazzmin', 'static')  # Ruta a los archivos estáticos de Jazzmin
 ]
 #STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directorio donde se recopilarán los 
-STATIC_ROOT = BASE_DIR / 'staticfiles' #testeo para diseño de pagina
+STATIC_ROOT = BASE_DIR / 'static' #testeo para diseño de pagina
 #archivos estáticos (usado en producción con collectstatic)
 
 # Tipo de campo por defecto para los identificadores de las tablas de la base de datos
