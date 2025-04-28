@@ -8,17 +8,15 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-60gx)fedy5u0f!3tc7a*4y$xjmv+$4p2@!o)&r)82*3da!7(yl'
 
 # Importante: pon DEBUG en False para producción.
-DEBUG = False ## se pone True en local, y antes de subirlo SI O SI EN FALSE (produccion)
+DEBUG = False  # Se pone True en local, y antes de subirlo SI O SI EN FALSE (producción)
 
 # Define los dominios permitidos para producción (en este caso, el dominio de Railway)
 ALLOWED_HOSTS = ['prueba-propia-ferremas-production.up.railway.app', '127.0.0.1', 'localhost']
-  # Aquí va tu dominio de Railway
-
-###CAMBIAR A LA HORA DE TRABAJAR A LA RUTA LOCAL: ALLOWED_HOSTS = ['prueba-propia-ferremas-production.up.railway.app'] 
+# Aquí va tu dominio de Railway
 
 # Aplicaciones de Django que estarán activas.
 INSTALLED_APPS = [
-    'jazzmin', ### diseño del panel de administracion (tiene que esta primero si o si)
+    'jazzmin',  # Debe estar primero para que funcione correctamente
     'django.contrib.admin',  # Panel de administración
     'django.contrib.auth',  # Autenticación de usuarios
     'django.contrib.contenttypes',  # Para manejar tipos de contenido
@@ -28,12 +26,12 @@ INSTALLED_APPS = [
     'home',  # Tu aplicación de inicio
     'rest_framework',  # Framework para APIs
     'productos',  # Aplicación de productos
-    'corsheaders', # impide bloqueo de peticion de la api
+    'corsheaders',  # Para evitar el bloqueo de peticiones a la API
 ]
 
 # Middleware necesario para la seguridad, autenticación y manejo de sesiones.
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware', ## para que no bloquee peticiones api
+    'corsheaders.middleware.CorsMiddleware',  # Para que no bloquee peticiones API
     'django.middleware.security.SecurityMiddleware',  # Middleware de seguridad
     'django.contrib.sessions.middleware.SessionMiddleware',  # Middleware de sesiones
     'django.middleware.common.CommonMiddleware',  # Middleware de funcionalidades comunes
@@ -43,7 +41,7 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',  # Middleware de protección contra clickjacking
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True # permite consultas de cualquier origen
+CORS_ALLOW_ALL_ORIGINS = True  # Permite consultas de cualquier origen
 
 # Archivo de configuración para las URLs del proyecto.
 ROOT_URLCONF = 'ferremas.urls'
@@ -103,15 +101,15 @@ USE_TZ = True  # Habilitar el uso de zonas horarias
 
 # Configuración para los archivos estáticos (CSS, JS, imágenes)
 STATIC_URL = '/static/'  # URL para servir los archivos estáticos
-#STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Directorios donde se encuentran los archivos estáticos
 
+# Directorios donde se encuentran los archivos estáticos
 STATICFILES_DIRS = [
-    os.path.join(BASE_DIR, 'static'),  # Tu carpeta de archivos estáticos propia
-    os.path.join(BASE_DIR, 'myvenv', 'Lib', 'site-packages', 'jazzmin', 'static')  # Ruta a los archivos estáticos de Jazzmin
+    os.path.join(BASE_DIR, 'static'),  # Ruta donde están tus archivos estáticos
+    os.path.join(BASE_DIR, 'myvenv', 'Lib', 'site-packages', 'jazzmin', 'static'),  # Archivos estáticos de Jazzmin
 ]
-#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directorio donde se recopilarán los 
-STATIC_ROOT = BASE_DIR / 'staticfiles' #testeo para diseño de pagina
-#archivos estáticos (usado en producción con collectstatic)
+
+# Directorio donde se recopilarán los archivos estáticos para producción
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directorio para los archivos estáticos en producción
 
 # Tipo de campo por defecto para los identificadores de las tablas de la base de datos
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
@@ -119,6 +117,7 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 # Configuración adicional para producción: asegurarse de que los formularios CSRF funcionen correctamente
 CSRF_TRUSTED_ORIGINS = ['https://prueba-propia-ferremas-production.up.railway.app']  # Agregar dominio de Railway
 
+# Configuración para Jazzmin
 JAZZMIN_SETTINGS = {
     "site_title": "Administración Ferremas",
     "site_header": "Panel de Gestión Ferremas",
