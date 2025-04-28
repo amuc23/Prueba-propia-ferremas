@@ -16,7 +16,7 @@ ALLOWED_HOSTS = ['prueba-propia-ferremas-production.up.railway.app', '127.0.0.1'
 
 # Aplicaciones de Django que estarán activas.
 INSTALLED_APPS = [
-    'jazzmin',  # Debe estar primero para que funcione correctamente
+    'jazzmin',  # Debe ir antes de django.contrib.admin
     'django.contrib.admin',  # Panel de administración
     'django.contrib.auth',  # Autenticación de usuarios
     'django.contrib.contenttypes',  # Para manejar tipos de contenido
@@ -101,15 +101,13 @@ USE_TZ = True  # Habilitar el uso de zonas horarias
 
 # Configuración para los archivos estáticos (CSS, JS, imágenes)
 STATIC_URL = '/static/'  # URL para servir los archivos estáticos
+STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directorio donde se recopilarán los archivos estáticos en producción
 
 # Directorios donde se encuentran los archivos estáticos
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),  # Ruta donde están tus archivos estáticos
     os.path.join(BASE_DIR, 'myvenv', 'Lib', 'site-packages', 'jazzmin', 'static'),  # Archivos estáticos de Jazzmin
 ]
-
-# Directorio donde se recopilarán los archivos estáticos para producción
-STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directorio para los archivos estáticos en producción
 
 # Tipo de campo por defecto para los identificadores de las tablas de la base de datos
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
