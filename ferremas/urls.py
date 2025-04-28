@@ -5,8 +5,8 @@ from django.conf.urls.static import static
 
 urlpatterns = [
     path('admin/', admin.site.urls),
-    path('', include('home.urls')),
-    path('productos/', include('productos.urls')),
+    path('', include('home.urls')),  # Tu aplicación de inicio
+    path('productos/', include('productos.urls')),  # Ruta para productos
 ]
 
 # Esto solo debe estar en desarrollo, no en producción, ya que Django no debe servir estáticos en producción
