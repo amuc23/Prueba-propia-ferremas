@@ -100,8 +100,8 @@ USE_TZ = True  # Habilitar el uso de zonas horarias
 # Configuración para los archivos estáticos (CSS, JS, imágenes)
 STATIC_URL = '/static/'  # URL para servir los archivos estáticos
 STATICFILES_DIRS = [os.path.join(BASE_DIR, 'static')]  # Directorios donde se encuentran los archivos estáticos
-STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directorio donde se recopilarán los 
-#STATIC_ROOT = BASE_DIR / 'staticfiles' #testeo para diseño de pagina
+#STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')  # Directorio donde se recopilarán los 
+STATIC_ROOT = BASE_DIR / 'staticfiles' #testeo para diseño de pagina
 #archivos estáticos (usado en producción con collectstatic)
 
 # Tipo de campo por defecto para los identificadores de las tablas de la base de datos
