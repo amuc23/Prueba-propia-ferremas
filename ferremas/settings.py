@@ -28,10 +28,12 @@ INSTALLED_APPS = [
     'home',  # Tu aplicación de inicio
     'rest_framework',  # Framework para APIs
     'productos',  # Aplicación de productos
+    'corsheaders', # impide bloqueo de peticion de la api
 ]
 
 # Middleware necesario para la seguridad, autenticación y manejo de sesiones.
 MIDDLEWARE = [
+    'corsheaders.middleware.CorsMiddleware', ## para que no bloquee peticiones api
     'django.middleware.security.SecurityMiddleware',  # Middleware de seguridad
     'django.contrib.sessions.middleware.SessionMiddleware',  # Middleware de sesiones
     'django.middleware.common.CommonMiddleware',  # Middleware de funcionalidades comunes
@@ -40,6 +42,8 @@ MIDDLEWARE = [
     'django.contrib.messages.middleware.MessageMiddleware',  # Middleware de mensajes
     'django.middleware.clickjacking.XFrameOptionsMiddleware',  # Middleware de protección contra clickjacking
 ]
+
+CORS_ALLOW_ALL_ORIGINS = True # permite consultas de cualquier origen
 
 # Archivo de configuración para las URLs del proyecto.
 ROOT_URLCONF = 'ferremas.urls'
