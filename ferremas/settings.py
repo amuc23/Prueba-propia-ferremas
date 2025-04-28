@@ -8,13 +8,17 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-60gx)fedy5u0f!3tc7a*4y$xjmv+$4p2@!o)&r)82*3da!7(yl'
 
 # Importante: pon DEBUG en False para producción.
-DEBUG = False
+DEBUG = False ## se pone True en local, y antes de subirlo SI O SI EN FALSE (produccion)
 
 # Define los dominios permitidos para producción (en este caso, el dominio de Railway)
-ALLOWED_HOSTS = ['prueba-propia-ferremas-production.up.railway.app']  # Aquí va tu dominio de Railway
+ALLOWED_HOSTS = ['prueba-propia-ferremas-production.up.railway.app', '127.0.0.1', 'localhost']
+  # Aquí va tu dominio de Railway
+
+###CAMBIAR A LA HORA DE TRABAJAR A LA RUTA LOCAL: ALLOWED_HOSTS = ['prueba-propia-ferremas-production.up.railway.app'] 
 
 # Aplicaciones de Django que estarán activas.
 INSTALLED_APPS = [
+    'jazzmin', ### diseño del panel de administracion (tiene que esta primero si o si)
     'django.contrib.admin',  # Panel de administración
     'django.contrib.auth',  # Autenticación de usuarios
     'django.contrib.contenttypes',  # Para manejar tipos de contenido
@@ -85,7 +89,7 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 # Configuración de internacionalización
-LANGUAGE_CODE = 'en-us'  # Idioma por defecto (puedes cambiarlo a 'es' para español)
+LANGUAGE_CODE = 'es'  # Idioma por defecto (puedes cambiarlo a 'es' para español)
 
 TIME_ZONE = 'UTC'  # Zona horaria en la que se encuentra el servidor
 
@@ -103,3 +107,11 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuración adicional para producción: asegurarse de que los formularios CSRF funcionen correctamente
 CSRF_TRUSTED_ORIGINS = ['https://prueba-propia-ferremas-production.up.railway.app']  # Agregar dominio de Railway
+
+JAZZMIN_SETTINGS = {
+    "site_title": "Administración Ferremas",
+    "site_header": "Panel de Gestión Ferremas",
+    "site_brand": "Ferremas",
+    "welcome_sign": "Bienvenido a Ferremas",
+    "copyright": "Ferremas",
+}
