@@ -12,3 +12,7 @@ urlpatterns = [
 # Esto solo debe estar en desarrollo, no en producción, ya que Django no debe servir estáticos en producción
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
+
+# Para servir archivos media (si los usas)
+if not settings.DEBUG:
+    urlpatterns += static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

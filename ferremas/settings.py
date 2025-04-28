@@ -1,5 +1,5 @@
 from pathlib import Path
-import os  # AGREGADO para manejar rutas de templates
+import os
 
 # Configuración de las rutas dentro del proyecto. BASE_DIR es el directorio raíz.
 BASE_DIR = Path(__file__).resolve().parent.parent
@@ -12,12 +12,10 @@ DEBUG = False  # Se pone True en local, y antes de subirlo SI O SI EN FALSE (pro
 
 # Define los dominios permitidos para producción (en este caso, el dominio de Railway)
 ALLOWED_HOSTS = ['prueba-propia-ferremas-production.up.railway.app', '127.0.0.1', 'localhost']
-# Aquí va tu dominio de Railway
 
 # Aplicaciones de Django que estarán activas.
 INSTALLED_APPS = [
-    'jazzmin',  # Debe ir antes de django.contrib.admin
-    'django.contrib.admin',  # Panel de administración
+    'django.contrib.admin',  # Panel de administración por defecto
     'django.contrib.auth',  # Autenticación de usuarios
     'django.contrib.contenttypes',  # Para manejar tipos de contenido
     'django.contrib.sessions',  # Para manejar sesiones de usuario
@@ -31,6 +29,7 @@ INSTALLED_APPS = [
 
 # Middleware necesario para la seguridad, autenticación y manejo de sesiones.
 MIDDLEWARE = [
+    'whitenoise.middleware.WhiteNoiseMiddleware',  # Para servir archivos estáticos en producción
     'corsheaders.middleware.CorsMiddleware',  # Para que no bloquee peticiones API
     'django.middleware.security.SecurityMiddleware',  # Middleware de seguridad
     'django.contrib.sessions.middleware.SessionMiddleware',  # Middleware de sesiones
@@ -106,7 +105,6 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'  # Directorio donde se recopilarán los a
 # Directorios donde se encuentran los archivos estáticos
 STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),  # Ruta donde están tus archivos estáticos
-    os.path.join(BASE_DIR, 'myvenv', 'Lib', 'site-packages', 'jazzmin', 'static'),  # Archivos estáticos de Jazzmin
 ]
 
 # Tipo de campo por defecto para los identificadores de las tablas de la base de datos
@@ -114,12 +112,3 @@ DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuración adicional para producción: asegurarse de que los formularios CSRF funcionen correctamente
 CSRF_TRUSTED_ORIGINS = ['https://prueba-propia-ferremas-production.up.railway.app']  # Agregar dominio de Railway
-
-# Configuración para Jazzmin
-JAZZMIN_SETTINGS = {
-    "site_title": "Administración Ferremas",
-    "site_header": "Panel de Gestión Ferremas",
-    "site_brand": "Ferremas",
-    "welcome_sign": "Bienvenido a Ferremas",
-    "copyright": "Ferremas",
-}
