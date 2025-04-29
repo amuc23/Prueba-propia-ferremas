@@ -34,6 +34,6 @@ def api_agregar_producto(request):
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Error de validación
 
 
-# Vista para mostrar el formulario de agregar producto
+#Vista para mostrar el formulario de agregar producto
 def formulario_producto(request):
     return render(request, 'productos/formulario_producto.html')
