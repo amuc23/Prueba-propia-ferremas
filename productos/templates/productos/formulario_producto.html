@@ -1,0 +1,65 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulario de Producto</title>
+</head>
+<body>
+    <h1>Agregar Nuevo Producto</h1>
+
+    <!-- Formulario para agregar producto -->
+    <form id="form-producto">
+        <label for="nombre">Nombre:</label>
+        <input type="text" id="nombre" name="nombre" required><br><br>
+
+        <label for="descripcion">Descripción:</label>
+        <textarea id="descripcion" name="descripcion" required></textarea><br><br>
+
+        <label for="precio">Precio:</label>
+        <input type="number" id="precio" name="precio" required step="0.01"><br><br>
+
+        <label for="imagen">Imagen (URL):</label>
+        <input type="url" id="imagen" name="imagen"><br><br>
+
+        <label for="stock">Stock:</label>
+        <input type="number" id="stock" name="stock" required><br><br>
+
+        <label for="categoria">Categoría:</label>
+        <input type="text" id="categoria" name="categoria"><br><br>
+
+        <button type="submit">Agregar Producto</button>
+    </form>
+
+    <script>
+        // Manejo del formulario para enviar los datos a la API
+        document.getElementById("form-producto").addEventListener("submit", function(event) {
+            event.preventDefault();  // Evitar que el formulario se envíe de forma tradicional
+
+            // Obtener los datos del formulario
+            const formData = new FormData(event.target);
+            const data = Object.fromEntries(formData.entries());
+
+            // Hacer una solicitud POST a la API para agregar el producto
+            fetch('/productos/api/agregar/', { //estar atento a rutas
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(data),  // Enviar los datos del formulario en formato JSON
+            })
+            .then(response => response.json())
+            .then(data => {
+                alert("Producto agregado correctamente!");
+                console.log(data);  // Mostrar la respuesta de la API (producto creado)
+                // Opcional: Redirigir a otra página o limpiar el formulario
+                document.getElementById("form-producto").reset();
+            })
+            .catch(error => {
+                alert("Error al agregar el producto.");
+                console.error("Error:", error);
+            });
+        });
+    </script>
+</body>
+</html>
