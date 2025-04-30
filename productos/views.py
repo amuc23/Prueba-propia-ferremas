@@ -1,7 +1,5 @@
 from django.shortcuts import render
 from .models import Producto
-
-# Vista API
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
@@ -33,7 +31,11 @@ def api_agregar_producto(request):
             return Response(serializer.data, status=status.HTTP_201_CREATED)  # Devuelve el producto creado
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Error de validación
 
-
-#Vista para mostrar el formulario de agregar producto
+# Vista para mostrar el formulario de agregar producto
 def formulario_producto(request):
     return render(request, 'productos/formulario_producto.html')
+
+# Vista para el CRUD de productos (muestra todos los productos)
+def crud_productos(request):
+    productos = Producto.objects.all()  # Obtiene todos los productos
+    return render(request, 'productos/crud_productos.html', {'productos': productos})  # Renderiza la plantilla HTML

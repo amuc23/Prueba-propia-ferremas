@@ -1,35 +1,62 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario de Producto</title>
+    <!-- Carga del CSS -->
+    <link rel="stylesheet" href="{% static 'css/formulario_producto.css' %}">
 </head>
 <body>
-    <h1>Agregar Nuevo Producto</h1>
+    <div class="container">
+        <!-- Título FERREMAS en la parte superior -->
+        <h1 class="title-ferremas">FERREMAS</h1>
 
-    <!-- Formulario para agregar producto -->
-    <form id="form-producto">
-        <label for="nombre">Nombre:</label>
-        <input type="text" id="nombre" name="nombre" required><br><br>
+        <div class="form-card">
+            <h2 class="form-title">Agregar Nuevo Producto</h2>
 
-        <label for="descripcion">Descripción:</label>
-        <textarea id="descripcion" name="descripcion" required></textarea><br><br>
+            <!-- Formulario para agregar producto -->
+            <form id="form-producto" class="form-container">
+                <div class="form-group">
+                    <label for="nombre">Nombre:</label>
+                    <input type="text" id="nombre" name="nombre" class="form-control" required>
+                </div>
 
-        <label for="precio">Precio:</label>
-        <input type="number" id="precio" name="precio" required step="0.01"><br><br>
+                <div class="form-group">
+                    <label for="descripcion">Descripción:</label>
+                    <textarea id="descripcion" name="descripcion" class="form-control" required></textarea>
+                </div>
 
-        <label for="imagen">Imagen (URL):</label>
-        <input type="url" id="imagen" name="imagen"><br><br>
+                <div class="form-group">
+                    <label for="precio">Precio:</label>
+                    <input type="number" id="precio" name="precio" class="form-control" required step="0.01">
+                </div>
 
-        <label for="stock">Stock:</label>
-        <input type="number" id="stock" name="stock" required><br><br>
+                <div class="form-group">
+                    <label for="imagen">Imagen (URL):</label>
+                    <input type="url" id="imagen" name="imagen" class="form-control">
+                </div>
 
-        <label for="categoria">Categoría:</label>
-        <input type="text" id="categoria" name="categoria"><br><br>
+                <div class="form-group">
+                    <label for="stock">Stock:</label>
+                    <input type="number" id="stock" name="stock" class="form-control" required>
+                </div>
 
-        <button type="submit">Agregar Producto</button>
-    </form>
+                <div class="form-group">
+                    <label for="categoria">Categoría:</label>
+                    <input type="text" id="categoria" name="categoria" class="form-control">
+                </div>
+
+                <button type="submit" class="btn-submit">Agregar Producto</button>
+            </form>
+
+            <!-- Botón de volver con flecha -->
+            <a href="/productos/crud/" class="button-back">
+                <span class="arrow-left">&#8592;</span> Volver
+            </a>
+        </div>
+    </div>
 
     <script>
         // Manejo del formulario para enviar los datos a la API
@@ -41,7 +68,7 @@
             const data = Object.fromEntries(formData.entries());
 
             // Hacer una solicitud POST a la API para agregar el producto
-            fetch('/productos/api/agregar/', { //estar atento a rutas
+            fetch('/productos/api/agregar/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -52,7 +79,6 @@
             .then(data => {
                 alert("Producto agregado correctamente!");
                 console.log(data);  // Mostrar la respuesta de la API (producto creado)
-                // Opcional: Redirigir a otra página o limpiar el formulario
                 document.getElementById("form-producto").reset();
             })
             .catch(error => {

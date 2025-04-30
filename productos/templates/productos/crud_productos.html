@@ -1,0 +1,110 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Administrar Productos - FERREMAS</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="{% static 'css/crud.css' %}">
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2E7D32;">
+    <div class="container">
+        <a class="navbar-brand" href="/">FERREMAS</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="menu">
+            <ul class="navbar-nav ms-auto">
+                <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Ofertas</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+                <!-- Nueva opción para el Panel de Administración -->
+                <li class="nav-item"><a class="nav-link" href="/productos/crud/">Panel de Administración</a></li>
+            </ul>
+        </div>
+    </div>
+</nav>
+
+<!-- Contenido principal -->
+<main class="container my-5">
+    <h1 class="text-center mb-4">Panel de Administración de Productos</h1>
+
+    <!-- Botón centrado para redirigir al formulario -->
+    <div class="text-center mb-4">
+        <a href="{% url 'formulario_producto' %}" class="btn btn-success">Agregar Producto</a>
+    </div>
+
+    <!-- TABLA de productos -->
+    <div id="listado">
+        <div class="table-responsive">
+            <table class="table table-bordered">
+                <thead class="table-success">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Precio</th>
+                        <th>Descripción</th>
+                        <th>Imagen</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody id="tabla-productos">
+                    {% for producto in productos %}
+                    <tr>
+                        <td>{{ producto.nombre }}</td>
+                        <td>${{ producto.precio }}</td>
+                        <td>{{ producto.descripcion }}</td>
+                        <td><img src="{{ producto.imagen }}" class="product-photo" style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;"></td>
+                        <td>
+                            <button class="btn btn-warning btn-sm" onclick="editarProducto(this)">Editar</button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminarProducto(this)">Eliminar</button>
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    </div>
+
+</main>
+
+<!-- Footer -->
+<footer>
+    <p>© 2025 FERREMAS - Todos los derechos reservados</p>
+</footer>
+
+<!-- Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Script de comportamiento -->
+<script>
+    function eliminarProducto(btn) {
+        if (confirm('¿Seguro que quieres eliminar este producto?')) {
+            btn.parentElement.parentElement.remove();
+        }
+    }
+
+    function editarProducto(btn) {
+        const fila = btn.parentElement.parentElement;
+        const nombre = prompt('Editar nombre:', fila.children[0].innerText);
+        const precio = prompt('Editar precio:', fila.children[1].innerText);
+        const descripcion = prompt('Editar descripción:', fila.children[2].innerText);
+        const imagen = prompt('Editar URL de imagen:', fila.children[3].querySelector('img').src);
+
+        if (nombre && precio && descripcion && imagen) {
+            fila.children[0].innerText = nombre;
+            fila.children[1].innerText = precio;
+            fila.children[2].innerText = descripcion;
+            fila.children[3].querySelector('img').src = imagen;
+        }
+    }
+</script>
+
+</body>
+</html>

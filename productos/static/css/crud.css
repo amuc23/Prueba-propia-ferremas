@@ -1,0 +1,157 @@
+/* Resetear márgenes y padding */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+/* Estilo general */
+html, body {
+    font-family: 'Arial', sans-serif;
+    height: 100%;
+    margin: 0;
+    background-color: #f4f4f4;
+    color: #333;
+}
+
+/* Estilo para el contenedor principal */
+main {
+    padding: 30px 15px;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* Estilo de la tabla */
+.table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.table thead {
+    background-color: #2E7D32;
+    color: #fff;
+}
+
+.table th, .table td {
+    padding: 15px;
+    text-align: left;
+    border: 1px solid #ddd;
+}
+
+.table tbody tr:nth-child(even) {
+    background-color: #f9f9f9;
+}
+
+.table tbody tr:hover {
+    background-color: #f1f1f1;
+}
+
+.table img.product-photo {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 5px;
+}
+
+/* Estilo para el botón de agregar producto */
+.btn-success {
+    background-color: #2E7D32;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    border-radius: 5px;
+    font-size: 16px;
+    transition: background-color 0.3s ease;
+}
+
+.btn-success:hover {
+    background-color: #1B5E20;
+}
+
+/* Estilo para el footer */
+/* Estilo para el footer */
+footer {
+    background-color: #2E7D32; /* Aseguramos que tenga el mismo color que el navbar */
+    color: white;
+    text-align: center;  /* Centrar el texto */
+    padding: 20px 0;
+    position: relative; /* Cambio para que se posicione en la parte inferior, pero no siempre fijo */
+    width: 100%;
+    margin-top: 20px; /* Añadir un margen superior para separarlo del contenido */
+}
+
+
+/* Estilo del Navbar */
+.navbar {
+    background-color: #2E7D32;
+    padding: 10px 20px;
+}
+
+.navbar-brand {
+    font-size: 24px;
+    font-weight: bold;
+    color: white;
+    text-decoration: none;
+}
+
+/* Menú de navegación */
+.navbar-nav {
+    display: flex;
+    gap: 20px;
+}
+
+.navbar-nav .nav-link {
+    color: white !important; /* Asegura que los enlaces tengan color blanco */
+    font-size: 16px;
+    padding: 10px 15px;
+    text-transform: uppercase;
+    text-decoration: none; /* Asegura que no haya subrayado */
+    border-radius: 5px;
+    transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+    background-color: #1B5E20;
+    color: white; /* Asegura que el texto sea blanco cuando se hace hover */
+}
+
+.navbar-nav .nav-item {
+    margin-left: 10px;
+}
+
+.navbar-toggler-icon {
+    background-color: white;
+}
+
+/* Estilo para el título */
+h1 {
+    font-size: 2.5rem;
+    color: #333;
+    margin-bottom: 30px;
+}
+
+/* Estilo para los botones de acción */
+.btn-warning {
+    background-color: #FF9800;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.btn-warning:hover {
+    background-color: #F57C00;
+}
+
+.btn-danger {
+    background-color: #F44336;
+    color: white;
+    border: none;
+    padding: 5px 10px;
+    border-radius: 5px;
+}
+
+.btn-danger:hover {
+    background-color: #D32F2F;
+}

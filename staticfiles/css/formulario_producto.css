@@ -1,0 +1,110 @@
+/* Fondo de la página con un gradiente verde */
+body {
+    background: linear-gradient(135deg, #66bb6a, #81c784);  /* Gradiente verde más claro */
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    font-family: Arial, sans-serif;
+}
+
+/* Estilo para el contenedor principal */
+.container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    flex-direction: column;
+}
+
+/* Estilo para el formulario */
+.form-card {
+    background-color: #fff;  /* Fondo blanco para el formulario */
+    color: #000;  /* Letras negras dentro del formulario */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);  /* Añadir sombra */
+    padding: 30px;
+    border-radius: 8px;
+    width: 100%;
+    max-width: 400px; /* Hacemos el formulario más pequeño */
+}
+
+/* Título "Agregar Nuevo Producto" dentro del formulario */
+.form-title {
+    text-align: center;
+    color: #000; /* Texto negro */
+    font-size: 22px;  /* Fuente medianamente grande */
+    margin-bottom: 20px;
+}
+
+/* Estilo para los formularios */
+.form-container {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group {
+    margin-bottom: 20px;
+}
+
+.form-group label {
+    font-size: 14px;
+    color: #333;
+    display: block;
+    margin-bottom: 5px;
+}
+
+.form-control {
+    width: 100%;
+    padding: 10px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    background-color: #fff; /* Fondo blanco para los campos de entrada */
+}
+
+/* Estilo para las áreas de texto */
+textarea.form-control {
+    height: 100px;
+    resize: none;
+}
+
+/* Botón de agregar producto */
+.btn-submit {
+    background-color: #2E7D32;
+    color: white;
+    border: none;
+    padding: 12px;
+    font-size: 16px;
+    border-radius: 5px;
+    cursor: pointer;
+}
+
+.btn-submit:hover {
+    background-color: #1c5e1d;
+}
+
+/* Estilo para el botón de "Volver" centrado */
+.button-back {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-color: #f44336; /* Rojo */
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    text-decoration: none;
+    font-size: 16px;
+    margin-top: 20px;
+    width: 100%;  /* Asegura que el botón esté centrado */
+    max-width: 300px; /* Máxima anchura para el botón */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.button-back:hover {
+    background-color: #d32f2f;
+}
+
+.arrow-left {
+    margin-right: 10px; /* Espacio entre la flecha y el texto */
+    font-size: 18px;
+}
