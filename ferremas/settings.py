@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-60gx)fedy5u0f!3tc7a*4y$xjmv+$4p2@!o)&r)82*3da!7(yl'
 
 # Importante: pon DEBUG en False para producción.
-DEBUG = False  # Se pone True en local, y antes de subirlo SI O SI EN FALSE (producción)
+DEBUG = True  # Se pone True en desarrollo, y antes de subirlo SI O SI EN FALSE (producción)
 
 # Define los dominios permitidos para producción (en este caso, el dominio de Railway)
 ALLOWED_HOSTS = ['prueba-propia-ferremas-production.up.railway.app', '127.0.0.1', 'localhost']
@@ -40,7 +40,11 @@ MIDDLEWARE = [
     'django.middleware.clickjacking.XFrameOptionsMiddleware',  # Middleware de protección contra clickjacking
 ]
 
-CORS_ALLOW_ALL_ORIGINS = True  # Permite consultas de cualquier origen
+# Configuración CORS (permite solicitudes desde otros dominios)
+CORS_ALLOWED_ORIGINS = [
+    "http://127.0.0.1:8000",  # Para desarrollo local
+    "https://prueba-propia-ferremas-production.up.railway.app",  # Para producción en Railway
+]
 
 # Archivo de configuración para las URLs del proyecto.
 ROOT_URLCONF = 'ferremas.urls'
@@ -49,7 +53,7 @@ ROOT_URLCONF = 'ferremas.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',  # Usar DjangoTemplates para procesar HTML
-        'DIRS': [os.path.join(BASE_DIR, 'home', 'templates')],  # Cambiar a la ruta correcta de los templates
+        'DIRS': [os.path.join(BASE_DIR, 'home', 'templates')],  # Ruta de los templates (ajusta según tu estructura)
         'APP_DIRS': True,  # Django buscará automáticamente los templates en cada aplicación
         'OPTIONS': {
             'context_processors': [  # Procesadores de contexto para manejar datos en los templates
@@ -107,8 +111,18 @@ STATICFILES_DIRS = [
     os.path.join(BASE_DIR, 'static'),  # Ruta donde están tus archivos estáticos
 ]
 
+# Para la carga de archivos estáticos en producción (cuando usas el servidor WhiteNoise)
+WHITENOISE_ROOT = os.path.join(BASE_DIR, 'staticfiles')
+
 # Tipo de campo por defecto para los identificadores de las tablas de la base de datos
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuración adicional para producción: asegurarse de que los formularios CSRF funcionen correctamente
 CSRF_TRUSTED_ORIGINS = ['https://prueba-propia-ferremas-production.up.railway.app']  # Agregar dominio de Railway
+
+# Configuración de los archivos multimedia (si es necesario para manejar archivos de imagen, etc.)
+MEDIA_URL = '/media/'
+MEDIA_ROOT = BASE_DIR / 'media'
+
+
+

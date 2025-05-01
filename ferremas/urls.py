@@ -6,7 +6,8 @@ from django.conf.urls.static import static
 urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),  # Ruta para la aplicación de inicio
-    path('productos/', include('productos.urls')),  # Ruta para productos
+    path('', include('productos.urls')),  # Incluye las rutas de la app productos
+
 ]
 
 if settings.DEBUG:

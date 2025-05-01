@@ -5,19 +5,20 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Formulario de Producto</title>
-    <!-- Carga del CSS -->
-    <link rel="stylesheet" href="{% static 'css/formulario_producto.css' %}">
+    <!-- Carga del CSS de Bootstrap -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
 </head>
-<body>
-    <div class="container">
-        <!-- Título FERREMAS en la parte superior -->
-        <h1 class="title-ferremas">FERREMAS</h1>
+<body class="bg-light">
 
-        <div class="form-card">
-            <h2 class="form-title">Agregar Nuevo Producto</h2>
+    <div class="container my-5">
+        <!-- Título FERREMAS en la parte superior -->
+        <h1 class="text-center text-success mb-5">FERREMAS</h1>
+
+        <div class="card p-4">
+            <h2 class="text-center mb-4">Agregar Nuevo Producto</h2>
 
             <!-- Formulario para agregar producto -->
-            <form id="form-producto" class="form-container">
+            <form id="form-producto">
                 <div class="form-group">
                     <label for="nombre">Nombre:</label>
                     <input type="text" id="nombre" name="nombre" class="form-control" required>
@@ -48,11 +49,11 @@
                     <input type="text" id="categoria" name="categoria" class="form-control">
                 </div>
 
-                <button type="submit" class="btn-submit">Agregar Producto</button>
+                <button type="submit" class="btn btn-success btn-block">Agregar Producto</button>
             </form>
 
             <!-- Botón de volver con flecha -->
-            <a href="/productos/crud/" class="button-back">
+            <a href="/productos/crud/" class="btn btn-outline-success btn-block mt-3">
                 <span class="arrow-left">&#8592;</span> Volver
             </a>
         </div>
@@ -87,5 +88,11 @@
             });
         });
     </script>
+
+    <!-- Carga de JS de Bootstrap -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.5.2/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
 </body>
 </html>

@@ -39,3 +39,11 @@ def formulario_producto(request):
 def crud_productos(request):
     productos = Producto.objects.all()  # Obtiene todos los productos
     return render(request, 'productos/crud_productos.html', {'productos': productos})  # Renderiza la plantilla HTML
+#------------------#
+
+def detalle_producto(request, id):
+    try:
+        producto = Producto.objects.get(id=id)
+    except Producto.DoesNotExist:
+        return render(request, 'productos/404.html')  # Página de error si no se encuentra el producto
+    return render(request, 'productos/detalle.html', {'producto': producto})
