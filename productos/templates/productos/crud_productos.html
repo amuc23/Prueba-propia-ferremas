@@ -25,7 +25,6 @@
                 <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Ofertas</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
-                <!-- Nueva opción para el Panel de Administración -->
                 <li class="nav-item"><a class="nav-link" href="/productos/crud/">Panel de Administración</a></li>
             </ul>
         </div>
@@ -36,9 +35,10 @@
 <main class="container my-5">
     <h1 class="text-center mb-4">Panel de Administración de Productos</h1>
 
-    <!-- Botón centrado para redirigir al formulario -->
+    <!-- Botones centrados para redirigir -->
     <div class="text-center mb-4">
-        <a href="{% url 'formulario_producto' %}" class="btn btn-success">Agregar Producto</a>
+        <a href="{% url 'formulario_producto' %}" class="btn btn-success me-2">Agregar Producto</a>
+        <a href="/" class="btn btn-outline-secondary">Volver al Inicio</a>
     </div>
 
     <!-- TABLA de productos -->
@@ -63,7 +63,7 @@
                         <td><img src="{{ producto.imagen }}" class="product-photo" style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;"></td>
                         <td>
                             <button class="btn btn-warning btn-sm" onclick="editarProducto(this)">Editar</button>
-                            <button class="btn btn-danger btn-sm" onclick="eliminarProducto(this)">Eliminar</button>
+                            <button class="btn btn-danger btn-sm" onclick="eliminarProducto({{ producto.id }}, this)">Eliminar</button>
                         </td>
                     </tr>
                     {% endfor %}
@@ -71,7 +71,6 @@
             </table>
         </div>
     </div>
-
 </main>
 
 <!-- Footer -->
@@ -84,14 +83,27 @@
 
 <!-- Script de comportamiento -->
 <script>
-    function eliminarProducto(btn) {
+    function eliminarProducto(id, btn) {
         if (confirm('¿Seguro que quieres eliminar este producto?')) {
-            btn.parentElement.parentElement.remove();
+            fetch(`/productos/api/eliminar/${id}/`, {
+                method: 'DELETE'
+            })
+            .then(response => {
+                if (response.status === 204) {
+                    btn.closest('tr').remove();
+                } else {
+                    alert('Error al eliminar el producto.');
+                }
+            })
+            .catch(error => {
+                console.error('Error al conectar con la API:', error);
+                alert('No se pudo eliminar el producto.');
+            });
         }
     }
 
     function editarProducto(btn) {
-        const fila = btn.parentElement.parentElement;
+        const fila = btn.closest('tr');
         const nombre = prompt('Editar nombre:', fila.children[0].innerText);
         const precio = prompt('Editar precio:', fila.children[1].innerText);
         const descripcion = prompt('Editar descripción:', fila.children[2].innerText);

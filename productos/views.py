@@ -47,3 +47,12 @@ def detalle_producto(request, id):
     except Producto.DoesNotExist:
         return render(request, 'productos/404.html')  # Página de error si no se encuentra el producto
     return render(request, 'productos/detalle.html', {'producto': producto})
+#--------------------------------
+@api_view(['DELETE'])
+def api_eliminar_producto(request, id):
+    try:
+        producto = Producto.objects.get(id=id)
+        producto.delete()
+        return Response({'mensaje': 'Producto eliminado'}, status=status.HTTP_204_NO_CONTENT)
+    except Producto.DoesNotExist:
+        return Response({'error': 'Producto no encontrado'}, status=status.HTTP_404_NOT_FOUND)
