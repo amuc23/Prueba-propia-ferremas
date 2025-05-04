@@ -8,6 +8,9 @@ document.addEventListener("DOMContentLoaded", function () {
         apiUrl = "https://prueba-propia-ferremas-production.up.railway.app/productos/api/";
     }
 
+    // Obtener el contenedor donde se van a agregar los productos
+    const productList = document.getElementById('product-list');
+
     // Hacer la solicitud a la API
     fetch(apiUrl)
         .then(response => response.json())
@@ -20,7 +23,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <img src="${producto.imagen}" class="card-img-top product-img" alt="${producto.nombre}">
                             <div class="card-body product-card-body">
                                 <h5 class="card-title">${producto.nombre}</h5>
-                                <p class="card-text">${producto.precio}</p>
+                                <p class="card-text">$${producto.precio}</p>
                                 <p class="card-text"><small class="text-muted">${producto.categoria}</small></p>
                                 <p class="product-stock">Stock disponible: ${producto.stock}</p>
                                 <a href="/productos/${producto.id}/" class="btn btn-primary mb-2">Ver Producto</a>
