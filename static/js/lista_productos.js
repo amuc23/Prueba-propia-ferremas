@@ -1,12 +1,12 @@
 document.addEventListener("DOMContentLoaded", function () {
-    const productList = document.getElementById("product-list");
+    const entorno = document.body.dataset.entorno;
+    let apiUrl = "";
 
-    // Determinar el entorno
-    const entorno = "local"; // Cambia esto según tu entorno, puedes hacerlo con Django template o usar un entorno dinámico
-
-    const apiUrl = entorno === "local"
-        ? "http://localhost:8000/productos/api/"
-        : "https://prueba-propia-ferremas-production.up.railway.app/productos/api/";
+    if (entorno === "local") {
+        apiUrl = "http://localhost:8000/productos/api/";
+    } else {
+        apiUrl = "https://prueba-propia-ferremas-production.up.railway.app/productos/api/";
+    }
 
     // Hacer la solicitud a la API
     fetch(apiUrl)
