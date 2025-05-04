@@ -1,16 +1,39 @@
-from django.shortcuts import render
+from django.shortcuts import render, redirect, get_object_or_404
 from .models import Producto
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 from .serializers import ProductoSerializer
+import requests
+from django.conf import settings
+from django.views.decorators.csrf import csrf_exempt  
 
 #--------------------GET-----------------------
 
 # Vista HTML (muestra los productos en formato HTML)
+#def lista_productos(request):
+#    productos = Producto.objects.all()  # Obtiene todos los productos
+#    return render(request, 'productos/lista_productos.html', {'productos': productos})  # Renderiza la plantilla HTML
+
 def lista_productos(request):
-    productos = Producto.objects.all()  # Obtiene todos los productos
-    return render(request, 'productos/lista_productos.html', {'productos': productos})  # Renderiza la plantilla HTML
+    if settings.ENTORNO == 'local':
+        api_url = 'http://localhost:8000/productos/api/'
+    else:
+        api_url = 'https://prueba-propia-ferremas-production.up.railway.app/productos/api/'
+
+    try:
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            productos = []
+            productos = response.json()
+        else:
+            productos = []
+    except requests.exceptions.RequestException:
+        productos = []
+
+    return render(request, 'productos/lista_productos.html', {'productos': productos})
+
+
 
 # Vista API (muestra los productos en formato JSON)
 @api_view(['GET'])
@@ -35,11 +58,28 @@ def api_agregar_producto(request):
 def formulario_producto(request):
     return render(request, 'productos/formulario_producto.html')
 
-# Vista para el CRUD de productos (muestra todos los productos)
-def crud_productos(request):
-    productos = Producto.objects.all()  # Obtiene todos los productos
-    return render(request, 'productos/crud_productos.html', {'productos': productos})  # Renderiza la plantilla HTML
-#------------------#
+
+
+
+def lista_productos_crud(request):
+    if settings.ENTORNO == 'local':
+        api_url = 'http://localhost:8000/productos/api/'
+    else:
+        api_url = 'https://prueba-propia-ferremas-production.up.railway.app/productos/api/'
+
+    try:
+        response = requests.get(api_url)
+        if response.status_code == 200:
+            productos = []
+            productos = response.json()
+        else:
+            productos = []
+    except requests.exceptions.RequestException:
+        productos = []
+
+    return render(request, 'productos/crud_productos.html', {'productos': productos})
+
+
 
 def detalle_producto(request, id):
     try:
@@ -48,11 +88,9 @@ def detalle_producto(request, id):
         return render(request, 'productos/404.html')  # Página de error si no se encuentra el producto
     return render(request, 'productos/detalle.html', {'producto': producto})
 #--------------------------------
-@api_view(['DELETE'])
-def api_eliminar_producto(request, id):
-    try:
-        producto = Producto.objects.get(id=id)
+
+def eliminar_producto(request, id):
+    if request.method == 'POST':
+        producto = get_object_or_404(Producto, id=id)
         producto.delete()
-        return Response({'mensaje': 'Producto eliminado'}, status=status.HTTP_204_NO_CONTENT)
-    except Producto.DoesNotExist:
-        return Response({'error': 'Producto no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+    return redirect('crud_productos')

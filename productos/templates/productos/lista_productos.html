@@ -47,7 +47,6 @@
             border-color: #0056b3;
         }
 
-        /* Estilo personalizado */
         .product-card {
             border-radius: 20px;
             box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
@@ -59,15 +58,13 @@
             transform: translateY(-10px);
         }
 
-        /* Imagen del producto que ocupa el 100% del contenedor sin perder calidad */
         .product-img {
-            width: 100%; /* Ocupa el 100% del ancho del contenedor */
-            height: 100%; /* Ocupa el 100% del alto del contenedor */
-            object-fit: cover; /* Asegura que se mantenga la proporción sin distorsionar la imagen */
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
             border-radius: 20px;
         }
 
-        /* Stock */
         .product-stock {
             font-size: 1rem;
             font-weight: bold;
@@ -75,7 +72,6 @@
             margin-top: 10px;
         }
 
-        /* Fondo y estilo para el precio */
         .product-price {
             font-size: 1.5rem;
             font-weight: bold;
@@ -100,81 +96,26 @@
 <div class="container my-5">
     <h2 class="text-center mb-5">Nuestros Productos</h2>
 
-    <!-- Barra de búsqueda -->
-    <div class="search-container mb-4">
-        <input type="text" id="searchInput" class="form-control" placeholder="Buscar productos..." onkeyup="filtrarProductos()">
-    </div>
-
-    <div class="row g-4" id="productos-container">
-        <!-- Aquí se insertarán los productos dinámicamente -->
+    <div class="row g-4">
+        {% for producto in productos %}
+        <div class="col-md-4">
+            <div class="card product-card h-100">
+                <img src="{{ producto.imagen }}" class="card-img-top product-img" alt="{{ producto.nombre }}">
+                <div class="card-body product-card-body">
+                    <h5 class="card-title">{{ producto.nombre }}</h5>
+                    <p class="card-text">${{ producto.precio }}</p>
+                    <p class="card-text"><small class="text-muted">{{ producto.categoria }}</small></p>
+                    <p class="product-stock">Stock disponible: {{ producto.stock }}</p>
+                    <a href="/productos/{{ producto.id }}/" class="btn btn-primary mb-2">Ver Producto</a>
+                    <a href="#" class="btn btn-comprar" onclick="alert('Producto agregado al carrito! ID del producto: {{ producto.id }}')">Agregar al Carrito</a>
+                </div>
+            </div>
+        </div>
+        {% endfor %}
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
-<script>
-    // URL de tu API (Railway)
-    const API_URL = "https://prueba-propia-ferremas-production.up.railway.app/productos/api/"; 
-    
-    // Vista local
-    //const API_URL = "http://127.0.0.1:8000/productos/api/"; 
-
-    // Contenedor donde irán los productos
-    const productosContainer = document.getElementById('productos-container');
-    
-    let productos = [];
-
-    // Función para cargar productos desde la API
-    fetch(API_URL)
-        .then(response => response.json())
-        .then(data => {
-            productos = data;
-            mostrarProductos(data);
-        })
-        .catch(error => {
-            console.error('Error al cargar productos:', error);
-            productosContainer.innerHTML = "<p>No se pudieron cargar los productos.</p>";
-        });
-
-    // Función para mostrar productos
-    function mostrarProductos(data) {
-        productosContainer.innerHTML = '';
-        data.forEach(producto => {
-            const card = document.createElement('div');
-            card.classList.add('col-md-4');
-            card.innerHTML = `
-                <div class="card product-card h-100">
-                    <img src="${producto.imagen}" class="card-img-top product-img" alt="${producto.nombre}">
-                    <div class="card-body product-card-body">
-                        <h5 class="card-title">${producto.nombre}</h5>
-                        <p class="card-text">$${producto.precio}</p>
-                        <p class="card-text"><small class="text-muted">${producto.categoria}</small></p>
-                        <!-- Información de Stock -->
-                        <p class="product-stock">Stock disponible: ${producto.stock}</p>
-                        <!-- Enlace dinámico para Ver Producto -->
-                        <a href="/productos/${producto.id}/" class="btn btn-primary mb-2">Ver Producto</a>
-                        <!-- Botón para Agregar al Carrito -->
-                        <a href="#" class="btn btn-comprar" onclick="agregarAlCarrito(${producto.id})">Agregar al Carrito</a>
-                    </div>
-                </div>
-            `;
-            productosContainer.appendChild(card);
-        });
-    }
-
-    // Función de búsqueda para filtrar productos por nombre
-    function filtrarProductos() {
-        const query = document.getElementById('searchInput').value.toLowerCase();
-        const productosFiltrados = productos.filter(producto => producto.nombre.toLowerCase().includes(query));
-        mostrarProductos(productosFiltrados);
-    }
-
-    // Función para agregar productos al carrito (solo muestra mensaje por ahora)
-    function agregarAlCarrito(productoId) {
-        alert('Producto agregado al carrito! ID del producto: ' + productoId);
-        // Aquí podrías agregar lógica para añadir el producto a un carrito real
-    }
-</script>
 
 </body>
 </html>
