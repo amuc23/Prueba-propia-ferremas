@@ -15,24 +15,9 @@ from django.views.decorators.csrf import csrf_exempt
 #    productos = Producto.objects.all()  # Obtiene todos los productos
 #    return render(request, 'productos/lista_productos.html', {'productos': productos})  # Renderiza la plantilla HTML
 
+
 def lista_productos(request):
-    if settings.ENTORNO == 'local':
-        api_url = 'http://localhost:8000/productos/api/'
-    else:
-        api_url = 'https://prueba-propia-ferremas-production.up.railway.app/productos/api/'
-
-    try:
-        response = requests.get(api_url)
-        if response.status_code == 200:
-            productos = []
-            productos = response.json()
-        else:
-            productos = []
-    except requests.exceptions.RequestException:
-        productos = []
-
-    return render(request, 'productos/lista_productos.html', {'productos': productos})
-
+    return render(request, 'productos/lista_productos.html')
 
 
 # Vista API (muestra los productos en formato JSON)

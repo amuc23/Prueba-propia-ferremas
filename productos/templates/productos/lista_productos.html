@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -96,26 +97,15 @@
 <div class="container my-5">
     <h2 class="text-center mb-5">Nuestros Productos</h2>
 
-    <div class="row g-4">
-        {% for producto in productos %}
-        <div class="col-md-4">
-            <div class="card product-card h-100">
-                <img src="{{ producto.imagen }}" class="card-img-top product-img" alt="{{ producto.nombre }}">
-                <div class="card-body product-card-body">
-                    <h5 class="card-title">{{ producto.nombre }}</h5>
-                    <p class="card-text">${{ producto.precio }}</p>
-                    <p class="card-text"><small class="text-muted">{{ producto.categoria }}</small></p>
-                    <p class="product-stock">Stock disponible: {{ producto.stock }}</p>
-                    <a href="/productos/{{ producto.id }}/" class="btn btn-primary mb-2">Ver Producto</a>
-                    <a href="#" class="btn btn-comprar" onclick="alert('Producto agregado al carrito! ID del producto: {{ producto.id }}')">Agregar al Carrito</a>
-                </div>
-            </div>
-        </div>
-        {% endfor %}
+    <div class="row g-4" id="product-list">
+        <!-- Aquí se llenarán los productos con JS -->
     </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<!-- Vincula el archivo JS -->
+<script src="{% static 'js/lista_productos.js' %}"></script>
 
 </body>
 </html>
