@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <title>Iniciar Sesión</title>
+    <style>
+        body {
+            background: url(https://d100mj7v0l85u5.cloudfront.net/s3fs-public/2023-04/funciones-del-jefe-de-compras-6.png) center center/cover no-repeat;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+        .navbar {
+            width: 100%;
+            background-color: #2E7D32;
+            color: white;
+            padding: 15px 0;
+            text-align: center;
+            font-size: 28px;
+            font-weight: bold;
+            position: fixed;
+            top: 0;
+            left: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+        }
+        .container {
+            margin-top: 120px; /* Espacio para que no tape el navbar */
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 100%;
+        }
+        .login-container {
+            background-color: rgba(255, 255, 255, 0.733);
+            padding: 40px 30px;
+            padding-right: 4%;
+            border-radius: 10px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+            width: 320px;
+            text-align: center;
+        }
+        .login-container h2 {
+            margin-bottom: 30px;
+            color: #333;
+        }
+        .login-container input {
+            width: 100%;
+            padding: 12px;
+            margin: 10px 0;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            font-size: 14px;
+        }
+        .login-container button {
+            width: 100%;
+            padding: 12px;
+            background-color: #2E7D32;
+            border: none;
+            color: white;
+            font-size: 16px;
+            border-radius: 8px;
+            margin-top: 20px;
+            margin-left: 12px;
+            cursor: pointer;
+        }
+        .login-container button:hover {
+            background-color: #003652;
+        }
+        .register-link {
+            margin-top: 15px;
+            font-size: 14px;
+        }
+        .register-link a {
+            color: #004d74;
+            text-decoration: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="navbar">
+        FERREMAS
+    </div>
+
+    <div class="container">
+        <div class="login-container">
+            <h2>Iniciar Sesión</h2>
+            <form>
+                <input type="email" placeholder="Correo electrónico" required>
+                <input type="password" placeholder="Contraseña" required>
+                <a href="/">
+                    <button type="button">Ingresar</button>
+                </a>
+            </form>
+            <div class="register-link">
+                ¿No tienes cuenta? <a href="/usuarios/registro/">Regístrate</a>
+
+            </div>
+        </div>
+    </div>
+</body>
+</html>

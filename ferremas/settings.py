@@ -25,6 +25,7 @@ INSTALLED_APPS = [
     'rest_framework',  # Framework para APIs
     'productos',  # Aplicación de productos
     'corsheaders',  # Para evitar el bloqueo de peticiones a la API
+    'usuarios',  # Aplicación de usuarios
 ]
 
 # Middleware necesario para la seguridad, autenticación y manejo de sesiones.

@@ -7,6 +7,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path('', include('home.urls')),  # Ruta para la aplicación de inicio
     path('', include('productos.urls')),  # Incluye las rutas de la app productos
+    path('', include('usuarios.urls')),  # Incluye las rutas de la app usuarios
 
 ]
 
