@@ -18,11 +18,11 @@ from django.views.decorators.csrf import csrf_exempt
 
 
 
-def lista_productos(request):
-    return render(request, 'productos/lista_productos.html'),{
-        'entorno': settings.ENTORNO
-    }
 
+def lista_productos(request):
+    return render(request, 'productos/lista_productos.html', {
+        'entorno': settings.ENTORNO
+    })
 
 # Vista API (muestra los productos en formato JSON)
 @api_view(['GET'])
