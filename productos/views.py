@@ -16,6 +16,8 @@ from django.views.decorators.csrf import csrf_exempt
 #    return render(request, 'productos/lista_productos.html', {'productos': productos})  # Renderiza la plantilla HTML
 
 
+
+
 def lista_productos(request):
     return render(request, 'productos/lista_productos.html')
 
@@ -58,8 +60,17 @@ def detalle_producto(request, id):
     return render(request, 'productos/detalle.html', {'producto': producto})
 #--------------------------------
 
-def eliminar_producto(request, id):
-    if request.method == 'POST':
-        producto = get_object_or_404(Producto, id=id)
+@api_view(['DELETE'])
+def api_eliminar_producto(request, id):
+    try:
+        producto = Producto.objects.get(id=id)
         producto.delete()
-    return redirect('crud_productos')
+        return Response({'mensaje': 'Producto eliminado'}, status=status.HTTP_204_NO_CONTENT)
+    except Producto.DoesNotExist:
+        return Response({'error': 'Producto no encontrado'}, status=status.HTTP_404_NOT_FOUND)
+    
+
+def lista_productos_crud(request):
+    return render(request, 'productos/crud_productos.html', {
+        'entorno': settings.ENTORNO
+    })

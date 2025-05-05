@@ -8,6 +8,7 @@ document.addEventListener("DOMContentLoaded", function () {
         apiUrl = "https://prueba-propia-ferremas-production.up.railway.app/productos/api/";
     }
 
+    // Cargar productos al iniciar
     fetch(apiUrl)
         .then(response => {
             if (!response.ok) {
@@ -17,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
         })
         .then(productos => {
             const tabla = document.getElementById("tabla-productos");
-            tabla.innerHTML = "";  // Limpiar
+            tabla.innerHTML = "";  // Limpiar la tabla antes de insertar
 
             productos.forEach(producto => {
                 const fila = `
@@ -30,12 +31,9 @@ document.addEventListener("DOMContentLoaded", function () {
                                  style="width: 80px; height: 80px; object-fit: cover; border-radius: 5px;">
                         </td>
                         <td>
-                            <form action="/productos/eliminar/${producto.id}/" method="POST" style="display:inline;">
-                                <input type="hidden" name="csrfmiddlewaretoken" value="${getCSRFToken()}">
-                                <button type="submit" class="btn btn-danger btn-sm">
-                                    <i class="fas fa-trash"></i> Eliminar
-                                </button>
-                            </form>
+                            <button onclick="eliminarProducto(${producto.id})" class="btn btn-danger btn-sm">
+                                <i class="fas fa-trash"></i> Eliminar
+                            </button>
                             <a href="/productos/${producto.id}/" class="btn btn-warning btn-sm">
                                 <i class="fas fa-pencil-alt"></i> Editar
                             </a>
@@ -49,6 +47,7 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error:", error);
         });
 
+    // Obtener token CSRF desde las cookies
     function getCSRFToken() {
         const cookies = document.cookie.split(";");
         for (let cookie of cookies) {
@@ -59,4 +58,37 @@ document.addEventListener("DOMContentLoaded", function () {
         }
         return "";
     }
+
+    // Hacer visible la función eliminarProducto en global
+    window.eliminarProducto = function (id) {
+        if (!confirm("¿Estás seguro de que quieres eliminar este producto?")) return;
+
+        let deleteUrl = "";
+
+        if (entorno === "local") {
+            deleteUrl = `http://localhost:8000/productos/api/eliminar/${id}/`;
+        } else {
+            deleteUrl = `https://prueba-propia-ferremas-production.up.railway.app/productos/api/eliminar/${id}/`;
+        }
+
+        fetch(deleteUrl, {
+            method: "DELETE",
+            headers: {
+                "X-CSRFToken": getCSRFToken(),
+            }
+        })
+        .then(response => {
+            if (response.status === 204) {
+                alert("Producto eliminado correctamente");
+                location.reload();  // Recarga la página para actualizar la tabla
+            } else {
+                return response.json().then(data => {
+                    alert("Error al eliminar: " + (data.error || "Error desconocido"));
+                });
+            }
+        })
+        .catch(error => {
+            console.error("Error al eliminar producto:", error);
+        });
+    };
 });

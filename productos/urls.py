@@ -8,5 +8,6 @@ urlpatterns = [
     path('productos/api/', views.api_lista_productos, name='api_lista_productos'),  # Ruta API para los productos
     path('productos/api/agregar/', views.api_agregar_producto, name='api_agregar_producto'),  # Ruta API para agregar productos
     path('productos/formulario/', views.formulario_producto, name='formulario_producto'),  # Ruta para formulario de agregar productos
-    path('productos/eliminar/<int:id>/', views.eliminar_producto, name='eliminar_producto'),
+    path('productos/api/eliminar/<int:id>/', views.api_eliminar_producto, name='api_eliminar_producto'),
+
 ]

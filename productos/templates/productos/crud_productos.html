@@ -65,7 +65,7 @@
 </main>
 
 <!-- Footer -->
-<footer>
+<footer class="text-center p-3">
     <p>© 2025 FERREMAS - Todos los derechos reservados</p>
 </footer>
 
@@ -74,10 +74,11 @@
 
 <!-- Enviar entorno al script JS -->
 <script>
-    document.body.dataset.entorno = "{{ settings.ENTORNO }}";
+    document.body.dataset.entorno = "{{ entorno }}";
 </script>
 
-<!-- Script JS externo para cargar productos desde la API -->
+
+<!-- Script JS externo para cargar productos desde la API y eliminar con fetch -->
 <script src="{% static 'js/fetch_productos.js' %}"></script>
 
 </body>
