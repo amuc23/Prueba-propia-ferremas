@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
                             <button onclick="eliminarProducto(${producto.id})" class="btn btn-danger btn-sm">
                                 <i class="fas fa-trash"></i> Eliminar
                             </button>
-                            <a href="/productos/${producto.id}/" class="btn btn-warning btn-sm">
+                            <a href="/productos/editar/${producto.id}/" class="btn btn-warning btn-sm">
                                 <i class="fas fa-pencil-alt"></i> Editar
                             </a>
                         </td>
@@ -44,22 +44,12 @@ document.addEventListener("DOMContentLoaded", function () {
             });
         })
         .catch(error => {
-            console.error("Error:", error);
+            console.error("Error al cargar los productos:", error);
         });
 
-    // Obtener token CSRF desde las cookies
-    function getCSRFToken() {
-        const cookies = document.cookie.split(";");
-        for (let cookie of cookies) {
-            const [name, value] = cookie.trim().split("=");
-            if (name === "csrftoken") {
-                return value;
-            }
-        }
-        return "";
-    }
 
-    // Hacer visible la función eliminarProducto en global
+
+    // Función global para eliminar producto
     window.eliminarProducto = function (id) {
         if (!confirm("¿Estás seguro de que quieres eliminar este producto?")) return;
 
@@ -73,12 +63,12 @@ document.addEventListener("DOMContentLoaded", function () {
 
         fetch(deleteUrl, {
             method: "DELETE",
-            headers: {}
+            headers: {}  // CSRF desactivado en modo local
         })
         .then(response => {
             if (response.status === 204) {
                 alert("Producto eliminado correctamente");
-                location.reload();  // Recarga la página para actualizar la tabla
+                location.reload();
             } else {
                 return response.json().then(data => {
                     alert("Error al eliminar: " + (data.error || "Error desconocido"));

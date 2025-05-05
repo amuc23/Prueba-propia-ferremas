@@ -6,7 +6,8 @@ from rest_framework import status
 from .serializers import ProductoSerializer
 import requests
 from django.conf import settings
-from django.views.decorators.csrf import csrf_exempt  
+from django.http import HttpResponseNotAllowed
+
 
 #--------------------GET-----------------------
 
@@ -51,7 +52,6 @@ def formulario_producto(request):
 
 
 
-
 def detalle_producto(request, id):
     try:
         producto = Producto.objects.get(id=id)
@@ -74,3 +74,16 @@ def lista_productos_crud(request):
     return render(request, 'productos/crud_productos.html', {
         'entorno': settings.ENTORNO
     })
+
+def editar_producto(request, id):
+    producto = get_object_or_404(Producto, id=id)
+
+    if request.method == 'POST':
+        producto.nombre = request.POST.get('nombre')
+        producto.precio = request.POST.get('precio')
+        producto.descripcion = request.POST.get('descripcion')
+        producto.imagen = request.POST.get('imagen')
+        producto.save()
+        return redirect('lista_productos_crud')
+
+    return render(request, 'productos/editar_producto.html', {'producto': producto})

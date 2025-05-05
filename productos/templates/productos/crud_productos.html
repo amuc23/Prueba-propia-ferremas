@@ -9,7 +9,6 @@
     <!-- Bootstrap 5 CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="{% static 'css/crud.css' %}">
-    <!-- Font Awesome CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
 </head>
 <body>
@@ -37,13 +36,11 @@
 <main class="container my-5">
     <h1 class="text-center mb-4">Panel de Administración de Productos</h1>
 
-    <!-- Botones centrados para redirigir -->
     <div class="text-center mb-4">
         <a href="{% url 'formulario_producto' %}" class="btn btn-success me-2">Agregar Producto</a>
         <a href="/" class="btn btn-outline-secondary">Volver al Inicio</a>
     </div>
 
-    <!-- TABLA de productos -->
     <div id="listado">
         <div class="table-responsive">
             <table class="table table-bordered">
@@ -57,7 +54,7 @@
                     </tr>
                 </thead>
                 <tbody id="tabla-productos">
-                    <!-- Los productos se insertarán aquí mediante JavaScript -->
+                    <!-- Aquí JS insertará las filas -->
                 </tbody>
             </table>
         </div>
@@ -72,14 +69,15 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Enviar entorno al script JS -->
+<!-- Inyectar entorno desde backend -->
 <script>
     document.body.dataset.entorno = "{{ entorno }}";
 </script>
 
-
-<!-- Script JS externo para cargar productos desde la API y eliminar con fetch -->
+<!-- Script para manejar CRUD con API -->
 <script src="{% static 'js/fetch_productos.js' %}"></script>
+
+
 
 </body>
 </html>

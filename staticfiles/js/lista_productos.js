@@ -11,12 +11,13 @@ document.addEventListener("DOMContentLoaded", function () {
     // Obtener el contenedor donde se van a agregar los productos
     const productList = document.getElementById('product-list');
 
-    // Hacer la solicitud a la API
-    fetch(apiUrl)
+    // Solicitar productos con nocache para forzar datos actualizados
+    fetch(apiUrl + '?nocache=' + new Date().getTime())
         .then(response => response.json())
         .then(productos => {
+            productList.innerHTML = "";  // Limpiar antes de insertar
+
             productos.forEach(producto => {
-                // Crear el HTML dinámico para cada producto
                 const productoHTML = `
                     <div class="col-md-4">
                         <div class="card product-card h-100">
@@ -32,7 +33,6 @@ document.addEventListener("DOMContentLoaded", function () {
                         </div>
                     </div>
                 `;
-                // Insertar el producto en el contenedor
                 productList.innerHTML += productoHTML;
             });
         })
