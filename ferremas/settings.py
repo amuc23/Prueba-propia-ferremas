@@ -125,8 +125,8 @@ CSRF_TRUSTED_ORIGINS = ['https://prueba-propia-ferremas-production.up.railway.ap
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-ENTORNO = 'local'
-#ENTORNO = 'produccion'
+#ENTORNO = 'local'
+ENTORNO = 'produccion'
 
 #cambiar de local a produccion antes de subir o al bajarlo para mantener conexion de la api
 

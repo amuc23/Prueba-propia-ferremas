@@ -73,9 +73,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         fetch(deleteUrl, {
             method: "DELETE",
-            headers: {
-                "X-CSRFToken": getCSRFToken(),
-            }
+            headers: {}
         })
         .then(response => {
             if (response.status === 204) {
