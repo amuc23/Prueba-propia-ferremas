@@ -6,33 +6,52 @@
     <title>Editar Producto</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="container mt-5">
-    <h1 class="text-center mb-4">Editar Producto</h1>
+<body>
 
-    <form method="POST">
-        {% csrf_token %}
+<div class="container mt-5">
+    <h1 class="mb-4">Editar Producto</h1>
+    <form id="form-editar" data-producto-id="{{ producto.id }}">
         <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre:</label>
-            <input type="text" class="form-control" id="nombre" name="nombre" value="{{ producto.nombre }}">
+            <label for="nombre" class="form-label">Nombre</label>
+            <input type="text" class="form-control" id="nombre" value="{{ producto.nombre }}">
         </div>
         <div class="mb-3">
-            <label for="precio" class="form-label">Precio:</label>
-            <input type="number" class="form-control" id="precio" name="precio" value="{{ producto.precio }}">
+            <label for="precio" class="form-label">Precio</label>
+            <input type="number" class="form-control" id="precio" value="{{ producto.precio }}">
         </div>
         <div class="mb-3">
-            <label for="descripcion" class="form-label">Descripción:</label>
-            <textarea class="form-control" id="descripcion" name="descripcion">{{ producto.descripcion }}</textarea>
+            <label for="descripcion" class="form-label">Descripción</label>
+            <textarea class="form-control" id="descripcion">{{ producto.descripcion }}</textarea>
         </div>
         <div class="mb-3">
-            <label for="imagen" class="form-label">URL de la Imagen:</label>
-            <input type="text" class="form-control" id="imagen" name="imagen" value="{{ producto.imagen }}">
+            <label for="categoria" class="form-label">Categoría</label>
+            <input type="text" class="form-control" id="categoria" value="{{ producto.categoria }}">
+        </div>
+        <div class="mb-3">
+            <label for="imagen" class="form-label">URL de la imagen</label>
+            <input type="text" class="form-control" id="imagen" value="{{ producto.imagen }}" oninput="actualizarVistaPrevia()">
         </div>
         <div class="mb-3">
             <label class="form-label">Vista previa:</label><br>
-            <img src="{{ producto.imagen }}" style="max-width: 200px; border-radius: 5px;">
+            <img id="preview-imagen" src="{{ producto.imagen }}" alt="Vista previa" style="max-width: 200px; border-radius: 5px;">
         </div>
         <button type="submit" class="btn btn-primary">Guardar Cambios</button>
         <a href="{% url 'lista_productos_crud' %}" class="btn btn-secondary">Cancelar</a>
     </form>
+</div>
+
+<!-- Script para vista previa dinámica de imagen -->
+<script>
+    document.body.dataset.entorno = "{{ entorno }}";
+
+    function actualizarVistaPrevia() {
+        const url = document.getElementById("imagen").value;
+        document.getElementById("preview-imagen").src = url;
+    }
+</script>
+
+<!-- Conexión con tu archivo JavaScript -->
+<script src="{% static 'js/fetch_productos.js' %}"></script>
+
 </body>
 </html>

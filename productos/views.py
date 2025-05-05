@@ -75,15 +75,21 @@ def lista_productos_crud(request):
         'entorno': settings.ENTORNO
     })
 
+@api_view(['PUT'])
+def api_editar_producto(request, id):
+    producto = get_object_or_404(Producto, id=id)
+    serializer = ProductoSerializer(producto, data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+
+
 def editar_producto(request, id):
     producto = get_object_or_404(Producto, id=id)
-
-    if request.method == 'POST':
-        producto.nombre = request.POST.get('nombre')
-        producto.precio = request.POST.get('precio')
-        producto.descripcion = request.POST.get('descripcion')
-        producto.imagen = request.POST.get('imagen')
-        producto.save()
-        return redirect('lista_productos_crud')
-
-    return render(request, 'productos/editar_producto.html', {'producto': producto})
+    return render(request, 'productos/editar_producto.html', {
+        'producto': producto,
+        'entorno': settings.ENTORNO
+    })
