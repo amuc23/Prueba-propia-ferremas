@@ -92,10 +92,12 @@
                     </li>
                 {% endif %}
 
-                <!-- Panel de administración (visible siempre) -->
-                <li class="nav-item ms-2">
-                    <a class="nav-link" href="{% url 'lista_productos_crud' %}">Panel de Administración</a>
-                </li>
+                <!-- Panel de administración (visible para staff, no para clientes) -->
+                {% if user.is_staff %}
+                    <li class="nav-item ms-2">
+                        <a class="nav-link" href="{% url 'lista_productos_crud' %}">Panel de Administración</a>
+                    </li>
+                {% endif %}
             </ul>
         </div>
     </div>

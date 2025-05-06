@@ -85,6 +85,10 @@ def api_eliminar_producto(request, id):
     except Producto.DoesNotExist:
         return JsonResponse({'error': 'Producto no encontrado'}, status=404)
 
+
+    
+    # Usar el decorador para proteger la vista
+@user_passes_test(es_admin, login_url='/')  # Redirige a la página principal si no es admin
 def lista_productos_crud(request):
     return render(request, 'productos/crud_productos.html', {
         'entorno': settings.ENTORNO
