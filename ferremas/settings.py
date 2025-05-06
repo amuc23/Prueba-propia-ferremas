@@ -133,3 +133,14 @@ ENTORNO = 'produccion'
 
 
 AUTH_USER_MODEL = 'usuarios.Usuario'
+
+# Configuración de Django REST Framework
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework.authentication.SessionAuthentication',  # Permite autenticación con sesión (cookies)
+        'rest_framework.authentication.TokenAuthentication',    # Opcional, para APIs que usen tokens
+    ],
+    'DEFAULT_PERMISSION_CLASSES': [
+        'rest_framework.permissions.AllowAny'  # Cambia a IsAuthenticated si quieres proteger todo por defecto
+    ]
+}

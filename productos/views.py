@@ -1,13 +1,12 @@
-from django.shortcuts import render, redirect, get_object_or_404
-from .models import Producto
-from rest_framework.decorators import api_view
+from django.shortcuts import render, get_object_or_404
+from django.conf import settings
+from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
+from .models import Producto
 from .serializers import ProductoSerializer
-import requests
-from django.conf import settings
-from django.http import HttpResponseNotAllowed
-
+from rest_framework.permissions import BasePermission
+from django.contrib.auth.decorators import user_passes_test
 
 #--------------------GET-----------------------
 
@@ -33,20 +32,25 @@ def api_lista_productos(request):
     return Response(serializer.data)  # Devuelve los productos en formato JSON
 
 #--------------------POST----------------------
+class EsAdmin(BasePermission):
+    def has_permission(self, request, view):
+        return request.user and request.user.is_authenticated and request.user.is_staff
 
-# Vista API para agregar un nuevo producto (POST)
-@api_view(['POST'])
-def api_agregar_producto(request):
-    if request.method == 'POST':
-        serializer = ProductoSerializer(data=request.data)  # Serializa los datos recibidos
-        if serializer.is_valid():  # Verifica si los datos son válidos
-            serializer.save()  # Guarda el nuevo producto
-            return Response(serializer.data, status=status.HTTP_201_CREATED)  # Devuelve el producto creado
-        return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)  # Error de validación
+def es_admin(user):
+    return user.is_authenticated and user.is_staff
 
-# Vista para mostrar el formulario de agregar producto
+@user_passes_test(es_admin)
 def formulario_producto(request):
     return render(request, 'productos/formulario_producto.html')
+
+@api_view(['POST'])
+@permission_classes([EsAdmin])
+def api_agregar_producto(request):
+    serializer = ProductoSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_201_CREATED)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
 
