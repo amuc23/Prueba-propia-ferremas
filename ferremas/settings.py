@@ -8,7 +8,7 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = 'django-insecure-60gx)fedy5u0f!3tc7a*4y$xjmv+$4p2@!o)&r)82*3da!7(yl'
 
 # Importante: pon DEBUG en False para producción.
-DEBUG = True  # Se pone True en desarrollo, y antes de subirlo SI O SI EN FALSE (producción)
+DEBUG = False  # Se pone True en desarrollo, y antes de subirlo SI O SI EN FALSE (producción)
 
 # Define los dominios permitidos para producción (en este caso, el dominio de Railway)
 ALLOWED_HOSTS = ['prueba-propia-ferremas-production.up.railway.app', '127.0.0.1', 'localhost']
