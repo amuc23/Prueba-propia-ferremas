@@ -7,8 +7,45 @@
     <title>Formulario de Producto</title>
     <!-- Carga del CSS de Bootstrap -->
     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+
+    <style>
+        footer {
+            background-color: #2E7D32;
+            color: white;
+            text-align: center;
+            padding: 20px 0;
+            margin-top: 50px;
+        }
+    </style>
 </head>
 <body class="bg-light">
+
+    <!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2E7D32;">
+    <div class="container">
+        <a class="navbar-brand" href="/"><img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;"></a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <a href="/productos/" class="btn btn-back" style="color: #2E7D32;">Atrás</a>
+        <div class="collapse navbar-collapse" id="menu">
+            <ul class="navbar-nav ms-auto align-items-center">
+                <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+                <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Ofertas</a></li>
+                <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+                <li class="nav-item ms-3">
+                    <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
+                        <i class="fas fa-user me-2"></i> Iniciar Sesión
+                    </a>
+                </li>
+                <li class="nav-item ms-2">
+                    <a class="nav-link" href="{% url 'lista_productos_crud' %}">Panel de Administración</a>
+                </li>
+            </ul>
+        </div>
+    </div>
+</nav>
 
     <div class="container my-5">
         <!-- Título FERREMAS en la parte superior -->
@@ -75,6 +112,14 @@
             </a>
         </div>
     </div>
+
+    <!-- Footer -->
+<footer>
+    <div class="container">
+        <p>© 2025 FERREMAS - Todos los derechos reservados</p>
+    </div>
+</footer>
+
 
     <script>
         // Mostrar u ocultar campo personalizado según selección
