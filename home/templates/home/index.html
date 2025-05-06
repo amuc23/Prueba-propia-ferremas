@@ -62,7 +62,9 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2E7D32;">
     <div class="container">
-        <a class="navbar-brand" href="/"><a class="navbar-brand" href="/"><img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;"></a>    </a>
+        <a class="navbar-brand" href="/">
+            <img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;">
+        </a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -73,14 +75,24 @@
                 <li class="nav-item"><a class="nav-link" href="#">Ofertas</a></li>
                 <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
 
-                <!-- Botón estilizado con borde blanco -->
-                <li class="nav-item ms-3">
-                    <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
-                        <i class="fas fa-user me-2"></i> Iniciar Sesión
-                    </a>
-                </li>
+                {% if user.is_authenticated %}
+                    <li class="nav-item ms-3">
+                        <span class="text-white me-3">Hola, {{ user.username }}</span>
+                    </li>
+                    <li class="nav-item ms-2">
+                        <a class="btn btn-outline-light px-3 py-2" href="/usuarios/cerrar-sesion/">
+                            <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+                        </a>
+                    </li>
+                {% else %}
+                    <li class="nav-item ms-3">
+                        <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
+                            <i class="fas fa-user me-2"></i> Iniciar Sesión
+                        </a>
+                    </li>
+                {% endif %}
 
-                <!-- Panel de administración -->
+                <!-- Panel de administración (visible siempre) -->
                 <li class="nav-item ms-2">
                     <a class="nav-link" href="{% url 'lista_productos_crud' %}">Panel de Administración</a>
                 </li>

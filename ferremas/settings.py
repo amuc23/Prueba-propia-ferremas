@@ -23,6 +23,7 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',  # Archivos estáticos (CSS, JS, imágenes)
     'home',  # Tu aplicación de inicio
     'rest_framework',  # Framework para APIs
+    'rest_framework.authtoken',
     'productos',  # Aplicación de productos
     'corsheaders',  # Para evitar el bloqueo de peticiones a la API
     'usuarios',  # Aplicación de usuarios
@@ -131,4 +132,4 @@ ENTORNO = 'produccion'
 #cambiar de local a produccion antes de subir o al bajarlo para mantener conexion de la api
 
 
-
+AUTH_USER_MODEL = 'usuarios.Usuario'
