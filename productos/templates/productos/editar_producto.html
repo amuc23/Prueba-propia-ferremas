@@ -2,113 +2,124 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <title>Editar Producto</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-
-    <style>
-         .btn-back {
-            background-color: #ffffff;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 1rem;
-            justify-content: center;
-        }
-
-        .btn-back:hover {
-            background-color: #5a6268;
-        }
-
-         footer {
-            background-color: #2E7D32;
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            margin-top: 50px;
-        }
-    </style>
-
+  <meta charset="UTF-8">
+  <title>Editar Producto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
 <body>
-    <!-- Navbar -->
-<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2E7D32;">
-    <div class="container">
-        <a class="navbar-brand" href="/"><img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;"></a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <a href="/productos/crud/" class="btn btn-back" style="color: #2E7D32;">Atrás</a>
-        <div class="collapse navbar-collapse" id="menu">
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
-                <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Ofertas</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
-                <li class="nav-item ms-3">
-                    <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
-                        <i class="fas fa-user me-2"></i> Iniciar Sesión
-                    </a>
-                </li>
-                <li class="nav-item ms-2">
-                    <a class="nav-link" href="{% url 'lista_productos_crud' %}">Panel de Administración</a>
-                </li>
-            </ul>
-        </div>
-    </div>
+
+<nav class="navbar navbar-dark" style="background-color: #2E7D32;">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;">
+    </a>
+  </div>
 </nav>
 
-<div class="container mt-5">
-    <h1 class="mb-4">Editar Producto</h1>
-    <form id="form-editar" data-producto-id="{{ producto.id }}">
-        <div class="mb-3">
-            <label for="nombre" class="form-label">Nombre</label>
-            <input type="text" class="form-control" id="nombre" value="{{ producto.nombre }}">
-        </div>
-        <div class="mb-3">
-            <label for="precio" class="form-label">Precio</label>
-            <input type="number" class="form-control" id="precio" value="{{ producto.precio }}">
-        </div>
-        <div class="mb-3">
-            <label for="descripcion" class="form-label">Descripción</label>
-            <textarea class="form-control" id="descripcion">{{ producto.descripcion }}</textarea>
-        </div>
-        <div class="mb-3">
-            <label for="categoria" class="form-label">Categoría</label>
-            <input type="text" class="form-control" id="categoria" value="{{ producto.categoria }}">
-        </div>
-        <div class="mb-3">
-            <label for="imagen" class="form-label">URL de la imagen</label>
-            <input type="text" class="form-control" id="imagen" value="{{ producto.imagen }}" oninput="actualizarVistaPrevia()">
-        </div>
-        <div class="mb-3">
-            <label class="form-label">Vista previa:</label><br>
-            <img id="preview-imagen" src="{{ producto.imagen }}" alt="Vista previa" style="max-width: 200px; border-radius: 5px;">
-        </div>
-        <button type="submit" class="btn btn-primary">Guardar Cambios</button>
-        <a href="{% url 'lista_productos_crud' %}" class="btn btn-secondary">Cancelar</a>
-    </form>
-</div>
+<main class="container my-5">
+  <h1 class="text-center mb-4">Editar Producto</h1>
 
-<!-- Footer -->
-<footer>
-    <div class="container">
-        <p>© 2025 FERREMAS - Todos los derechos reservados</p>
+  <form id="formEditar">
+    {% csrf_token %}
+    <div class="mb-3">
+      <label for="nombre" class="form-label">Nombre</label>
+      <input type="text" class="form-control" id="nombre" name="nombre" required>
     </div>
+    <div class="mb-3">
+      <label for="precio" class="form-label">Precio</label>
+      <input type="number" class="form-control" id="precio" name="precio" required>
+    </div>
+    <div class="mb-3">
+      <label for="descripcion" class="form-label">Descripción</label>
+      <textarea class="form-control" id="descripcion" name="descripcion" rows="3" required></textarea>
+    </div>
+    <div class="mb-3">
+      <label for="imagen" class="form-label">URL de Imagen</label>
+      <input type="url" class="form-control" id="imagen" name="imagen">
+    </div>
+    <div class="mb-3">
+      <label for="stock" class="form-label">Stock</label>
+      <input type="number" class="form-control" id="stock" name="stock" required>
+    </div>
+    <div class="mb-3">
+      <label for="categoria" class="form-label">Categoría</label>
+      <input type="text" class="form-control" id="categoria" name="categoria" required>
+    </div>
+    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    <a href="/productos/crud/" class="btn btn-secondary">Cancelar</a>
+  </form>
+</main>
+
+<footer class="text-center p-3 mt-5" style="background-color: #2E7D32; color: white;">
+  <p>© 2025 FERREMAS - Todos los derechos reservados</p>
 </footer>
 
-<!-- Script para vista previa dinámica de imagen -->
 <script>
-    document.body.dataset.entorno = "{{ entorno }}";
+const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+const idProducto = window.location.pathname.split("/").filter(p => p).pop();
 
-    function actualizarVistaPrevia() {
-        const url = document.getElementById("imagen").value;
-        document.getElementById("preview-imagen").src = url;
+const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+const baseApiUrl = isLocal
+  ? "http://127.0.0.1:8000"
+  : "https://prueba-propia-ferremas-production.up.railway.app";
+
+const apiProductoURL = `${baseApiUrl}/productos/api/`;
+const apiEditarURL = `${baseApiUrl}/productos/api/editar/${idProducto}/`;
+
+// Obtener producto por ID desde lista
+fetch(apiProductoURL)
+  .then(res => res.json())
+  .then(productos => {
+    const producto = productos.find(p => p.id == idProducto);
+    if (!producto) return alert("Producto no encontrado");
+
+    document.getElementById("nombre").value = producto.nombre;
+    document.getElementById("precio").value = producto.precio;
+    document.getElementById("descripcion").value = producto.descripcion;
+    document.getElementById("imagen").value = producto.imagen;
+    document.getElementById("stock").value = producto.stock;
+    document.getElementById("categoria").value = producto.categoria;
+  });
+
+// Guardar cambios al enviar formulario
+document.getElementById("formEditar").addEventListener("submit", function(e) {
+  e.preventDefault();
+
+  const datos = {
+    nombre: document.getElementById("nombre").value,
+    precio: document.getElementById("precio").value,
+    descripcion: document.getElementById("descripcion").value,
+    imagen: document.getElementById("imagen").value,
+    stock: document.getElementById("stock").value,
+    categoria: document.getElementById("categoria").value,
+  };
+
+  fetch(apiEditarURL, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": csrftoken
+    },
+    credentials: "same-origin",
+    body: JSON.stringify(datos)
+  })
+  .then(res => {
+    if (res.ok) {
+      alert("Producto actualizado correctamente");
+      window.location.href = "/productos/crud/";
+    } else {
+      return res.json().then(data => {
+        alert("Error al actualizar: " + JSON.stringify(data));
+      });
     }
+  })
+  .catch(err => {
+    console.error("Error al enviar datos:", err);
+    alert("Error al conectar con el servidor");
+  });
+});
 </script>
-
-<!-- Conexión con tu archivo JavaScript -->
-<script src="{% static 'js/fetch_productos.js' %}"></script>
 
 </body>
 </html>
