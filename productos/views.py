@@ -7,6 +7,11 @@ from .models import Producto
 from .serializers import ProductoSerializer
 from rest_framework.permissions import BasePermission
 from django.contrib.auth.decorators import user_passes_test
+from django.http import JsonResponse
+from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from django.contrib.auth.decorators import login_required, user_passes_test
+from django.http import HttpResponse
 
 #--------------------GET-----------------------
 
@@ -64,15 +69,21 @@ def detalle_producto(request, id):
     return render(request, 'productos/detalle.html', {'producto': producto})
 #--------------------------------
 
-@api_view(['DELETE'])
+
+@csrf_exempt
+@require_http_methods(["DELETE"])
+@login_required(login_url='/usuarios/iniciosesion/')
 def api_eliminar_producto(request, id):
+    if not request.user.is_staff:
+        return JsonResponse({'error': 'No tienes permisos para eliminar productos.'}, status=403)
+
     try:
+        from .models import Producto
         producto = Producto.objects.get(id=id)
         producto.delete()
-        return Response({'mensaje': 'Producto eliminado'}, status=status.HTTP_204_NO_CONTENT)
+        return JsonResponse({'mensaje': 'Producto eliminado correctamente'}, status=204)
     except Producto.DoesNotExist:
-        return Response({'error': 'Producto no encontrado'}, status=status.HTTP_404_NOT_FOUND)
-    
+        return JsonResponse({'error': 'Producto no encontrado'}, status=404)
 
 def lista_productos_crud(request):
     return render(request, 'productos/crud_productos.html', {
@@ -97,3 +108,7 @@ def editar_producto(request, id):
         'producto': producto,
         'entorno': settings.ENTORNO
     })
+
+@login_required
+def prueba_permisos(request):
+    return HttpResponse(f"Usuario: {request.user.username} | Staff: {request.user.is_staff}")

@@ -11,4 +11,6 @@ urlpatterns = [
     path('productos/api/eliminar/<int:id>/', views.api_eliminar_producto, name='api_eliminar_producto'),
     path('productos/api/editar/<int:id>/', views.api_editar_producto, name='api_editar_producto'),
     path('productos/editar/<int:id>/', views.editar_producto, name='editar_producto'),
+    path('productos/prueba/', views.prueba_permisos),
+
 ]

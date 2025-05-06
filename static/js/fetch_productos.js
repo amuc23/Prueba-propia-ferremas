@@ -1,3 +1,20 @@
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+
 document.addEventListener("DOMContentLoaded", function () {
     // === CONFIGURACIÓN DEL ENTORNO ===
     const entorno = document.body.dataset.entorno;
@@ -50,33 +67,8 @@ document.addEventListener("DOMContentLoaded", function () {
             console.error("Error al cargar los productos:", error);
         });
 
-    // === FUNCIÓN GLOBAL PARA ELIMINAR PRODUCTO ===
-    window.eliminarProducto = function (id) {
-        if (!confirm("¿Estás seguro de que quieres eliminar este producto?")) return;
-
-        const deleteUrl = entorno === "local"
-            ? `http://localhost:8000/productos/api/eliminar/${id}/`
-            : `https://prueba-propia-ferremas-production.up.railway.app/productos/api/eliminar/${id}/`;
-
-        fetch(deleteUrl, {
-            method: "DELETE",
-            headers: {}  // CSRF desactivado en modo local
-        })
-        .then(response => {
-            if (response.status === 204) {
-                alert("Producto eliminado correctamente");
-                location.reload();
-            } else {
-                return response.json().then(data => {
-                    alert("Error al eliminar: " + (data.error || "Error desconocido"));
-                });
-            }
-        })
-        .catch(error => {
-            console.error("Error al eliminar producto:", error);
-        });
-    };
-
+       
+        
     // === FUNCIÓN PARA ENVIAR EDICIÓN DESDE FORMULARIO editar_producto.html ===
     const formEditar = document.getElementById("form-editar");
 

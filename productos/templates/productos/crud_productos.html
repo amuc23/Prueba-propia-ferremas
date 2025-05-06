@@ -16,7 +16,7 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2E7D32;">
     <div class="container">
-        <a class="navbar-brand" href="/"><img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;">        </a>
+        <a class="navbar-brand" href="/"><img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;"></a>
         <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
             <span class="navbar-toggler-icon"></span>
         </button>
@@ -54,7 +54,7 @@
                     </tr>
                 </thead>
                 <tbody id="tabla-productos">
-                    <!-- Aquí JS insertará las filas -->
+                    <!-- JS insertará las filas -->
                 </tbody>
             </table>
         </div>
@@ -69,15 +69,98 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Inyectar entorno desde backend -->
+<!-- Script para cargar y eliminar productos -->
 <script>
-    document.body.dataset.entorno = "{{ entorno }}";
+function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== '') {
+        const cookies = document.cookie.split(';');
+        for (let i = 0; i < cookies.length; i++) {
+            const cookie = cookies[i].trim();
+            if (cookie.substring(0, name.length + 1) === (name + '=')) {
+                cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                break;
+            }
+        }
+    }
+    return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+// Detectar si es entorno local usando 127.0.0.1 o localhost
+const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+
+const apiUrl = isLocal
+    ? "http://127.0.0.1:8000/productos/api/"
+    : "https://prueba-propia-ferremas-production.up.railway.app/productos/api/";
+
+fetch(apiUrl)
+    .then(response => response.json())
+    .then(productos => {
+        const tabla = document.getElementById("tabla-productos");
+        tabla.innerHTML = "";
+
+        productos.forEach(producto => {
+            const fila = `
+                <tr>
+                    <td>${producto.nombre}</td>
+                    <td>$${producto.precio}</td>
+                    <td>${producto.descripcion}</td>
+                    <td><img src="${producto.imagen}" style="width: 80px; height: 80px; object-fit: cover;"></td>
+                    <td>
+                        <button class="btn btn-danger btn-sm" onclick="eliminarProducto(${producto.id})">
+                            <i class="fas fa-trash"></i> Eliminar
+                        </button>
+                        <a href="/productos/editar/${producto.id}/" class="btn btn-warning btn-sm">
+                            <i class="fas fa-pencil-alt"></i> Editar
+                        </a>
+                    </td>
+                </tr>
+            `;
+            tabla.insertAdjacentHTML("beforeend", fila);
+        });
+    })
+    .catch(error => {
+        console.error("Error al cargar productos:", error);
+        alert("No se pudieron cargar los productos.");
+    });
+
+function eliminarProducto(id) {
+    if (!confirm("¿Estás seguro de que quieres eliminar este producto?")) return;
+
+    const deleteUrl = isLocal
+        ? `http://127.0.0.1:8000/productos/api/eliminar/${id}/`
+        : `https://prueba-propia-ferremas-production.up.railway.app/productos/api/eliminar/${id}/`;
+
+    fetch(deleteUrl, {
+        method: "DELETE",
+        credentials: "same-origin",
+        headers: {
+            "X-CSRFToken": csrftoken
+        }
+    })
+    .then(response => {
+        if (response.status === 204) {
+            alert("Producto eliminado correctamente");
+            location.reload();
+        } else if (response.status === 403) {
+            alert("No tienes permisos. Inicia sesión como administrador.");
+        } else if (response.status === 404) {
+            alert("Producto no encontrado.");
+        } else {
+            return response.json().then(data => {
+                alert("Error: " + (data.error || "Error desconocido"));
+            }).catch(() => {
+                alert("Error inesperado: respuesta no fue JSON.");
+            });
+        }
+    })
+    .catch(error => {
+        console.error("Error al eliminar producto:", error);
+        alert("Error al conectar con el servidor.");
+    });
+}
 </script>
-
-<!-- Script para manejar CRUD con API -->
-<script src="{% static 'js/fetch_productos.js' %}"></script>
-
-
 
 </body>
 </html>

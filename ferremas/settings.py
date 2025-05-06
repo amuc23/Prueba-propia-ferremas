@@ -120,16 +120,21 @@ WHITENOISE_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
 
 # Configuración adicional para producción: asegurarse de que los formularios CSRF funcionen correctamente
-CSRF_TRUSTED_ORIGINS = ['https://prueba-propia-ferremas-production.up.railway.app']  # Agregar dominio de Railway
+CSRF_TRUSTED_ORIGINS = ['http://127.0.0.1:8000','https://prueba-propia-ferremas-production.up.railway.app']  # Agregar dominio de Railway
+
+CORS_ALLOW_CREDENTIALS = True
+
 
 # Configuración de los archivos multimedia (si es necesario para manejar archivos de imagen, etc.)
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-#ENTORNO = 'local'
-ENTORNO = 'produccion'
+ENTORNO = 'local'
+#ENTORNO = 'produccion'
 
 #cambiar de local a produccion antes de subir o al bajarlo para mantener conexion de la api
+
+LOGIN_URL = '/usuarios/iniciosesion/'
 
 
 AUTH_USER_MODEL = 'usuarios.Usuario'

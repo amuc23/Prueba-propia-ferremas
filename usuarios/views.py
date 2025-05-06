@@ -1,5 +1,6 @@
 from django.shortcuts import render, redirect
-from django.contrib.auth import login, logout
+from django.contrib.auth import authenticate, login, logout
+from django.contrib import messages
 from rest_framework.views import APIView
 from rest_framework.response import Response
 from rest_framework import status
@@ -8,6 +9,15 @@ from .serializers import UsuarioSerializer, LoginSerializer
 from django.http import JsonResponse
 
 def iniciosesion(request):
+    if request.method == 'POST':
+        username = request.POST.get('username')
+        password = request.POST.get('password')
+        user = authenticate(username=username, password=password)
+        if user and user.is_active:
+            login(request, user)
+            return redirect('/productos/crud/')
+        else:
+            messages.error(request, 'Credenciales inválidas o cuenta inactiva.')
     return render(request, 'usuarios/iniciosesion.html')
 
 def registro(request):
@@ -46,3 +56,5 @@ class LoginAPIView(APIView):
                 'redirect_url': '/'
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+    
+    
