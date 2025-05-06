@@ -95,6 +95,7 @@ def lista_productos_crud(request):
     })
 
 @api_view(['PUT'])
+@permission_classes([EsAdmin])
 def api_editar_producto(request, id):
     producto = get_object_or_404(Producto, id=id)
     serializer = ProductoSerializer(producto, data=request.data)
@@ -105,14 +106,14 @@ def api_editar_producto(request, id):
 
 
 
-
+# Vista protegida: solo accesible por administradores
+@user_passes_test(es_admin, login_url='/usuarios/iniciosesion/')
 def editar_producto(request, id):
     producto = get_object_or_404(Producto, id=id)
     return render(request, 'productos/editar_producto.html', {
         'producto': producto,
         'entorno': settings.ENTORNO
     })
-
 @login_required
 def prueba_permisos(request):
     return HttpResponse(f"Usuario: {request.user.username} | Staff: {request.user.is_staff}")
