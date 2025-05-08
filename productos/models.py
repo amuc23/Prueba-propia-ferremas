@@ -10,3 +10,12 @@ class Producto(models.Model):
 
     def __str__(self):
         return self.nombre
+    
+class HistorialPrecio(models.Model):
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='historial_precios')
+    precio_anterior = models.IntegerField()
+    precio_nuevo = models.IntegerField()
+    fecha = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.producto.nombre} | {self.precio_anterior} → {self.precio_nuevo}"

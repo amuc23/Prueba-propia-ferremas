@@ -3,7 +3,7 @@ from django.conf import settings
 from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status
-from .models import Producto
+from .models import Producto, HistorialPrecio
 from .serializers import ProductoSerializer
 from rest_framework.permissions import BasePermission
 from django.contrib.auth.decorators import user_passes_test
@@ -11,6 +11,7 @@ from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required, user_passes_test
+from django.db.models import OuterRef, Subquery, F
 from django.http import HttpResponse
 
 #--------------------GET-----------------------
@@ -21,7 +22,9 @@ from django.http import HttpResponse
 #    return render(request, 'productos/lista_productos.html', {'productos': productos})  # Renderiza la plantilla HTML
 
 
-
+# Vista HTML
+def vista_ofertas(request):
+    return render(request, 'productos/ofertas.html')
 
 
 def lista_productos(request):
@@ -98,11 +101,21 @@ def lista_productos_crud(request):
 @permission_classes([EsAdmin])
 def api_editar_producto(request, id):
     producto = get_object_or_404(Producto, id=id)
+    nuevo_precio = request.data.get('precio')
+
+    if nuevo_precio and int(nuevo_precio) != producto.precio:
+        HistorialPrecio.objects.create(
+            producto=producto,
+            precio_anterior=producto.precio,
+            precio_nuevo=int(nuevo_precio)
+        )
+
     serializer = ProductoSerializer(producto, data=request.data)
     if serializer.is_valid():
         serializer.save()
         return Response(serializer.data, status=status.HTTP_200_OK)
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
 
 
 
@@ -117,3 +130,31 @@ def editar_producto(request, id):
 @login_required
 def prueba_permisos(request):
     return HttpResponse(f"Usuario: {request.user.username} | Staff: {request.user.is_staff}")
+
+@api_view(['GET'])
+def api_ofertas(request):
+    from django.db.models import OuterRef, Subquery, F
+    from .models import Producto, HistorialPrecio
+
+    ultimos = HistorialPrecio.objects.filter(
+        producto=OuterRef('pk')
+    ).order_by('-fecha')
+
+    productos_con_descuento = Producto.objects.annotate(
+        precio_anterior=Subquery(ultimos.values('precio_anterior')[:1]),
+        precio_nuevo=Subquery(ultimos.values('precio_nuevo')[:1])
+    ).filter(precio_anterior__gt=F('precio_nuevo'))
+
+   
+    resultado = []
+    for p in productos_con_descuento:
+        resultado.append({
+            'id': p.id,
+            'nombre': p.nombre,
+            'descripcion': p.descripcion,
+            'precio': p.precio,
+            'imagen': p.imagen,
+            'precio_anterior': getattr(p, 'precio_anterior', None)
+        })
+
+    return Response(resultado)

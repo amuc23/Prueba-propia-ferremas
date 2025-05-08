@@ -6,7 +6,12 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.authtoken.models import Token
 from .serializers import UsuarioSerializer, LoginSerializer
-from django.http import JsonResponse
+from .serializers import UsuarioListaSerializer
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAdminUser
+from .models import Usuario
+from django.contrib.auth.decorators import user_passes_test
+
 
 def iniciosesion(request):
     if request.method == 'POST':
@@ -57,4 +62,15 @@ class LoginAPIView(APIView):
             }, status=status.HTTP_200_OK)
         return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
     
-    
+
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def api_lista_usuarios(request):
+    usuarios = Usuario.objects.all()
+    serializer = UsuarioListaSerializer(usuarios, many=True)
+    return Response(serializer.data)    
+
+@user_passes_test(lambda u: u.is_staff)
+def vista_lista_usuarios(request):
+    return render(request, 'usuarios/lista_usuarios.html')
