@@ -2,178 +2,214 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1">
-    <title>{{ producto.nombre }}</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>{{ producto.nombre }}</title>
 
-    <!-- Bootstrap 5 CDN -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
 
-    <style>
-        body {
-            background-color: #f4f4f9;
-        }
-
-        .product-container {
-            padding: 50px 0;
-        }
-
-        .product-title {
-            font-size: 3rem;
-            font-weight: bold;
-            color: #333;
-            text-align: center;
-            margin-bottom: 30px;
-        }
-
-        .product-card {
-            border-radius: 20px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            background-color: white;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .product-img {
-            width: 100%;
-            max-height: 400px;
-            object-fit: contain;
-            border-radius: 20px;
-        }
-
-        .btn-buy {
-            background-color: #FFB300;
-            color: white;
-            font-size: 1.1rem;
-            font-weight: bold;
-            border-radius: 30px;
-            padding: 15px 30px;
-            width: 100%;
-            text-transform: uppercase;
-        }
-
-        .btn-buy:hover {
-            background-color: #FFA000;
-        }
-
-        .product-description {
-            font-size: 1.1rem;
-            color: #555;
-        }
-
-        .product-price {
-            font-size: 1.5rem;
-            font-weight: bold;
-            color: #FF5733;
-            margin-top: 20px;
-        }
-
-        .product-stock {
-            font-size: 1.1rem;
-            color: #28a745;
-            font-weight: bold;
-            margin-top: 20px;
-        }
-
-        .product-card-body {
-            background-color: #f9f9f9;
-            padding: 30px;
-            border-radius: 20px;
-            flex-grow: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: space-between;
-        }
-
-        .btn-back {
-            background-color: #ffffff;
-            color: white;
-            padding: 10px 20px;
-            border-radius: 30px;
-            font-size: 1rem;
-            justify-content: center;
-        }
-
-        .btn-back:hover {
-            background-color: #5a6268;
-        }
-
-        footer {
-            background-color: #2E7D32;
-            color: white;
-            text-align: center;
-            padding: 20px 0;
-            margin-top: 50px;
-        }
-    </style>
+  <style>
+    body { background-color: #f4f4f9; }
+    .product-container { padding: 50px 0; }
+    .product-title { font-size: 3rem; font-weight: bold; color: #333; text-align: center; margin-bottom: 30px; }
+    .product-card {
+      border-radius: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      background-color: white;
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .product-img {
+      width: 100%;
+      max-height: 400px;
+      object-fit: contain;
+      border-radius: 20px;
+    }
+    .btn-buy {
+      background-color: #FFB300;
+      color: white;
+      font-size: 1.1rem;
+      font-weight: bold;
+      border-radius: 30px;
+      padding: 15px 30px;
+      width: 100%;
+      text-transform: uppercase;
+    }
+    .btn-buy:hover { background-color: #FFA000; }
+    .product-description { font-size: 1.1rem; color: #555; }
+    .product-price {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #FF5733;
+      margin-top: 20px;
+    }
+    .product-stock {
+      font-size: 1.1rem;
+      color: #28a745;
+      font-weight: bold;
+      margin-top: 20px;
+    }
+    .product-card-body {
+      background-color: #f9f9f9;
+      padding: 30px;
+      border-radius: 20px;
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .btn-back {
+      background-color: #ffffff;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 30px;
+      font-size: 1rem;
+      justify-content: center;
+    }
+    .btn-back:hover { background-color: #5a6268; }
+    footer {
+      background-color: #2E7D32;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      margin-top: 50px;
+    }
+    .search-container {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-top: 20px;
+    }
+  </style>
 </head>
 
 <body>
 
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2E7D32;">
-    <div class="container">
-        <a class="navbar-brand" href="/"><img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;"></a>
-        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
-            <span class="navbar-toggler-icon"></span>
-        </button>
-        <a href="/productos/" class="btn btn-back" style="color: #2E7D32;">Atrás</a>
-        <div class="collapse navbar-collapse" id="menu">
-            <ul class="navbar-nav ms-auto align-items-center">
-                <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
-                <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Ofertas</a></li>
-                <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
-                <li class="nav-item ms-3">
-                    <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
-                        <i class="fas fa-user me-2"></i> Iniciar Sesión
-                    </a>
-                </li>
-                <li class="nav-item ms-2">
-                    <a class="nav-link" href="{% url 'lista_productos_crud' %}">Panel de Administración</a>
-                </li>
-            </ul>
-        </div>
+  <div class="container">
+    <a class="navbar-brand" href="/"><img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <a href="/productos/" class="btn btn-back" style="color: #2E7D32;">Atrás</a>
+    <div class="collapse navbar-collapse" id="menu">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Ofertas</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+        <li class="nav-item ms-3">
+          <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
+            <i class="fas fa-user me-2"></i> Iniciar Sesión
+          </a>
+        </li>
+        <li class="nav-item ms-2">
+          <a class="nav-link" href="{% url 'lista_productos_crud' %}">Panel de Administración</a>
+        </li>
+      </ul>
     </div>
+  </div>
 </nav>
 
-<!-- Contenedor principal -->
-<div class="container product-container">
-    <h2 class="product-title">{{ producto.nombre }}</h2>
+<!-- Selector de moneda -->
+<div class="search-container">
+  <select id="moneda-selector" class="form-select w-auto">
+    <option value="CLP">CLP - Peso Chileno</option>
+    <option value="USD">USD - Dólar</option>
+    <option value="EUR">EUR - Euro</option>
+    <option value="BRL">BRL - Real</option>
+  </select>
+  <button class="btn btn-outline-secondary" id="volver-clp">Volver a CLP</button>
+</div>
 
-    <!-- Fila del producto -->
-    <div class="row justify-content-center">
-        <div class="col-lg-6 col-md-8">
-            <div class="card product-card text-center p-3">
-                <img src="{{ producto.imagen }}" class="product-img mx-auto mb-3" alt="{{ producto.nombre }}">
-                <div class="card-body product-card-body">
-                    <h5 class="product-price">${{ producto.precio }}</h5>
-                    <p class="product-description">{{ producto.descripcion }}</p>
-                    <p class="product-stock">Stock disponible: {{ producto.stock }}</p>
-                    <a href="#" class="btn btn-buy mt-3" onclick="agregarAlCarrito()">Agregar al Carrito</a>
-                </div>
-            </div>
+<!-- Contenido principal -->
+<div class="container product-container">
+  <h2 class="product-title">{{ producto.nombre }}</h2>
+
+  <div class="row justify-content-center">
+    <div class="col-lg-6 col-md-8">
+      <div class="card product-card text-center p-3">
+        <img src="{{ producto.imagen }}" class="product-img mx-auto mb-3" alt="{{ producto.nombre }}">
+        <div class="card-body product-card-body">
+          <p class="product-price" id="precio-convertido"></p>
+          <p class="product-description">{{ producto.descripcion }}</p>
+          <p class="product-stock">Stock disponible: {{ producto.stock }}</p>
+          <a href="#" class="btn btn-buy mt-3" onclick="agregarAlCarrito()">Agregar al Carrito</a>
         </div>
+      </div>
     </div>
+  </div>
 </div>
 
 <!-- Footer -->
 <footer>
-    <div class="container">
-        <p>© 2025 FERREMAS - Todos los derechos reservados</p>
-    </div>
+  <div class="container">
+    <p>© 2025 FERREMAS - Todos los derechos reservados</p>
+  </div>
 </footer>
 
-<!-- Bootstrap JS CDN -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-
 <script>
-    function agregarAlCarrito() {
-        alert('Producto agregado al carrito! Cantidad: 1');
-        // Aquí puedes agregar lógica para tu carrito real.
+  function agregarAlCarrito() {
+    alert('Producto agregado al carrito! Cantidad: 1');
+  }
+
+  document.addEventListener("DOMContentLoaded", async function () {
+    const monedaSelector = document.getElementById('moneda-selector');
+    const volverClpBtn = document.getElementById('volver-clp');
+    const precioOriginal = parseFloat("{{ producto.precio }}");
+    const precioEl = document.getElementById('precio-convertido');
+
+    let tasaCambio = 1;
+    let monedaActual = localStorage.getItem("moneda") || "CLP";
+    if (monedaSelector) monedaSelector.value = monedaActual;
+
+    if (monedaSelector) {
+      monedaSelector.addEventListener("change", function () {
+        localStorage.setItem("moneda", this.value);
+        location.reload();
+      });
     }
+
+    if (volverClpBtn) {
+      volverClpBtn.addEventListener("click", function () {
+        localStorage.setItem("moneda", "CLP");
+        location.reload();
+      });
+    }
+
+    async function obtenerTasa(monedaDestino) {
+      if (monedaDestino === "CLP") {
+        tasaCambio = 1;
+        return;
+      }
+      try {
+        const res = await fetch("https://open.er-api.com/v6/latest/CLP");
+        const data = await res.json();
+        tasaCambio = data.rates[monedaDestino];
+      } catch (err) {
+        console.error("Error al obtener la tasa:", err);
+        tasaCambio = 1;
+      }
+    }
+
+    function convertirPrecio(precioCLP) {
+      if (monedaActual === "CLP") {
+        return `CLP $${Math.round(precioCLP).toLocaleString("es-CL")}`;
+      }
+      const convertido = precioCLP * tasaCambio;
+      return `${monedaActual} $${convertido.toFixed(2)}`;
+    }
+
+    await obtenerTasa(monedaActual);
+    if (precioEl) {
+      precioEl.textContent = convertirPrecio(precioOriginal);
+    }
+  });
 </script>
 
 </body>
