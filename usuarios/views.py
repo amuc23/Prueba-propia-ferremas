@@ -11,6 +11,7 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.permissions import IsAdminUser
 from .models import Usuario
 from django.contrib.auth.decorators import user_passes_test
+from django.shortcuts import get_object_or_404
 
 
 def iniciosesion(request):
@@ -74,3 +75,61 @@ def api_lista_usuarios(request):
 @user_passes_test(lambda u: u.is_staff)
 def vista_lista_usuarios(request):
     return render(request, 'usuarios/lista_usuarios.html')
+
+################################################################
+@user_passes_test(lambda u: u.is_staff, login_url='/usuarios/iniciosesion/')
+def vista_agregar_usuario(request):
+    return render(request, 'usuarios/agregar_usuario.html')
+
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def api_agregar_usuario(request):
+    serializer = UsuarioSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=201)
+    return Response(serializer.errors, status=400)    
+
+@api_view(['PATCH'])
+@permission_classes([IsAdminUser])
+def api_toggle_activo_usuario(request, id):
+    usuario = get_object_or_404(Usuario, id=id)
+
+    # Evitar que un administrador se auto-banee
+    if usuario == request.user:
+        return Response(
+            {"error": "No puedes suspender tu propia cuenta."},
+            status=403
+        )
+
+    usuario.is_active = not usuario.is_active
+    usuario.save()
+    return Response({"message": "Estado actualizado", "is_active": usuario.is_active})
+
+@user_passes_test(lambda u: u.is_staff)
+def vista_editar_usuario(request, id):
+    usuario = get_object_or_404(Usuario, id=id)
+    return render(request, 'usuarios/editar_usuario.html', {'usuario': usuario})
+
+
+@api_view(['PUT'])
+@permission_classes([IsAdminUser])
+def api_editar_usuario(request, id):
+    usuario = get_object_or_404(Usuario, id=id)
+
+    # 🚫 No permitir editar usuarios suspendidos
+    if not usuario.is_active:
+        return Response({"error": "No puedes editar un usuario suspendido."}, status=status.HTTP_403_FORBIDDEN)
+
+    # 🚫 No permitir editarse a uno mismo
+    if request.user == usuario:
+        return Response({"error": "No puedes editar tu propia cuenta desde el panel."}, status=status.HTTP_403_FORBIDDEN)
+
+    serializer = UsuarioSerializer(usuario, data=request.data, partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data, status=status.HTTP_200_OK)
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
