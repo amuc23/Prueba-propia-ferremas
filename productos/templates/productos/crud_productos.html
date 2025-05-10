@@ -41,23 +41,42 @@
         <a href="/" class="btn btn-outline-secondary">Volver al Inicio</a>
     </div>
 
-    <div id="listado">
-        <div class="table-responsive">
-            <table class="table table-bordered">
-                <thead class="table-success">
-                    <tr>
-                        <th>Nombre</th>
-                        <th>Precio</th>
-                        <th>Descripción</th>
-                        <th>Imagen</th>
-                        <th>Acciones</th>
-                    </tr>
-                </thead>
-                <tbody id="tabla-productos">
-                    <!-- JS insertará las filas -->
-                </tbody>
-            </table>
-        </div>
+    <h3>Productos Activos</h3>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-success">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Descripción</th>
+                    <th>Imagen</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-productos">
+                <!-- JS insertará las filas -->
+            </tbody>
+        </table>
+    </div>
+
+    <h3 class="mt-5">Productos Deshabilitados</h3>
+    <div class="table-responsive">
+        <table class="table table-bordered">
+            <thead class="table-secondary">
+                <tr>
+                    <th>Nombre</th>
+                    <th>Precio</th>
+                    <th>Stock</th>
+                    <th>Descripción</th>
+                    <th>Imagen</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="tabla-deshabilitados">
+                <!-- JS insertará las filas -->
+            </tbody>
+        </table>
     </div>
 </main>
 
@@ -69,7 +88,7 @@
 <!-- Bootstrap JS -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
-<!-- Script para cargar y eliminar productos -->
+<!-- Script para cargar y gestionar productos -->
 <script>
 function getCookie(name) {
     let cookieValue = null;
@@ -87,37 +106,43 @@ function getCookie(name) {
 }
 const csrftoken = getCookie('csrftoken');
 
-// Detectar si es entorno local usando 127.0.0.1 o localhost
+// Detectar si es entorno local
 const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
 
+// Endpoint exclusivo para administración
 const apiUrl = isLocal
-    ? "http://127.0.0.1:8000/productos/api/"
-    : "https://prueba-propia-ferremas-production.up.railway.app/productos/api/";
+    ? "http://127.0.0.1:8000/productos/api/admin/"
+    : "https://prueba-propia-ferremas-production.up.railway.app/productos/api/admin/";
 
 fetch(apiUrl)
     .then(response => response.json())
     .then(productos => {
         const tabla = document.getElementById("tabla-productos");
+        const tablaDeshabilitados = document.getElementById("tabla-deshabilitados");
         tabla.innerHTML = "";
+        tablaDeshabilitados.innerHTML = "";
 
         productos.forEach(producto => {
             const fila = `
                 <tr>
                     <td>${producto.nombre}</td>
                     <td>$${producto.precio}</td>
+                    <td>${producto.stock}</td>
                     <td>${producto.descripcion}</td>
                     <td><img src="${producto.imagen}" style="width: 80px; height: 80px; object-fit: cover;"></td>
                     <td>
-                        <button class="btn btn-danger btn-sm" onclick="eliminarProducto(${producto.id})">
-                            <i class="fas fa-trash"></i> Eliminar
+                        <button class="btn btn-${producto.activo ? 'danger' : 'success'} btn-sm" onclick="toggleActivoProducto(${producto.id})">
+                            <i class="fas fa-${producto.activo ? 'trash' : 'undo'}"></i> ${producto.activo ? 'Desactivar' : 'Reactivar'}
                         </button>
-                        <a href="/productos/editar/${producto.id}/" class="btn btn-warning btn-sm">
-                            <i class="fas fa-pencil-alt"></i> Editar
-                        </a>
+                        ${producto.activo ? `<a href="/productos/editar/${producto.id}/" class="btn btn-warning btn-sm"><i class="fas fa-pencil-alt"></i> Editar</a>` : ''}
                     </td>
                 </tr>
             `;
-            tabla.insertAdjacentHTML("beforeend", fila);
+            if (producto.activo) {
+                tabla.insertAdjacentHTML("beforeend", fila);
+            } else {
+                tablaDeshabilitados.insertAdjacentHTML("beforeend", fila);
+            }
         });
     })
     .catch(error => {
@@ -125,38 +150,27 @@ fetch(apiUrl)
         alert("No se pudieron cargar los productos.");
     });
 
-function eliminarProducto(id) {
-    if (!confirm("¿Estás seguro de que quieres eliminar este producto?")) return;
+function toggleActivoProducto(id) {
+    if (!confirm("¿Estás seguro de que quieres cambiar el estado de este producto?")) return;
 
-    const deleteUrl = isLocal
-        ? `http://127.0.0.1:8000/productos/api/eliminar/${id}/`
-        : `https://prueba-propia-ferremas-production.up.railway.app/productos/api/eliminar/${id}/`;
+    const toggleUrl = isLocal
+        ? `http://127.0.0.1:8000/productos/api/toggle-activo/${id}/`
+        : `https://prueba-propia-ferremas-production.up.railway.app/productos/api/toggle-activo/${id}/`;
 
-    fetch(deleteUrl, {
-        method: "DELETE",
+    fetch(toggleUrl, {
+        method: "PATCH",
         credentials: "same-origin",
         headers: {
             "X-CSRFToken": csrftoken
         }
     })
-    .then(response => {
-        if (response.status === 204) {
-            alert("Producto eliminado correctamente");
-            location.reload();
-        } else if (response.status === 403) {
-            alert("No tienes permisos. Inicia sesión como administrador.");
-        } else if (response.status === 404) {
-            alert("Producto no encontrado.");
-        } else {
-            return response.json().then(data => {
-                alert("Error: " + (data.error || "Error desconocido"));
-            }).catch(() => {
-                alert("Error inesperado: respuesta no fue JSON.");
-            });
-        }
+    .then(response => response.json())
+    .then(data => {
+        alert(data.mensaje || "Estado actualizado");
+        location.reload();
     })
     .catch(error => {
-        console.error("Error al eliminar producto:", error);
+        console.error("Error al actualizar producto:", error);
         alert("Error al conectar con el servidor.");
     });
 }

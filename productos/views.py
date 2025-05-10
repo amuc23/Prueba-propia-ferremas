@@ -35,7 +35,7 @@ def lista_productos(request):
 # Vista API (muestra los productos en formato JSON)
 @api_view(['GET'])
 def api_lista_productos(request):
-    productos = Producto.objects.all()  # Obtiene todos los productos
+    productos = Producto.objects.filter(activo=True)  # Solo los activos
     serializer = ProductoSerializer(productos, many=True)  # Serializa los productos
     return Response(serializer.data)  # Devuelve los productos en formato JSON
 
@@ -74,17 +74,17 @@ def detalle_producto(request, id):
 
 
 @csrf_exempt
-@require_http_methods(["DELETE"])
+@require_http_methods(["PATCH"])
 @login_required(login_url='/usuarios/iniciosesion/')
-def api_eliminar_producto(request, id):
+def api_toggle_activo_producto(request, id):
     if not request.user.is_staff:
-        return JsonResponse({'error': 'No tienes permisos para eliminar productos.'}, status=403)
+        return JsonResponse({'error': 'No tienes permisos para modificar productos.'}, status=403)
 
     try:
-        from .models import Producto
         producto = Producto.objects.get(id=id)
-        producto.delete()
-        return JsonResponse({'mensaje': 'Producto eliminado correctamente'}, status=204)
+        producto.activo = not producto.activo
+        producto.save()
+        return JsonResponse({'mensaje': 'Estado del producto actualizado correctamente', 'activo': producto.activo}, status=200)
     except Producto.DoesNotExist:
         return JsonResponse({'error': 'Producto no encontrado'}, status=404)
 
@@ -158,3 +158,10 @@ def api_ofertas(request):
         })
 
     return Response(resultado)
+
+@api_view(['GET'])
+@permission_classes([EsAdmin])
+def api_lista_productos_admin(request):
+    productos = Producto.objects.all()
+    serializer = ProductoSerializer(productos, many=True)
+    return Response(serializer.data)
