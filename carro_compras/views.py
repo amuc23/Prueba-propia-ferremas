@@ -17,28 +17,28 @@ from transbank.webpay.webpay_plus.transaction import Transaction
 import time  # ⬅️ pon esto al inicio del archivo si no lo tienes
 
 # Vista para renderizar la plantilla HTML del carrito
-
 def vista_carrito(request):
     if request.user.is_authenticated:
-        # Obtener el carrito activo para el usuario
         venta = Venta.objects.filter(id_usuario=request.user, estado_venta='carrito').first()
 
         if venta:
-            # Obtener todos los detalles del carrito
             detalles = Detalle.objects.filter(id_venta=venta)
             productos_eliminados = []
 
-            # Eliminar productos con stock cero y guardar los eliminados para mostrarlos
             for detalle in detalles:
-                if detalle.producto.stock <= 0:
+                producto = detalle.producto
+                if producto.stock <= 0:
                     productos_eliminados.append(detalle)
                     detalle.delete()
+                elif detalle.cantidad_producto > producto.stock:
+                    detalle.cantidad_producto = producto.stock
+                    detalle.subtotal_venta = producto.precio * producto.stock
+                    detalle.save()
 
-            # Recalcular detalles después de eliminar
             detalles = Detalle.objects.filter(id_venta=venta)
-
-            # Calcular el total del carrito actualizado
             total_carrito = sum(d.subtotal_venta for d in detalles)
+            venta.total_venta = total_carrito
+            venta.save()
 
             return render(request, 'carro_compras/carrito.html', {
                 'entorno': settings.ENTORNO,
