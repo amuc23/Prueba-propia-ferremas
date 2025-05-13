@@ -20,5 +20,8 @@ urlpatterns = [
     path('api/webpay/iniciar/', views.iniciar_pago_webpay, name='iniciar_pago_webpay'),
     
     path('api/webpay/respuesta/', views.respuesta_pago_webpay, name='respuesta_pago_webpay'),
+    
+    path('historial-ventas/', views.vista_historial_ventas, name='historial_ventas'),
+
 
 ]

@@ -9,12 +9,32 @@
     body { background-color: #f4f6f8; }
     .table-container { margin-top: 50px; }
     .filtros input, .filtros select { max-width: 250px; margin-right: 10px; }
+    .filtros-box {
+      background: #ffffff;
+      padding: 20px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      margin-bottom: 30px;
+    }
+    .btn-volver {
+      margin-bottom: 30px;
+    }
+    .table th, .table td {
+      vertical-align: middle;
+    }
   </style>
 </head>
 <body>
 
 <div class="container table-container">
   <h2 class="mb-4 text-center">Panel de Usuarios</h2>
+
+  <!-- Botón Volver -->
+  <div class="text-center btn-volver">
+    <a href="{% url 'panel_administracion' %}" class="btn btn-outline-secondary">
+      <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Administración
+    </a>
+  </div>
 
   {% if messages %}
     {% for message in messages %}
@@ -28,24 +48,26 @@
   <div id="alerta-error" class="alert alert-danger d-none" role="alert"></div>
 
   <!-- Filtros -->
-  <div class="d-flex justify-content-between mb-3 flex-wrap">
-    <div class="d-flex flex-wrap filtros">
-      <input type="text" id="filtro-nombre" class="form-control mb-2" placeholder="Buscar por nombre">
-      <input type="text" id="filtro-rut" class="form-control mb-2" placeholder="Buscar por RUT">
-      <select id="filtro-rol" class="form-select mb-2">
-        <option value="">Todos</option>
-        <option value="admin">Administradores</option>
-        <option value="usuario">Usuarios</option>
-      </select>
+  <div class="filtros-box">
+    <div class="d-flex justify-content-between flex-wrap align-items-center">
+      <div class="d-flex flex-wrap filtros mb-2">
+        <input type="text" id="filtro-nombre" class="form-control mb-2" placeholder="Buscar por nombre">
+        <input type="text" id="filtro-rut" class="form-control mb-2" placeholder="Buscar por RUT">
+        <select id="filtro-rol" class="form-select mb-2">
+          <option value="">Todos</option>
+          <option value="admin">Administradores</option>
+          <option value="usuario">Usuarios</option>
+        </select>
+      </div>
+      <a href="{% url 'vista_agregar_usuario' %}" class="btn btn-success mb-2">Agregar Usuario</a>
     </div>
-    <a href="{% url 'vista_agregar_usuario' %}" class="btn btn-success align-self-start">Agregar Usuario</a>
   </div>
 
   <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
   <input type="hidden" id="usuario-actual-id" value="{{ request.user.id }}">
 
   <!-- Tabla de usuarios activos -->
-  <h4>Usuarios activos</h4>
+  <h4 class="mt-4">Usuarios activos</h4>
   <table class="table table-bordered table-hover">
     <thead class="table-success text-center">
       <tr>
@@ -123,7 +145,7 @@
           ${u.id !== idActual ? `
             <a href="/usuarios/editar/${u.id}/" class="btn btn-primary btn-sm me-2">Editar</a>
             <button class="btn btn-warning btn-sm btn-ban" data-id="${u.id}">Banear</button>
-          ` : `<span class="text-muted">Sesion Actual</span>`}
+          ` : `<span class="text-muted">Sesión actual</span>`}
         </td>
       `;
       tbodyActivos.appendChild(fila);

@@ -304,3 +304,8 @@ def respuesta_pago_webpay(request):
         'venta': venta,
         'response': response
     })
+
+
+def vista_historial_ventas(request):
+    ventas = Venta.objects.filter(estado_venta='pagado').order_by('-fecha_compra')
+    return render(request, 'carro_compras/historial_ventas.html', {'ventas': ventas})

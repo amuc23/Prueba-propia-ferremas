@@ -32,7 +32,7 @@ def iniciosesion(request):
                     estado_venta='carrito'
                 )
 
-            return redirect('/productos/crud/')
+            return redirect('index')
         else:
             messages.error(request, 'Credenciales inválidas o cuenta inactiva.')
     return render(request, 'usuarios/iniciosesion.html')

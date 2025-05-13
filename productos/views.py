@@ -138,7 +138,6 @@ def api_ofertas(request):
         precio_nuevo=Subquery(ultimos.values('precio_nuevo')[:1])
     ).filter(precio_anterior__gt=F('precio_nuevo'))
 
-   
     resultado = []
     for p in productos_con_descuento:
         resultado.append({
@@ -147,7 +146,8 @@ def api_ofertas(request):
             'descripcion': p.descripcion,
             'precio': p.precio,
             'imagen': p.imagen,
-            'precio_anterior': getattr(p, 'precio_anterior', None)
+            'precio_anterior': getattr(p, 'precio_anterior', None),
+            'stock': p.stock  # ✅ se agrega aquí
         })
 
     return Response(resultado)
