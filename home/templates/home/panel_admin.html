@@ -43,6 +43,12 @@
     <div class="container">
         <!-- Imagen decorativa superior -->
         <img src="{% static 'img/logo.png' %}" alt="FERREMAS" class="panel-image rounded">
+        <!-- Botón Volver -->
+        <div class="volver-btn">
+            <a href="{% url 'index' %}" class="btn btn-outline-secondary mt-4">
+                <i class="fas fa-arrow-left me-2"></i>Volver al Inicio
+            </a>
+        </div>
 
         <h2 class="panel-title">Panel de Administración</h2>
 
@@ -77,19 +83,14 @@
                     <img src="https://cdn-icons-png.flaticon.com/512/891/891419.png" alt="Ventas" class="card-img-top">
                     <div class="card-body">
                         <h5 class="card-title">Administrar Ventas</h5>
-                        <p class="card-text">Consulta y gestiona el historial de ventas.</p>
+                        <p class="card-text">Consulta y gestiona el historial de ventas totales en la tienda.</p>
                          <a href="{% url 'historial_ventas' %}" class="btn btn-success">Ir</a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Botón Volver -->
-        <div class="volver-btn">
-            <a href="{% url 'index' %}" class="btn btn-outline-secondary mt-4">
-                <i class="fas fa-arrow-left me-2"></i>Volver al Inicio
-            </a>
-        </div>
+        
     </div>
 </body>
 </html>

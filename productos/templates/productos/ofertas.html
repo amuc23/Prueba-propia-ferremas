@@ -173,7 +173,8 @@
               ` : ''}
               <p class="text-muted mb-1">${prod.descripcion}</p>
               <p class="text-muted">Stock disponible: ${prod.stock}</p>
-              <a href="/productos/${prod.id}/" class="btn btn-ver mt-auto align-self-start">Ver Producto</a>
+              <a href="/productos/${prod.id}/" class="btn btn-ver mt-auto align-self-start ${prod.stock === 0 ? 'disabled' : ''}" 
+                 ${prod.stock === 0 ? 'aria-disabled="true"' : ''}>${prod.stock === 0 ? 'Agotado' : 'Ver Producto'}</a>
             </div>
           `;
           contenedor.appendChild(col);

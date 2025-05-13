@@ -90,6 +90,10 @@
         actualizarCantidad(detalleId, '-');
       }
     }
+
+    function refreshPage() {
+      window.location.reload();
+    }
   </script>
 </head>
 <body>
@@ -137,6 +141,20 @@
         </tbody>
       </table>
     </div>
+
+    {% if productos_eliminados %}
+      <div class="mt-5">
+        <h3 class="text-danger">Productos Eliminados (sin stock)</h3>
+        <ul class="list-group">
+          {% for detalle in productos_eliminados %}
+            <li class="list-group-item">
+              {{ detalle.producto.nombre }} - <strong>Producto eliminado</strong>
+            </li>
+          {% endfor %}
+        </ul>
+        <button class="btn btn-primary mt-3" onclick="refreshPage()">Continuar</button>
+      </div>
+    {% endif %}
 
     <div class="mt-4">
       <form action="/api/webpay/iniciar/" method="POST">

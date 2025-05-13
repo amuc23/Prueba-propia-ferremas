@@ -16,7 +16,6 @@ from transbank.common.integration_type import IntegrationType
 from transbank.webpay.webpay_plus.transaction import Transaction
 import time  # ⬅️ pon esto al inicio del archivo si no lo tienes
 
-
 # Vista para renderizar la plantilla HTML del carrito
 def vista_carrito(request):
     if request.user.is_authenticated:
@@ -26,6 +25,12 @@ def vista_carrito(request):
         if venta:
             # Obtener todos los detalles del carrito
             detalles = Detalle.objects.filter(id_venta=venta)
+            productos_eliminados = Detalle.objects.filter(id_venta=venta, producto__stock=0)
+
+            # Eliminar productos con stock cero
+            for detalle in detalles:
+                if detalle.producto.stock <= 0:
+                    detalle.delete()
 
             # Calcular el total del carrito
             total_carrito = sum(d.subtotal_venta for d in detalles)
@@ -34,7 +39,8 @@ def vista_carrito(request):
             return render(request, 'carro_compras/carrito.html', {
                 'entorno': settings.ENTORNO,
                 'detalles': detalles,
-                'total_carrito': total_carrito
+                'total_carrito': total_carrito,
+                'productos_eliminados': productos_eliminados
             })
         else:
             return render(request, 'carro_compras/carrito.html', {
@@ -46,6 +52,7 @@ def vista_carrito(request):
             'entorno': settings.ENTORNO,
             'mensaje': 'Por favor, inicia sesión para ver tu carrito.'
         })
+
 
 # Vista para gestionar el carrito (ver y crear)
 @api_view(['GET', 'POST'])
@@ -116,18 +123,15 @@ def agregar_producto_carrito(request):
         detalle_existente = Detalle.objects.filter(id_venta=venta, producto=producto).first()
 
         if detalle_existente:
-            # Si ya existe el producto, actualizamos la cantidad
-            detalle_existente.cantidad_producto += cantidad
-            detalle_existente.subtotal_venta = detalle_existente.producto.precio * detalle_existente.cantidad_producto
-            detalle_existente.save()
-        else:
-            # Si no existe, agregamos un nuevo detalle al carrito
-            Detalle.objects.create(
-                id_venta=venta,
-                producto=producto,
-                cantidad_producto=cantidad,
-                subtotal_venta=producto.precio * cantidad
-            )
+            return Response({"detail": "Este producto ya está en tu carrito."}, status=status.HTTP_400_BAD_REQUEST)
+        
+        # Si no existe, agregamos un nuevo detalle al carrito
+        Detalle.objects.create(
+            id_venta=venta,
+            producto=producto,
+            cantidad_producto=cantidad,
+            subtotal_venta=producto.precio * cantidad
+        )
 
         # Recalcular el total de la venta
         venta.total_venta = sum(d.subtotal_venta for d in venta.detalles.all())
@@ -135,6 +139,7 @@ def agregar_producto_carrito(request):
 
         return Response({"message": "Producto agregado al carrito exitosamente."})
     return Response({"detail": "Usuario no autenticado."}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 @api_view(['PUT'])
 def actualizar_cantidad_producto(request, detalle_id):
@@ -177,6 +182,7 @@ def actualizar_cantidad_producto(request, detalle_id):
         })
 
     return Response({"detail": "Usuario no autenticado."}, status=status.HTTP_401_UNAUTHORIZED)
+
 
 
 # Vista para disminuir la cantidad de un producto
