@@ -12,19 +12,22 @@
   <style>
     body { background-color: #f4f4f9; }
     .product-container { padding: 50px 0; }
-    .product-title { font-size: 3rem; font-weight: bold; color: #333; text-align: center; margin-bottom: 30px; }
+    .product-title {
+      font-size: 2.5rem;
+      font-weight: bold;
+      color: #2E7D32;
+      text-align: center;
+      margin-bottom: 30px;
+    }
     .product-card {
       border-radius: 20px;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
       background-color: white;
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
+      padding: 30px;
     }
     .product-img {
       width: 100%;
-      max-height: 400px;
+      max-height: 350px;
       object-fit: contain;
       border-radius: 20px;
     }
@@ -36,40 +39,21 @@
       border-radius: 30px;
       padding: 15px 30px;
       width: 100%;
-      text-transform: uppercase;
     }
     .btn-buy:hover { background-color: #FFA000; }
-    .product-description { font-size: 1.1rem; color: #555; }
+    .product-description { font-size: 1.1rem; color: #555; margin-top: 10px; }
     .product-price {
       font-size: 1.5rem;
       font-weight: bold;
       color: #FF5733;
-      margin-top: 20px;
+      margin-top: 15px;
     }
     .product-stock {
       font-size: 1.1rem;
       color: #28a745;
       font-weight: bold;
-      margin-top: 20px;
+      margin-top: 10px;
     }
-    .product-card-body {
-      background-color: #f9f9f9;
-      padding: 30px;
-      border-radius: 20px;
-      flex-grow: 1;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-    }
-    .btn-back {
-      background-color: #ffffff;
-      color: white;
-      padding: 10px 20px;
-      border-radius: 30px;
-      font-size: 1rem;
-      justify-content: center;
-    }
-    .btn-back:hover { background-color: #5a6268; }
     footer {
       background-color: #2E7D32;
       color: white;
@@ -83,6 +67,10 @@
       gap: 10px;
       margin-top: 20px;
     }
+    .btn-back {
+      color: #2E7D32;
+      font-weight: bold;
+    }
   </style>
 </head>
 
@@ -91,25 +79,47 @@
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2E7D32;">
   <div class="container">
-    <a class="navbar-brand" href="/"><img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;"></a>
+    <a class="navbar-brand" href="/">
+      <img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;">
+    </a>
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
       <span class="navbar-toggler-icon"></span>
     </button>
-    <a href="/productos/" class="btn btn-back" style="color: #2E7D32;">Atrás</a>
     <div class="collapse navbar-collapse" id="menu">
       <ul class="navbar-nav ms-auto align-items-center">
         <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
-        <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Ofertas</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/productos/">Productos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'vista_ofertas' %}">Ofertas</a></li>
         <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
-        <li class="nav-item ms-3">
-          <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
-            <i class="fas fa-user me-2"></i> Iniciar Sesión
-          </a>
-        </li>
-        <li class="nav-item ms-2">
-          <a class="nav-link" href="{% url 'lista_productos_crud' %}">Panel de Administración</a>
-        </li>
+
+        {% if user.is_authenticated %}
+          <li class="nav-item ms-3"><span class="text-white me-3">Hola, {{ user.username }}</span></li>
+          <li class="nav-item ms-2">
+            <a class="btn btn-outline-light px-3 py-2" href="/usuarios/cerrar-sesion/">
+              <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+            </a>
+          </li>
+        {% else %}
+          <li class="nav-item ms-3">
+            <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
+              <i class="fas fa-user me-2"></i> Iniciar Sesión
+            </a>
+          </li>
+        {% endif %}
+
+        {% if user.is_staff %}
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'panel_administracion' %}">Panel de Administración</a>
+          </li>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'vista_carrito' %}">
+              <i class="fas fa-shopping-cart"></i> Carrito
+            </a>
+          </li>
+        {% endif %}
       </ul>
     </div>
   </div>
@@ -129,21 +139,18 @@
 <!-- Contenido principal -->
 <div class="container product-container">
   <h2 class="product-title">{{ producto.nombre }}</h2>
-
   <div class="row justify-content-center">
     <div class="col-lg-6 col-md-8">
-      <div class="card product-card text-center p-3">
+      <div class="product-card text-center">
         <img src="{{ producto.imagen }}" class="product-img mx-auto mb-3" alt="{{ producto.nombre }}">
-        <div class="card-body product-card-body">
-          <p class="product-price" id="precio-convertido"></p>
-          <p class="product-description">{{ producto.descripcion }}</p>
-          <p class="product-stock">Stock disponible: {{ producto.stock }}</p>
-          {% if user.is_authenticated %}
-              <a href="#" class="btn btn-buy mt-3" onclick="agregarAlCarrito()">Agregar al Carrito</a>
-          {% else %}
-              <button class="btn btn-secondary mt-2" disabled>Por favor inicie sesión</button>
-          {% endif %}
-        </div>
+        <p class="product-price" id="precio-convertido"></p>
+        <p class="product-description">{{ producto.descripcion }}</p>
+        <p class="product-stock">Stock disponible: {{ producto.stock }}</p>
+        {% if user.is_authenticated %}
+            <a href="#" class="btn btn-buy mt-3" onclick="agregarAlCarrito()">Agregar al Carrito</a>
+        {% else %}
+            <button class="btn btn-secondary mt-2" disabled>Por favor inicie sesión</button>
+        {% endif %}
       </div>
     </div>
   </div>
@@ -159,17 +166,15 @@
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script>
   async function agregarAlCarrito() {
-    // Obtener el ID del producto y la cantidad
     const productoId = "{{ producto.id }}";
-    const cantidad = 1; // De momento, agregamos siempre una unidad
+    const cantidad = 1;
 
-    // Enviar la solicitud POST a la API de carro_compras
     try {
       const response = await fetch("/api/carrito/agregar/", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          "X-CSRFToken": getCookie("csrftoken"),  // Si usas CSRF
+          "X-CSRFToken": getCookie("csrftoken"),
         },
         body: JSON.stringify({
           producto: productoId,
@@ -178,26 +183,21 @@
       });
 
       const data = await response.json();
-      if (response.ok) {
-        alert(data.message);  // Mensaje de éxito
-      } else {
-        alert(data.detail || "Error al agregar al carrito.");
-      }
+      alert(response.ok ? data.message : (data.detail || "Error al agregar al carrito."));
     } catch (error) {
-      console.error("Error al agregar al carrito:", error);
-      alert("Hubo un error al agregar el producto al carrito.");
+      console.error("Error:", error);
+      alert("Error al agregar el producto al carrito.");
     }
   }
 
-  // Función para obtener el valor del CSRF token (si lo necesitas)
   function getCookie(name) {
     let cookieValue = null;
     if (document.cookie && document.cookie !== "") {
-      const cookies = document.cookie.split(";"); 
-      for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim();
-        if (cookie.substring(0, name.length + 1) === (name + "=")) {
-          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+      const cookies = document.cookie.split(";");
+      for (let cookie of cookies) {
+        cookie = cookie.trim();
+        if (cookie.startsWith(name + "=")) {
+          cookieValue = decodeURIComponent(cookie.slice(name.length + 1));
           break;
         }
       }
@@ -230,34 +230,24 @@
     }
 
     async function obtenerTasa(monedaDestino) {
-      if (monedaDestino === "CLP") {
-        tasaCambio = 1;
-        return;
-      }
+      if (monedaDestino === "CLP") return;
       try {
         const res = await fetch("https://open.er-api.com/v6/latest/CLP");
         const data = await res.json();
-        tasaCambio = data.rates[monedaDestino];
-      } catch (err) {
-        console.error("Error al obtener la tasa:", err);
+        tasaCambio = data.rates[monedaDestino] || 1;
+      } catch {
         tasaCambio = 1;
       }
-    }
-
-    function convertirPrecio(precioCLP) {
-      if (monedaActual === "CLP") {
-        return `CLP $${Math.round(precioCLP).toLocaleString("es-CL")}`;
-      }
-      const convertido = precioCLP * tasaCambio;
-      return `${monedaActual} $${convertido.toFixed(2)}`;
     }
 
     await obtenerTasa(monedaActual);
     if (precioEl) {
-      precioEl.textContent = convertirPrecio(precioOriginal);
+      const convertido = precioOriginal * tasaCambio;
+      precioEl.textContent = monedaActual === "CLP"
+        ? `CLP $${Math.round(precioOriginal).toLocaleString("es-CL")}`
+        : `${monedaActual} $${convertido.toFixed(2)}`;
     }
   });
 </script>
-
 </body>
 </html>
