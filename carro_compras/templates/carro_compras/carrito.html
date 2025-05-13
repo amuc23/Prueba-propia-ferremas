@@ -101,6 +101,18 @@
 <div class="container">
   <h1 class="mt-5">Carrito de Compras</h1>
 
+  {% if productos_eliminados %}
+    <div class="alert alert-warning mt-4">
+      <h5>⚠️ Algunos productos fueron eliminados del carrito porque ya no están disponibles:</h5>
+      <ul class="mb-0">
+        {% for detalle in productos_eliminados %}
+          <li><strong>{{ detalle.producto.nombre }}</strong></li>
+        {% endfor %}
+      </ul>
+      <button class="btn btn-sm btn-outline-primary mt-3" onclick="refreshPage()">Aceptar</button>
+    </div>
+  {% endif %}
+
   {% if mensaje %}
     <div class="alert alert-warning mt-3">{{ mensaje }}</div>
   {% else %}
@@ -141,20 +153,6 @@
         </tbody>
       </table>
     </div>
-
-    {% if productos_eliminados %}
-      <div class="mt-5">
-        <h3 class="text-danger">Productos Eliminados (sin stock)</h3>
-        <ul class="list-group">
-          {% for detalle in productos_eliminados %}
-            <li class="list-group-item">
-              {{ detalle.producto.nombre }} - <strong>Producto eliminado</strong>
-            </li>
-          {% endfor %}
-        </ul>
-        <button class="btn btn-primary mt-3" onclick="refreshPage()">Continuar</button>
-      </div>
-    {% endif %}
 
     <div class="mt-4">
       <form action="/api/webpay/iniciar/" method="POST">
