@@ -1,0 +1,180 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Productos - FERREMAS</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    body { background-color: #f4f4f9; }
+    .card-title { font-weight: bold; }
+    .search-container { display: flex; justify-content: center; margin-bottom: 20px; gap: 10px; }
+    .btn-primary { background-color: #007bff; border-color: #007bff; }
+    .btn-primary:hover { background-color: #0056b3; border-color: #0056b3; }
+    .product-card {
+      border-radius: 20px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease;
+      background-color: white;
+    }
+    .product-card:hover { transform: translateY(-10px); }
+    .product-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      border-radius: 20px;
+    }
+    .product-stock { font-size: 1rem; font-weight: bold; margin-top: 10px; }
+    .product-price { font-size: 1.5rem; font-weight: bold; color: #FF5733; margin-top: 20px; }
+    .product-card-body {
+      background-color: #f9f9f9;
+      padding: 30px;
+      border-radius: 20px;
+    }
+    footer {
+      background-color: #2E7D32;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2E7D32;">
+  <div class="container">
+    <a class="navbar-brand" href="/"><img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;"></a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div class="collapse navbar-collapse" id="menu">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Ofertas</a></li>
+        <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+        <li class="nav-item ms-3">
+          <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
+            <i class="fas fa-user me-2"></i> Iniciar Sesión
+          </a>
+        </li>
+        <li class="nav-item ms-2">
+          <a class="nav-link" href="{% url 'lista_productos_crud' %}">Panel de Administración</a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<div class="container my-5">
+  <h2 class="text-center mb-4">Nuestros Productos</h2>
+
+  <div class="search-container">
+    <select id="moneda-selector" class="form-select w-auto">
+      <option value="CLP">CLP - Peso Chileno</option>
+      <option value="USD">USD - Dólar</option>
+      <option value="EUR">EUR - Euro</option>
+      <option value="BRL">BRL - Real</option>
+    </select>
+    <button class="btn btn-outline-secondary" id="volver-clp">Volver a CLP</button>
+  </div>
+
+  <div class="row g-4" id="product-list"></div>
+</div>
+
+<footer>
+  <div class="container">
+    <p>© 2025 FERREMAS - Todos los derechos reservados</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.body.dataset.entorno = "{{ entorno }}";
+
+  document.addEventListener("DOMContentLoaded", async function () {
+    const entorno = document.body.dataset.entorno;
+    let apiUrl = entorno === "local"
+      ? "http://localhost:8000/productos/api/"
+      : "https://prueba-propia-ferremas-production.up.railway.app/productos/api/";
+
+    const monedaSelector = document.getElementById('moneda-selector');
+    const volverClpBtn = document.getElementById('volver-clp');
+    const productList = document.getElementById('product-list');
+    let tasaCambio = 1;
+    let monedaActual = localStorage.getItem("moneda") || "CLP";
+    monedaSelector.value = monedaActual;
+
+    monedaSelector.addEventListener("change", function () {
+      localStorage.setItem("moneda", this.value);
+      location.reload();
+    });
+
+    volverClpBtn.addEventListener("click", function () {
+      localStorage.setItem("moneda", "CLP");
+      location.reload();
+    });
+
+    async function obtenerTasa(monedaDestino) {
+      if (monedaDestino === "CLP") {
+        tasaCambio = 1;
+        return;
+      }
+      try {
+        const res = await fetch("https://open.er-api.com/v6/latest/CLP");
+        const data = await res.json();
+        tasaCambio = data.rates[monedaDestino];
+      } catch (err) {
+        console.error("Error al obtener la tasa:", err);
+        tasaCambio = 1;
+      }
+    }
+
+    function convertirPrecio(precioCLP) {
+      if (monedaActual === "CLP") {
+        return `CLP $${Math.round(precioCLP).toLocaleString("es-CL")}`;
+      }
+      let convertido = precioCLP * tasaCambio;
+      return `${monedaActual} $${convertido.toFixed(2)}`;
+    }
+
+    try {
+      await obtenerTasa(monedaActual);
+      const response = await fetch(apiUrl + '?nocache=' + new Date().getTime());
+      const productos = await response.json();
+
+      productList.innerHTML = "";
+      productos.forEach(producto => {
+        const disponible = producto.stock > 0;
+        productList.innerHTML += `
+          <div class="col-md-4">
+            <div class="card product-card h-100">
+              <img src="${producto.imagen}" class="card-img-top product-img" alt="${producto.nombre}">
+              <div class="card-body product-card-body">
+                <h5 class="card-title">${producto.nombre}</h5>
+                <p class="product-price">${convertirPrecio(producto.precio)}</p>
+                <p class="card-text"><small class="text-muted">${producto.categoria}</small></p>
+                <p class="product-stock ${disponible ? '' : 'text-danger'}">
+                  ${disponible ? `Stock disponible: ${producto.stock}` : 'No disponible'}
+                </p>
+                ${disponible
+                  ? `<a href="/productos/${producto.id}/" class="btn btn-primary mt-2">Ver Producto</a>`
+                  : `<button class="btn btn-secondary mt-2" disabled>Agotado</button>`
+                }
+              </div>
+            </div>
+          </div>`;
+      });
+    } catch (error) {
+      console.error("Error al cargar productos:", error);
+    }
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>FERREMAS - Resultado del Pago</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f2f2f2;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+    }
+    .card {
+      background-color: #ffffff;
+      padding: 2rem 2.5rem;
+      border-radius: 1rem;
+      box-shadow: 0 0 20px rgba(0, 0, 0, 0.05);
+      max-width: 480px;
+      width: 100%;
+      text-align: center;
+      border: 2px solid #ffa500;
+    }
+    .card h2 {
+      color: #e67e00;
+      margin-bottom: 1rem;
+    }
+    .icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+    }
+    .success {
+      color: #28a745;
+    }
+    .fail {
+      color: #dc3545;
+    }
+    .btn-ferremas {
+      background-color: #ffa500;
+      border: none;
+      color: #000;
+      font-weight: bold;
+    }
+    .btn-ferremas:hover {
+      background-color: #e69500;
+    }
+    .logo {
+      width: 120px;
+      margin-bottom: 1rem;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <img src="/static/img/logo.png" alt="FERREMAS" class="logo">
+
+    {% if "éxito" in mensaje %}
+      <div class="icon success">✔️</div>
+    {% else %}
+      <div class="icon fail">❌</div>
+    {% endif %}
+
+    <h2>{{ mensaje }}</h2>
+
+    <p><strong>ID de Venta:</strong> {{ venta.id }}</p>
+    <p><strong>Total pagado:</strong> ${{ venta.total_venta }}</p>
+
+    {% if "éxito" in mensaje %}
+      <a href="/" class="btn btn-ferremas btn-lg mt-4">Volver al inicio</a>
+    {% else %}
+      <a href="/carrito/" class="btn btn-ferremas btn-lg mt-4">Volver al carrito</a>
+    {% endif %}
+  </div>
+</body>
+</html>
