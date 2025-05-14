@@ -247,36 +247,32 @@ def iniciar_pago_webpay(request):
     if not venta:
         return Response({'error': 'No tienes un carrito activo'}, status=404)
 
+    venta.tipo_entrega = request.POST.get('tipo_entrega')
+    venta.direccion_despacho = request.POST.get('direccion_despacho') if venta.tipo_entrega == 'despacho' else ''
+    venta.save()
+
     options = WebpayOptions(
         commerce_code='597055555532',
         api_key='579B532A7440BB0C9079DED94D31EA1615BACEB56610332264630D42D0A36B1C',
         integration_type=IntegrationType.TEST
     )
 
-    try:
-        tx = Transaction(options)
-        import time
-        buy_order = f"{venta.id}-{int(time.time())}"
+    tx = Transaction(options)
+    import time
+    buy_order = f"{venta.id}-{int(time.time())}"
+    return_url = request.build_absolute_uri('/api/webpay/respuesta/')
 
-        # Usar build_absolute_uri para que funcione tanto local como en Railway
-        return_url = request.build_absolute_uri('/api/webpay/respuesta/')
+    response = tx.create(
+        buy_order=buy_order,
+        session_id=str(request.user.id),
+        amount=venta.total_venta,
+        return_url=return_url
+    )
 
-        response = tx.create(
-            buy_order=buy_order,
-            session_id=str(request.user.id),
-            amount=venta.total_venta,
-            return_url=return_url
-        )
+    venta.webpay_transaction_id = response['token']
+    venta.save()
 
-        venta.webpay_transaction_id = response['token']
-        venta.save()
-
-        return redirect(response['url'] + "?token_ws=" + response['token'])
-
-    except Exception as e:
-        print("❌ ERROR AL CREAR TRANSACCIÓN:")
-        print(e)
-        return Response({'error': 'Error al crear la transacción con WebPay', 'detalle': str(e)}, status=500)
+    return redirect(response['url'] + "?token_ws=" + response['token'])
 
     
 @csrf_exempt
@@ -332,7 +328,7 @@ def vista_historial_ventas(request):
     ventas = Venta.objects.filter(estado_venta='pagado').order_by('-fecha_compra')
     return render(request, 'carro_compras/historial_ventas.html', {'ventas': ventas})
 
-##########
+
 @login_required
 def ver_boleta(request, venta_id):
     venta = get_object_or_404(Venta, id=venta_id)
@@ -347,3 +343,62 @@ def ver_boleta(request, venta_id):
         'detalles': detalles
     })
 
+#############
+
+@csrf_exempt
+@login_required
+def vista_retiros(request):
+    from .models import Venta
+    mensaje = None
+
+    if request.method == 'POST':
+        venta_id = request.POST.get('venta_id')
+        rut_ingresado = request.POST.get('rut')
+        venta = get_object_or_404(Venta, id=venta_id, tipo_entrega='retiro', estado_entrega='pendiente')
+
+        if rut_ingresado == venta.id_usuario.rut:
+            venta.estado_entrega = 'completado'
+            venta.save()
+            mensaje = {'tipo': 'success', 'texto': f"✅ Retiro confirmado para Boleta N°{venta.id}"}
+        else:
+            mensaje = {'tipo': 'danger', 'texto': f"❌ RUT incorrecto para Boleta N°{venta.id}"}
+
+    retiros_pendientes = Venta.objects.filter(tipo_entrega='retiro', estado_entrega='pendiente')
+    retiros_realizados = Venta.objects.filter(tipo_entrega='retiro', estado_entrega='completado')
+
+    return render(request, 'carro_compras/retiros.html', {
+        'ventas': retiros_pendientes,
+        'realizados': retiros_realizados,
+        'mensaje': mensaje
+    })
+
+@csrf_exempt
+@login_required
+def vista_despachos(request):
+    from .models import Venta
+    mensaje = None
+
+    if request.method == 'POST':
+        venta_id = request.POST.get('venta_id')
+        venta = get_object_or_404(Venta, id=venta_id, tipo_entrega='despacho', estado_entrega='pendiente')
+        venta.estado_entrega = 'completado'
+        venta.save()
+        mensaje = {'tipo': 'success', 'texto': f"✅ Despacho marcado como completado para Boleta N°{venta.id}"}
+
+    pendientes = Venta.objects.filter(tipo_entrega='despacho', estado_entrega='pendiente')
+    completados = Venta.objects.filter(tipo_entrega='despacho', estado_entrega='completado')
+
+    return render(request, 'carro_compras/despachos.html', {
+        'pendientes': pendientes,
+        'completados': completados,
+        'mensaje': mensaje
+    })
+
+@login_required
+def mi_historial_compras(request):
+    ventas = Venta.objects.filter(id_usuario=request.user, estado_venta='pagado').order_by('-fecha_compra')
+
+    for venta in ventas:
+        venta.detalles_list = venta.detalles.all()  # ← relación desde related_name
+
+    return render(request, 'carro_compras/mi_historial.html', {'ventas': ventas})

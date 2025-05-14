@@ -24,7 +24,13 @@ urlpatterns = [
     path('historial-ventas/', views.vista_historial_ventas, name='historial_ventas'),
 
     path('boleta/<int:venta_id>/', views.ver_boleta, name='ver_boleta'),
+
+    path('retiros/', views.vista_retiros, name='vista_retiros'),
+    path('despachos/', views.vista_despachos, name='vista_despachos'),
+    path('mis-compras/', views.mi_historial_compras, name='mi_historial_compras'),
+
+
+
+ 
    
-
-
 ]

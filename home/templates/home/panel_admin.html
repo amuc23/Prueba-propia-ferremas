@@ -16,7 +16,7 @@
         }
 
         .hero {
-            background-color: #2E7D32; /* Verde solicitado */
+            background-color: #2E7D32;
             padding: 20px;
             text-align: center;
             border-radius: 10px;
@@ -104,14 +104,14 @@
 </head>
 <body>
     <div class="container">
-        <!-- Título Panel con estilo similar al del carrito -->
+        <!-- Título Panel -->
         <div class="hero">
             <h1>Panel de Administración</h1>
         </div>
 
-        <!-- Imagen decorativa superior -->
+        <!-- Imagen decorativa -->
         <img src="{% static 'img/logo.png' %}" alt="FERREMAS" class="panel-image rounded">
-        
+
         <!-- Tarjetas de Secciones -->
         <div class="row justify-content-center g-4">
             <!-- Productos -->
@@ -149,9 +149,33 @@
                     </div>
                 </div>
             </div>
+
+            <!-- Retiros en tienda -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1040/1040250.png" alt="Retiros en tienda" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">Retiros en Tienda</h5>
+                        <p class="card-text">Gestiona y valida los retiros con verificación por RUT.</p>
+                        <a href="{% url 'vista_retiros' %}" class="btn btn-success">Ver Retiros</a>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Despachos -->
+            <div class="col-md-4">
+                <div class="card text-center">
+                    <img src="https://cdn-icons-png.flaticon.com/512/1239/1239686.png" alt="Despachos" class="card-img-top">
+                    <div class="card-body">
+                        <h5 class="card-title">Despachos</h5>
+                        <p class="card-text">Visualiza y gestiona los despachos a domicilio.</p>
+                        <a href="{% url 'vista_despachos' %}" class="btn btn-success">Ver Despachos</a>
+                    </div>
+                </div>
+            </div>
         </div>
 
-        <!-- Botón Volver debajo de los recuadros -->
+        <!-- Botón Volver -->
         <div class="volver-btn">
             <a href="{% url 'index' %}" class="btn btn-outline-light mt-4">
                 <i class="fas fa-arrow-left me-2"></i>Volver al Inicio

@@ -14,6 +14,8 @@ from django.contrib.auth.decorators import login_required, user_passes_test
 from django.db.models import OuterRef, Subquery, F
 from django.http import HttpResponse
 from carro_compras import views
+from carro_compras.models import Venta, Detalle  # Asegúrate de importar esto arriba
+
 
 #--------------------GET-----------------------
 
@@ -57,12 +59,23 @@ def api_agregar_producto(request):
 
 
 
+@login_required
 def detalle_producto(request, id):
     try:
         producto = Producto.objects.get(id=id)
     except Producto.DoesNotExist:
-        return render(request, 'productos/404.html')  # Página de error si no se encuentra el producto
-    return render(request, 'productos/detalle.html', {'producto': producto})
+        return render(request, 'productos/404.html')
+
+    productos_en_carrito = []
+    if request.user.is_authenticated:
+        carrito = Venta.objects.filter(id_usuario=request.user, estado_venta='carrito').first()
+        if carrito:
+            productos_en_carrito = Detalle.objects.filter(id_venta=carrito).values_list('producto_id', flat=True)
+
+    return render(request, 'productos/detalle.html', {
+        'producto': producto,
+        'productos_en_carrito': productos_en_carrito
+    })
 #--------------------------------
 
 
@@ -158,3 +171,4 @@ def api_lista_productos_admin(request):
     productos = Producto.objects.all()
     serializer = ProductoSerializer(productos, many=True)
     return Response(serializer.data)
+
