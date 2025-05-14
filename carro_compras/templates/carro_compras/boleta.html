@@ -73,6 +73,11 @@
     .print-btn button:hover {
       background: #2E7D32;
     }
+    @media print {
+      .print-btn {
+        display: none;
+      }
+    }
   </style>
 </head>
 <body>
@@ -92,7 +97,8 @@
   <div class="datos-cliente">
     <strong>Boleta Nº:</strong> {{ venta.id }}<br>
     <strong>Fecha:</strong> {{ venta.fecha_compra|date:"d/m/Y H:i" }}<br>
-    <strong>Cliente:</strong> {{ venta.id_usuario.first_name }} {{ venta.id_usuario.last_name }} ({{ venta.id_usuario.rut }})
+    <strong>Cliente:</strong> {{ venta.id_usuario.first_name }} {{ venta.id_usuario.last_name }} ({{ venta.id_usuario.rut }})<br>
+    <strong>Método de Pago:</strong> WebPay
   </div>
 
   <table>

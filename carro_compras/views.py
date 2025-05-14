@@ -18,6 +18,8 @@ import time  # ⬅️ pon esto al inicio del archivo si no lo tienes
 from django.template.loader import get_template
 from xhtml2pdf import pisa
 from django.shortcuts import get_object_or_404
+import os
+
 
 
 def vista_carrito(request):
@@ -334,22 +336,3 @@ def ver_boleta(request, venta_id):
     detalles = Detalle.objects.filter(id_venta=venta)
     return render(request, 'carro_compras/boleta.html', {'venta': venta, 'detalles': detalles})
 
-def descargar_boleta_pdf(request, venta_id):
-    venta = get_object_or_404(Venta, id=venta_id, id_usuario=request.user, estado_venta='pagado')
-    detalles = Detalle.objects.filter(id_venta=venta)
-
-    template_path = 'carro_compras/boleta.html'
-    context = {'venta': venta, 'detalles': detalles}
-
-    template = get_template(template_path)
-    html = template.render(context)
-
-    response = HttpResponse(content_type='application/pdf')
-    response['Content-Disposition'] = f'attachment; filename="boleta_{venta.id}.pdf"'
-
-    pisa_status = pisa.CreatePDF(html, dest=response, encoding='utf-8')
-
-    if pisa_status.err:
-        return HttpResponse('Error al generar PDF', status=500)
-
-    return response
