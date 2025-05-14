@@ -16,7 +16,6 @@ from transbank.common.integration_type import IntegrationType
 from transbank.webpay.webpay_plus.transaction import Transaction
 import time  # ⬅️ pon esto al inicio del archivo si no lo tienes
 
-# Vista para renderizar la plantilla HTML del carrito
 def vista_carrito(request):
     if request.user.is_authenticated:
         venta = Venta.objects.filter(id_usuario=request.user, estado_venta='carrito').first()
@@ -47,9 +46,12 @@ def vista_carrito(request):
                 'productos_eliminados': productos_eliminados
             })
         else:
+            # 👇 Mostrar vista sin productos, sin mensaje personalizado
             return render(request, 'carro_compras/carrito.html', {
                 'entorno': settings.ENTORNO,
-                'mensaje': 'No tienes productos en tu carrito.'
+                'detalles': [],
+                'total_carrito': 0,
+                'productos_eliminados': []
             })
     else:
         return render(request, 'carro_compras/carrito.html', {
