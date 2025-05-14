@@ -6,6 +6,144 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Carrito de Compras</title>
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <style>
+    /* Fondo con imagen completa */
+    body {
+      background: url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?crop=entropy&cs=tinysrgb&fit=crop&h=700&w=1600') center center/cover no-repeat;
+      background-attachment: fixed; /* Fija el fondo */
+      font-family: 'Arial', sans-serif;
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.8); /* Fondo semitransparente para la tabla */
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      margin-top: 50px;
+    }
+
+    h1 {
+      text-align: center;
+      color: white;
+      font-size: 2.5rem;
+      margin-bottom: 30px;
+      background-color: #2E7D32; /* Verde solicitado */
+      padding: 15px;
+      border-radius: 10px;
+    }
+
+    .table {
+      margin-top: 20px;
+      font-size: 1rem;
+    }
+
+    .table th, .table td {
+      vertical-align: middle;
+      text-align: center;
+    }
+
+    .product-img {
+      width: 120px;
+      height: 120px;
+      object-fit: cover;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .btn-custom {
+      border-radius: 25px;
+    }
+
+    .btn-success {
+      background-color: #28a745;
+      border-color: #28a745;
+    }
+
+    .btn-danger {
+      background-color: #dc3545;
+      border-color: #dc3545;
+    }
+
+    .btn-primary {
+      background-color: #2E7D32; /* Verde solicitado */
+      border-color: #2E7D32; /* Verde solicitado */
+    }
+
+    .alert-warning {
+      background-color: #ffecb3;
+      color: #856404;
+    }
+
+    .total {
+      font-size: 1.3rem;
+      font-weight: bold;
+      color: #343a40;
+    }
+
+    .list-group-item {
+      background-color: #f8f9fa;
+    }
+
+    .mt-4, .mt-3 {
+      margin-top: 25px;
+    }
+
+    .table-actions button {
+      margin: 0 5px;
+    }
+
+    .total-row {
+      font-size: 1.5rem;
+      font-weight: 700;
+    }
+
+    /* Estilo para la sección de productos eliminados */
+    .deleted-products {
+      margin-top: 40px;
+      text-align: center;
+    }
+
+    .deleted-products h3 {
+      color: #dc3545;
+      margin-bottom: 20px;
+    }
+
+    .deleted-products button {
+      width: 200px;
+      padding: 10px;
+    }
+
+    /* Ajuste de la tabla sobre la imagen */
+    .container {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Botón en la parte superior izquierda */
+    .btn-back {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #2E7D32; /* Verde solicitado */
+      color: white;
+      border-radius: 25px;
+      padding: 10px 20px;
+      font-size: 1rem;
+    }
+
+    .btn-back:hover {
+      background-color: #1b5e20; /* Color más oscuro al hacer hover */
+    }
+
+    /* Mejor visualización en dispositivos móviles */
+    @media (max-width: 768px) {
+      .container {
+        margin-top: 20px;
+      }
+    }
+
+  </style>
+  
   <script>
     function getCookie(name) {
       let cookieValue = null;
@@ -98,9 +236,14 @@
 </head>
 <body>
 
-<div class="container">
-  <h1 class="mt-5">Carrito de Compras</h1>
+<!-- Botón para volver a los productos -->
+<a href="/productos" class="btn-back">Volver a Productos</a>
 
+<div class="hero">
+  <h1>Carrito de Compras</h1>
+</div>
+
+<div class="container">
   {% if mensaje %}
     <div class="alert alert-warning mt-3">{{ mensaje }}</div>
   {% else %}
@@ -119,7 +262,7 @@
           {% for detalle in detalles %}
             <tr id="detalle-row-{{ detalle.id }}">
               <td>
-                <img src="{{ detalle.producto.imagen }}" alt="{{ detalle.producto.nombre }}" style="width: 100px;">
+                <img src="{{ detalle.producto.imagen }}" alt="{{ detalle.producto.nombre }}" class="product-img">
               </td>
               <td>{{ detalle.producto.nombre }}</td>
               <td>
@@ -128,23 +271,23 @@
                 <input type="hidden" id="stock-{{ detalle.producto.id }}" value="{{ detalle.producto.stock }}">
               </td>
               <td id="subtotal-{{ detalle.id }}">${{ detalle.subtotal_venta }}</td>
-              <td>
+              <td class="table-actions">
                 <button class="btn btn-success" onclick="actualizarCantidad({{ detalle.id }}, '+')">+</button>
                 <button class="btn btn-danger" onclick="disminuirCantidad({{ detalle.id }})">-</button>
               </td>
             </tr>
           {% endfor %}
-          <tr>
+          <tr class="total-row">
             <td colspan="3" class="text-end"><strong>Total</strong></td>
-            <td id="total-carrito"><strong>${{ total_carrito }}</strong></td>
+            <td id="total-carrito" class="total"><strong>${{ total_carrito }}</strong></td>
           </tr>
         </tbody>
       </table>
     </div>
 
     {% if productos_eliminados %}
-      <div class="mt-5">
-        <h3 class="text-danger">Productos Eliminados (sin stock)</h3>
+      <div class="deleted-products">
+        <h3>Productos Eliminados (sin stock)</h3>
         <ul class="list-group">
           {% for detalle in productos_eliminados %}
             <li class="list-group-item">
@@ -156,10 +299,10 @@
       </div>
     {% endif %}
 
-    <div class="mt-4">
+    <div class="mt-4 text-center">
       <form action="/api/webpay/iniciar/" method="POST">
         {% csrf_token %}
-        <button type="submit" class="btn btn-primary">Proceder al pago con WebPay</button>
+        <button type="submit" class="btn btn-primary btn-custom">Proceder al pago con WebPay</button>
       </form>
     </div>
   {% endif %}
