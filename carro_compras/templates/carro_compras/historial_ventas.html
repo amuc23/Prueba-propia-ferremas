@@ -2,137 +2,179 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-    <meta charset="UTF-8" />
-    <title>Historial de Ventas - FERREMAS</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        /* Fondo blanco para toda la página */
-        body {
-            background-color: #ffffff; /* Fondo blanco para la página */
-            font-family: 'Arial', sans-serif;
-            margin: 0; /* Eliminar márgenes predeterminados */
-            color: black; /* Texto en negro */
-        }
-
-        /* Estilo para el contenedor */
-        .container {
-            background-color: #388E3C; /* Verde oscuro */
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            padding: 30px;
-            color: black; /* Texto negro dentro del contenedor */
-            margin-top: 50px;
-        }
-
-        /* Recuadros dentro del contenedor con fondo gris transparente */
-        .venta-card {
-            background-color: rgba(255, 255, 255, 0.8); /* Fondo gris translúcido */
-            border-radius: 10px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1); /* Sombra sutil */
-            padding: 20px;
-            margin-bottom: 30px;
-            color: black; /* Texto negro dentro del recuadro */
-        }
-
-        .venta-header {
-            font-weight: bold;
-            color: #388E3C; /* Verde para los encabezados dentro del recuadro */
-        }
-
-        /* Estilo para el botón de volver */
-        .volver-btn {
-            margin-bottom: 30px;
-        }
-
-        /* Fondo degradado verde para el botón */
-        .btn-volver {
-            margin-bottom: 30px;
-            background: linear-gradient(to bottom, #2E7D32, #81C784); /* Fondo degradado verde */
-            color: white; /* Texto blanco */
-            border: none; /* Sin borde */
-            border-radius: 50px; /* Bordes redondeados */
-            padding: 10px 30px; /* Espaciado alrededor del texto */
-            font-size: 1.1rem; /* Tamaño de texto ligeramente mayor */
-            font-weight: bold; /* Negrita */
-            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2); /* Sombra sutil */
-            transition: background-color 0.3s, transform 0.3s; /* Transiciones suaves */
-        }
-
-        .btn-volver:hover {
-            background: linear-gradient(to bottom, #45a049, #66bb6a); /* Verde más oscuro al pasar el ratón */
-            transform: scale(1.05); /* Aumento del tamaño para un efecto visual */
-        }
-
-        .btn-volver:focus {
-            outline: none; /* Eliminar contorno cuando está en foco */
-            box-shadow: 0 0 10px rgba(76, 175, 80, 0.5); /* Efecto de enfoque con sombra */
-        }
-
-        .btn-volver i {
-            font-size: 1.2rem; /* Icono un poco más grande */
-        }
-
-        .table th, .table td {
-            vertical-align: middle;
-            color: black; /* Texto negro dentro de la tabla */
-        }
-
-        /* Fondo translúcido gris para las filas de la tabla */
-        .table tbody tr {
-            background-color: rgba(255, 255, 255, 0.8); /* Gris translúcido */
-        }
-    </style>
+  <meta charset="UTF-8" />
+  <title>Historial de Ventas - FERREMAS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #ffffff;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      color: black;
+    }
+    .container {
+      background-color: #388E3C;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      color: black;
+      margin-top: 50px;
+    }
+    .venta-card {
+      background-color: rgba(255, 255, 255, 0.8);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 20px;
+      margin-bottom: 30px;
+      color: black;
+    }
+    .volver-btn {
+      margin-bottom: 30px;
+    }
+    .btn-volver {
+      background: linear-gradient(to bottom, #2E7D32, #81C784);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 30px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .btn-volver:hover {
+      background: linear-gradient(to bottom, #45a049, #66bb6a);
+      transform: scale(1.05);
+    }
+    .table th, .table td {
+      vertical-align: middle;
+      color: black;
+    }
+    .table tbody tr {
+      background-color: rgba(255, 255, 255, 0.8);
+    }
+    .filtros {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 15px;
+      margin-bottom: 30px;
+    }
+  </style>
 </head>
 <body>
 <div class="container my-5">
-    <h2 class="text-center mb-4">Historial de Compras</h2>
+  <h2 class="text-center mb-4">Historial de Compras</h2>
 
-    <!-- Botón Volver -->
-    <div class="text-center volver-btn">
-        <a href="{% url 'panel_administracion' %}" class="btn btn-volver">
-            <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Administración
-        </a>
+  <!-- Botón Volver -->
+  <div class="text-center volver-btn">
+    <a href="{% url 'panel_administracion' %}" class="btn btn-volver">
+      <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Administración
+    </a>
+  </div>
+
+  <!-- Filtros -->
+  <div class="filtros text-center">
+    <div class="row justify-content-center mb-2">
+      <div class="col-md-4">
+        <input type="text" id="buscadorUsuario" class="form-control" placeholder="Buscar por nombre o apellido">
+      </div>
+      <div class="col-md-3">
+        <input type="date" id="fechaDesde" class="form-control" placeholder="Desde">
+      </div>
+      <div class="col-md-3">
+        <input type="date" id="fechaHasta" class="form-control" placeholder="Hasta">
+      </div>
     </div>
+  </div>
 
-    {% if ventas %}
-        {% for venta in ventas %}
-            <div class="venta-card">
-                <div class="row mb-3">
-                    <div class="col-md-4"><strong>Fecha:</strong> {{ venta.fecha_compra }}</div>
-                    <div class="col-md-4"><strong>Usuario:</strong> {{ venta.id_usuario.first_name }} {{ venta.id_usuario.last_name }} ({{ venta.id_usuario.rut }})</div>
-                    <div class="col-md-4"><strong>Total:</strong> ${{ venta.total_venta }}</div>
-                </div>
-                <div class="row mb-3">
-                    <div class="col-md-6"><strong>Estado WebPay:</strong> {{ venta.webpay_payment_status|title }}</div>
-                    <div class="col-md-6"><strong>ID Transacción:</strong> {{ venta.webpay_transaction_id }}</div>
-                </div>
+  {% if ventas %}
+    {% for venta in ventas %}
+      <div class="venta-card"
+           data-usuario="{{ venta.id_usuario.first_name }} {{ venta.id_usuario.last_name }}"
+           data-fecha="{{ venta.fecha_compra|date:'Y-m-d' }}">
+        <div class="row mb-3">
+          <div class="col-md-4">
+            <strong>Venta ID:</strong> {{ venta.id }}<br>
+            <strong>Fecha:</strong> {{ venta.fecha_compra|date:"d/m/Y H:i" }}
+          </div>
+          <div class="col-md-4">
+            <strong>Usuario:</strong> {{ venta.id_usuario.first_name }} {{ venta.id_usuario.last_name }} ({{ venta.id_usuario.rut }})
+          </div>
+          <div class="col-md-4">
+            <strong>Total:</strong> ${{ venta.total_venta }}
+          </div>
+        </div>
+        <div class="row mb-3">
+          <div class="col-md-6"><strong>Estado WebPay:</strong> {{ venta.webpay_payment_status|title }}</div>
+          <div class="col-md-6"><strong>ID Transacción:</strong> {{ venta.webpay_transaction_id }}</div>
+        </div>
 
-                <table class="table table-sm table-bordered">
-                    <thead class="table-light">
-                        <tr>
-                            <th>Producto</th>
-                            <th>Cantidad</th>
-                            <th>Subtotal</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {% for detalle in venta.detalles.all %}
-                            <tr>
-                                <td>{{ detalle.producto.nombre }}</td>
-                                <td>{{ detalle.cantidad_producto }}</td>
-                                <td>${{ detalle.subtotal_venta }}</td>
-                            </tr>
-                        {% endfor %}
-                    </tbody>
-                </table>
-            </div>
-        {% endfor %}
-    {% else %}
-        <div class="alert alert-info text-center">No hay ventas registradas.</div>
-    {% endif %}
+        <table class="table table-sm table-bordered">
+          <thead class="table-light">
+            <tr>
+              <th>Producto</th>
+              <th>Cantidad</th>
+              <th>Subtotal</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for detalle in venta.detalles.all %}
+              <tr>
+                <td>{{ detalle.producto.nombre }}</td>
+                <td>{{ detalle.cantidad_producto }}</td>
+                <td>${{ detalle.subtotal_venta }}</td>
+              </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+
+        <!-- Botones de boleta -->
+        <div class="text-end mt-2">
+          <a href="{% url 'ver_boleta' venta.id %}" class="btn btn-outline-success btn-sm">
+            Ver Boleta
+          </a>
+          <a href="{% url 'descargar_boleta' venta.id %}" class="btn btn-outline-primary btn-sm">
+            Descargar Boleta (PDF)
+          </a>
+        </div>
+      </div>
+    {% endfor %}
+  {% else %}
+    <div class="alert alert-info text-center">No hay ventas registradas.</div>
+  {% endif %}
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 <script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+<!-- Script de filtros -->
+<script>
+  function filtrarVentas() {
+    const filtroNombre = document.getElementById("buscadorUsuario").value.toLowerCase();
+    const fechaDesde = document.getElementById("fechaDesde").value;
+    const fechaHasta = document.getElementById("fechaHasta").value;
+
+    const ventas = document.querySelectorAll(".venta-card");
+
+    ventas.forEach(card => {
+      const nombre = card.dataset.usuario.toLowerCase();
+      const fecha = card.dataset.fecha;
+
+      const cumpleNombre = nombre.includes(filtroNombre);
+      const cumpleDesde = !fechaDesde || fecha >= fechaDesde;
+      const cumpleHasta = !fechaHasta || fecha <= fechaHasta;
+
+      if (cumpleNombre && cumpleDesde && cumpleHasta) {
+        card.style.display = "block";
+      } else {
+        card.style.display = "none";
+      }
+    });
+  }
+
+  document.getElementById("buscadorUsuario").addEventListener("input", filtrarVentas);
+  document.getElementById("fechaDesde").addEventListener("change", filtrarVentas);
+  document.getElementById("fechaHasta").addEventListener("change", filtrarVentas);
+</script>
 </body>
 </html>

@@ -23,5 +23,9 @@ urlpatterns = [
     
     path('historial-ventas/', views.vista_historial_ventas, name='historial_ventas'),
 
+    path('boleta/<int:venta_id>/', views.ver_boleta, name='ver_boleta'),
+    
+    path('boleta/<int:venta_id>/descargar/', views.descargar_boleta_pdf, name='descargar_boleta'),
+
 
 ]

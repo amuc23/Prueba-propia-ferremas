@@ -5,7 +5,7 @@ from productos.models import Producto
 # Tabla Venta
 class Venta(models.Model):
     # Campos
-    fecha_compra = models.DateField(null=True, blank=True)  # La fecha se establece cuando se confirma la compra
+    fecha_compra = models.DateTimeField(null=True, blank=True)  # La fecha se establece cuando se confirma la compra
     total_venta = models.IntegerField()  # Total de la venta, en formato decimal
     estado_venta = models.CharField(max_length=100)
     id_usuario = models.ForeignKey(Usuario, on_delete=models.CASCADE, related_name='ventas')  # Relación con Usuario
