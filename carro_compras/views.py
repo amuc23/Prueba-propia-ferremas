@@ -296,13 +296,20 @@ def respuesta_pago_webpay(request):
         id_venta = str(response['buy_order']).split("-")[0]
         venta = Venta.objects.get(id=int(id_venta))
 
+        # ❌ Validación: si no hay productos, no permitir continuar
+        if not venta.detalles.exists():
+            return HttpResponse("No puedes completar el pago: el carrito está vacío.")
+
         if response['status'] == 'AUTHORIZED':
             venta.estado_venta = 'pagado'
             venta.fecha_compra = timezone.now()
             venta.webpay_payment_status = 'completed'
+
+            # ✅ Calcular total antes de guardar
+            venta.total_venta = sum(d.subtotal_venta for d in venta.detalles.all())
             venta.save()
 
-            # ✅ Descontar stock por cada producto vendido
+            # ✅ Descontar stock
             for detalle in venta.detalles.all():
                 producto = detalle.producto
                 producto.stock -= detalle.cantidad_producto
@@ -322,7 +329,6 @@ def respuesta_pago_webpay(request):
         'venta': venta,
         'response': response
     })
-
 
 def vista_historial_ventas(request):
     ventas = Venta.objects.filter(estado_venta='pagado').order_by('-fecha_compra')
