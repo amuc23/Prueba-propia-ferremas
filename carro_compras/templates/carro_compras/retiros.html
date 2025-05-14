@@ -7,163 +7,195 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      background-color: #f4f6f9;
-      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      font-family: 'Arial', sans-serif;
     }
+
+    .fondo {
+      background: url('https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1920,fit=crop/Yle55W6QKWSoQbE4/herramientas-manuales-basicas-02-2022-07-AE0vvPgGKDiqlZEX.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+
     .container {
-      max-width: 1000px;
+      background-color: #388E3C;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 30px;
       margin-top: 50px;
-      padding: 40px;
-      background-color: #fff;
-      border-radius: 15px;
-      box-shadow: 0 0 15px rgba(0,0,0,0.1);
+      color: black;
     }
-    h2 {
-      color: #2E7D32;
+
+    .retiro-card {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .btn-volver {
+      background: linear-gradient(to bottom, #2E7D32, #81C784);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 30px;
+      font-size: 1.1rem;
       font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s, transform 0.3s;
     }
-    h4 {
-      margin-top: 30px;
-      font-weight: 600;
-      color: #333;
+
+    .btn-volver:hover {
+      background: linear-gradient(to bottom, #45a049, #66bb6a);
+      transform: scale(1.05);
     }
+
+    .table th, .table td {
+      vertical-align: middle;
+      color: black;
+    }
+
+    .table tbody tr {
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+
     .form-inline {
       display: flex;
       gap: 10px;
     }
-    .btn-success {
-      background-color: #2E7D32;
-      border-color: #2E7D32;
-    }
-    .btn-success:hover {
-      background-color: #256529;
-    }
+
     #buscador {
       max-width: 400px;
-      margin-bottom: 20px;
+      margin: 20px auto;
     }
+
     footer {
       text-align: center;
       margin-top: 40px;
       font-size: 0.9rem;
       color: #777;
     }
-    .volver-btn {
-      margin: 20px 0 30px;
-    }
   </style>
 </head>
 <body>
 
+<div class="fondo">
   <div class="container">
-    <h2 class="mb-3">Retiros en Tienda</h2>
+    <h2 class="text-center mb-4">Retiros en Tienda</h2>
 
-    <!-- Botón Volver -->
-    <div class="volver-btn">
-      <a href="{% url 'panel_administracion' %}" class="btn btn-outline-secondary">
+    <div class="text-center mb-4">
+      <a href="{% url 'panel_administracion' %}" class="btn btn-volver">
         <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Administración
       </a>
     </div>
 
-    <!-- Buscador -->
-    <input type="text" id="buscador" class="form-control" placeholder="Buscar por nombre o RUT..." onkeyup="filtrarTablas()">
+    <input type="text" id="buscador" class="form-control text-center" placeholder="Buscar por nombre o RUT..." onkeyup="filtrarTablas()">
 
     {% if mensaje %}
       <div class="alert alert-{{ mensaje.tipo }} mt-3">{{ mensaje.texto }}</div>
     {% endif %}
 
-    <h4>🔸 Retiros Pendientes</h4>
-    {% if ventas %}
-      <div class="table-responsive">
-        <table class="table table-hover table-bordered align-middle">
-          <thead class="table-success">
-            <tr>
-              <th>ID</th>
-              <th>Cliente</th>
-              <th>RUT</th>
-              <th>Total</th>
-              <th>Fecha</th>
-              <th>Verificación</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for v in ventas %}
-              {% if v.total_venta > 0 %}
+    <div class="retiro-card">
+      <h4>🔸 Retiros Pendientes</h4>
+      {% if ventas %}
+        <div class="table-responsive">
+          <table class="table table-hover table-bordered align-middle">
+            <thead class="table-success">
               <tr>
-                <td>{{ v.id }}</td>
-                <td>{{ v.id_usuario.first_name }} {{ v.id_usuario.last_name }}</td>
-                <td>{{ v.id_usuario.rut }}</td>
-                <td>${{ v.total_venta }}</td>
-                <td>{{ v.fecha_compra|date:"d/m/Y H:i" }}</td>
-                <td>
-                  <form method="POST" class="form-inline">
-                    {% csrf_token %}
-                    <input type="hidden" name="venta_id" value="{{ v.id }}">
-                    <input type="text" name="rut" class="form-control" placeholder="RUT del cliente" required>
-                    <button type="submit" class="btn btn-success btn-sm">Confirmar</button>
-                  </form>
-                </td>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>RUT</th>
+                <th>Total</th>
+                <th>Fecha</th>
+                <th>Verificación</th>
               </tr>
-              {% endif %}
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <div class="alert alert-info">No hay retiros pendientes.</div>
-    {% endif %}
+            </thead>
+            <tbody>
+              {% for v in ventas %}
+                {% if v.total_venta > 0 %}
+                <tr>
+                  <td>{{ v.id }}</td>
+                  <td>{{ v.id_usuario.first_name }} {{ v.id_usuario.last_name }}</td>
+                  <td>{{ v.id_usuario.rut }}</td>
+                  <td>${{ v.total_venta }}</td>
+                  <td>{{ v.fecha_compra|date:"d/m/Y H:i" }}</td>
+                  <td>
+                    <form method="POST" class="form-inline">
+                      {% csrf_token %}
+                      <input type="hidden" name="venta_id" value="{{ v.id }}">
+                      <input type="text" name="rut" class="form-control" placeholder="RUT del cliente" required>
+                      <button type="submit" class="btn btn-success btn-sm">Confirmar</button>
+                    </form>
+                  </td>
+                </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <div class="alert alert-info">No hay retiros pendientes.</div>
+      {% endif %}
+    </div>
 
-    <h4>✅ Retiros Completados</h4>
-    {% if realizados %}
-      <div class="table-responsive">
-        <table class="table table-bordered table-striped">
-          <thead class="table-light">
-            <tr>
-              <th>ID</th>
-              <th>Cliente</th>
-              <th>RUT</th>
-              <th>Total</th>
-              <th>Fecha</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for r in realizados %}
-              {% if r.total_venta > 0 %}
+    <div class="retiro-card">
+      <h4>✅ Retiros Completados</h4>
+      {% if realizados %}
+        <div class="table-responsive">
+          <table class="table table-bordered table-striped">
+            <thead class="table-light">
               <tr>
-                <td>{{ r.id }}</td>
-                <td>{{ r.id_usuario.first_name }} {{ r.id_usuario.last_name }}</td>
-                <td>{{ r.id_usuario.rut }}</td>
-                <td>${{ r.total_venta }}</td>
-                <td>{{ r.fecha_compra|date:"d/m/Y H:i" }}</td>
+                <th>ID</th>
+                <th>Cliente</th>
+                <th>RUT</th>
+                <th>Total</th>
+                <th>Fecha</th>
               </tr>
-              {% endif %}
-            {% endfor %}
-          </tbody>
-        </table>
-      </div>
-    {% else %}
-      <p class="text-muted">No hay retiros completados aún.</p>
-    {% endif %}
+            </thead>
+            <tbody>
+              {% for r in realizados %}
+                {% if r.total_venta > 0 %}
+                <tr>
+                  <td>{{ r.id }}</td>
+                  <td>{{ r.id_usuario.first_name }} {{ r.id_usuario.last_name }}</td>
+                  <td>{{ r.id_usuario.rut }}</td>
+                  <td>${{ r.total_venta }}</td>
+                  <td>{{ r.fecha_compra|date:"d/m/Y H:i" }}</td>
+                </tr>
+                {% endif %}
+              {% endfor %}
+            </tbody>
+          </table>
+        </div>
+      {% else %}
+        <p class="text-muted">No hay retiros completados aún.</p>
+      {% endif %}
+    </div>
   </div>
 
   <footer>
     <p>© 2025 FERREMAS - Gestión de Retiros</p>
   </footer>
+</div>
 
-  <!-- Filtro dinámico -->
-  <script>
-    function filtrarTablas() {
-      const input = document.getElementById("buscador").value.toLowerCase();
-      const tablas = document.querySelectorAll("table tbody");
-      tablas.forEach(tbody => {
-        const filas = tbody.querySelectorAll("tr");
-        filas.forEach(fila => {
-          const textoFila = fila.innerText.toLowerCase();
-          fila.style.display = textoFila.includes(input) ? "" : "none";
-        });
+<!-- Filtro dinámico -->
+<script>
+  function filtrarTablas() {
+    const input = document.getElementById("buscador").value.toLowerCase();
+    const tablas = document.querySelectorAll("table tbody");
+    tablas.forEach(tbody => {
+      const filas = tbody.querySelectorAll("tr");
+      filas.forEach(fila => {
+        const textoFila = fila.innerText.toLowerCase();
+        fila.style.display = textoFila.includes(input) ? "" : "none";
       });
-    }
-  </script>
+    });
+  }
+</script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 
 </body>
 </html>

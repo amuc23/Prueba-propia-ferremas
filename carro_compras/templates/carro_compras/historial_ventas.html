@@ -7,11 +7,18 @@
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
   <style>
     body {
-      background-color: #ffffff;
-      font-family: 'Arial', sans-serif;
       margin: 0;
-      color: black;
+      font-family: 'Arial', sans-serif;
     }
+
+    .fondo {
+      background: url('https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1920,fit=crop/Yle55W6QKWSoQbE4/herramientas-manuales-basicas-02-2022-07-AE0vvPgGKDiqlZEX.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+
     .container {
       background-color: #388E3C;
       border-radius: 10px;
@@ -20,6 +27,7 @@
       color: black;
       margin-top: 50px;
     }
+
     .venta-card {
       background-color: rgba(255, 255, 255, 0.8);
       border-radius: 10px;
@@ -28,9 +36,11 @@
       margin-bottom: 30px;
       color: black;
     }
+
     .volver-btn {
       margin-bottom: 30px;
     }
+
     .btn-volver {
       background: linear-gradient(to bottom, #2E7D32, #81C784);
       color: white;
@@ -42,17 +52,21 @@
       box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
       transition: background-color 0.3s, transform 0.3s;
     }
+
     .btn-volver:hover {
       background: linear-gradient(to bottom, #45a049, #66bb6a);
       transform: scale(1.05);
     }
+
     .table th, .table td {
       vertical-align: middle;
       color: black;
     }
+
     .table tbody tr {
       background-color: rgba(255, 255, 255, 0.8);
     }
+
     .filtros {
       background-color: rgba(255, 255, 255, 0.9);
       border-radius: 10px;
@@ -62,84 +76,85 @@
   </style>
 </head>
 <body>
-<div class="container my-5">
-  <h2 class="text-center mb-4">Historial de Compras</h2>
+<div class="fondo">
+  <div class="container my-5">
+    <h2 class="text-center mb-4">Historial de Compras</h2>
 
-  <!-- Botón Volver -->
-  <div class="text-center volver-btn">
-    <a href="{% url 'panel_administracion' %}" class="btn btn-volver">
-      <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Administración
-    </a>
-  </div>
+    <!-- Botón Volver -->
+    <div class="text-center volver-btn">
+      <a href="{% url 'panel_administracion' %}" class="btn btn-volver">
+        <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Administración
+      </a>
+    </div>
 
-  <!-- Filtros -->
-  <div class="filtros text-center">
-    <div class="row justify-content-center mb-2">
-      <div class="col-md-4">
-        <input type="text" id="buscadorUsuario" class="form-control" placeholder="Buscar por nombre o apellido">
-      </div>
-      <div class="col-md-3">
-        <input type="date" id="fechaDesde" class="form-control" placeholder="Desde">
-      </div>
-      <div class="col-md-3">
-        <input type="date" id="fechaHasta" class="form-control" placeholder="Hasta">
+    <!-- Filtros -->
+    <div class="filtros text-center">
+      <div class="row justify-content-center mb-2">
+        <div class="col-md-4">
+          <input type="text" id="buscadorUsuario" class="form-control" placeholder="Buscar por nombre o apellido">
+        </div>
+        <div class="col-md-3">
+          <input type="date" id="fechaDesde" class="form-control" placeholder="Desde">
+        </div>
+        <div class="col-md-3">
+          <input type="date" id="fechaHasta" class="form-control" placeholder="Hasta">
+        </div>
       </div>
     </div>
-  </div>
 
-  {% if ventas %}
-    {% for venta in ventas %}
-      <div class="venta-card"
-           data-usuario="{{ venta.id_usuario.first_name }} {{ venta.id_usuario.last_name }}"
-           data-fecha="{{ venta.fecha_compra|date:'Y-m-d' }}">
-        <div class="row mb-3">
-          <div class="col-md-4">
-            <strong>Venta ID:</strong> {{ venta.id }}<br>
-            <strong>Fecha:</strong> {{ venta.fecha_compra|date:"d/m/Y H:i" }}
+    {% if ventas %}
+      {% for venta in ventas %}
+        <div class="venta-card"
+             data-usuario="{{ venta.id_usuario.first_name }} {{ venta.id_usuario.last_name }}"
+             data-fecha="{{ venta.fecha_compra|date:'Y-m-d' }}">
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <strong>Venta ID:</strong> {{ venta.id }}<br>
+              <strong>Fecha:</strong> {{ venta.fecha_compra|date:"d/m/Y H:i" }}
+            </div>
+            <div class="col-md-4">
+              <strong>Usuario:</strong> {{ venta.id_usuario.first_name }} {{ venta.id_usuario.last_name }} ({{ venta.id_usuario.rut }})
+            </div>
+            <div class="col-md-4">
+              <strong>Total:</strong> ${{ venta.total_venta }}
+            </div>
           </div>
-          <div class="col-md-4">
-            <strong>Usuario:</strong> {{ venta.id_usuario.first_name }} {{ venta.id_usuario.last_name }} ({{ venta.id_usuario.rut }})
+          <div class="row mb-3">
+            <div class="col-md-6"><strong>Estado WebPay:</strong> {{ venta.webpay_payment_status|title }}</div>
+            <div class="col-md-6"><strong>ID Transacción:</strong> {{ venta.webpay_transaction_id }}</div>
           </div>
-          <div class="col-md-4">
-            <strong>Total:</strong> ${{ venta.total_venta }}
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-md-6"><strong>Estado WebPay:</strong> {{ venta.webpay_payment_status|title }}</div>
-          <div class="col-md-6"><strong>ID Transacción:</strong> {{ venta.webpay_transaction_id }}</div>
-        </div>
 
-        <table class="table table-sm table-bordered">
-          <thead class="table-light">
-            <tr>
-              <th>Producto</th>
-              <th>Cantidad</th>
-              <th>Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for detalle in venta.detalles.all %}
+          <table class="table table-sm table-bordered">
+            <thead class="table-light">
               <tr>
-                <td>{{ detalle.producto.nombre }}</td>
-                <td>{{ detalle.cantidad_producto }}</td>
-                <td>${{ detalle.subtotal_venta }}</td>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
               </tr>
-            {% endfor %}
-          </tbody>
-        </table>
+            </thead>
+            <tbody>
+              {% for detalle in venta.detalles.all %}
+                <tr>
+                  <td>{{ detalle.producto.nombre }}</td>
+                  <td>{{ detalle.cantidad_producto }}</td>
+                  <td>${{ detalle.subtotal_venta }}</td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
 
-        <!-- Botones de boleta -->
-        <div class="text-end mt-2">
-          <a href="{% url 'ver_boleta' venta.id %}" class="btn btn-outline-success btn-sm">
-            Ver Boleta
-          </a>
-          
+          <!-- Botón Ver Boleta -->
+          <div class="text-end mt-2">
+            <a href="{% url 'ver_boleta' venta.id %}" class="btn btn-outline-success btn-sm">
+              Ver Boleta
+            </a>
+          </div>
         </div>
-      </div>
-    {% endfor %}
-  {% else %}
-    <div class="alert alert-info text-center">No hay ventas registradas.</div>
-  {% endif %}
+      {% endfor %}
+    {% else %}
+      <div class="alert alert-info text-center">No hay ventas registradas.</div>
+    {% endif %}
+  </div>
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
