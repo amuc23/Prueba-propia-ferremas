@@ -27,7 +27,7 @@ def vista_carrito(request):
 
             for detalle in detalles:
                 producto = detalle.producto
-                if producto.stock <= 0:
+                if producto.stock <= 0 or not producto.activo:
                     productos_eliminados.append(detalle)
                     detalle.delete()
                 elif detalle.cantidad_producto > producto.stock:
@@ -56,6 +56,7 @@ def vista_carrito(request):
             'entorno': settings.ENTORNO,
             'mensaje': 'Por favor, inicia sesión para ver tu carrito.'
         })
+
 
 
 # Vista para gestionar el carrito (ver y crear)
