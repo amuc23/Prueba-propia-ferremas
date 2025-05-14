@@ -16,9 +16,12 @@ from transbank.common.integration_type import IntegrationType
 from transbank.webpay.webpay_plus.transaction import Transaction
 import time  # ⬅️ pon esto al inicio del archivo si no lo tienes
 from django.template.loader import get_template
-from xhtml2pdf import pisa
-from django.shortcuts import get_object_or_404
-import os
+from django.shortcuts import get_object_or_404, render
+from django.http import HttpResponseForbidden
+from django.contrib.auth.decorators import login_required
+from .models import Venta, Detalle
+
+
 
 
 
@@ -330,9 +333,17 @@ def vista_historial_ventas(request):
     return render(request, 'carro_compras/historial_ventas.html', {'ventas': ventas})
 
 ##########
-
+@login_required
 def ver_boleta(request, venta_id):
-    venta = get_object_or_404(Venta, id=venta_id, id_usuario=request.user, estado_venta='pagado')
+    venta = get_object_or_404(Venta, id=venta_id)
+
+    # Solo el dueño o un admin puede verla
+    if request.user != venta.id_usuario and not request.user.is_staff:
+        return HttpResponseForbidden("No tienes permiso para ver esta boleta.")
+
     detalles = Detalle.objects.filter(id_venta=venta)
-    return render(request, 'carro_compras/boleta.html', {'venta': venta, 'detalles': detalles})
+    return render(request, 'carro_compras/boleta.html', {
+        'venta': venta,
+        'detalles': detalles
+    })
 
