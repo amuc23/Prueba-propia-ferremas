@@ -79,55 +79,73 @@
 </head>
 
 <body>
-  <!-- NAVBAR -->
-  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2e7d32;">
-    <div class="container">
-      <a class="navbar-brand" href="/">
-        <img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;">
-      </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
-        <span class="navbar-toggler-icon"></span>
-      </button>
-      <div class="collapse navbar-collapse" id="menu">
-        <ul class="navbar-nav ms-auto align-items-center">
-          <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
-          <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
-          <li class="nav-item"><a class="nav-link" href="{% url 'vista_ofertas' %}">Ofertas</a></li>
-          <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
-          {% if user.is_authenticated %}
-            <li class="nav-item ms-3"><span class="text-white me-3">Hola, {{ user.username }}</span></li>
-            <li class="nav-item ms-2">
-              <a class="btn btn-outline-light px-3 py-2" href="/usuarios/cerrar-sesion/">
-                <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
-              </a>
-            </li>
-          {% else %}
-            <li class="nav-item ms-3">
-              <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
-                <i class="fas fa-user me-2"></i> Iniciar Sesión
-              </a>
-            </li>
-          {% endif %}
-          {% if user.is_staff %}
-            <li class="nav-item ms-2">
-              <a class="nav-link" href="{% url 'panel_administracion' %}">Panel de Administración</a>
-            </li>
-          {% endif %}
-          {% if user.is_authenticated %}
-            <li class="nav-item ms-2">
-              <a class="nav-link" href="{% url 'vista_carrito' %}">
-                <i class="fas fa-shopping-cart"></i> Carrito
-              </a>
-            </li>
-          {% endif %}
-        </ul>
-      </div>
-    </div>
-  </nav>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2E7D32;">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
 
+    <div class="collapse navbar-collapse" id="menu">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'vista_ofertas' %}">Ofertas</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+
+        {% if user.is_authenticated %}
+          <li class="nav-item ms-3">
+            <span class="text-white me-3">Hola, {{ user.username }}</span>
+          </li>
+          <li class="nav-item ms-2">
+            <a class="btn btn-outline-light px-3 py-2" href="/usuarios/cerrar-sesion/">
+              <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+            </a>
+          </li>
+        {% else %}
+          <li class="nav-item ms-3">
+            <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
+              <i class="fas fa-user me-2"></i> Iniciar Sesión
+            </a>
+          </li>
+        {% endif %}
+
+        {% if user.is_staff %}
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'panel_administracion' %}">Panel de Administración</a>
+          </li>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'vista_carrito' %}">
+              <i class="fas fa-shopping-cart"></i> Carrito
+            </a>
+          </li>
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'mi_historial_compras' %}">
+              <i class="fas fa-history"></i> Mis Compras
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
   <!-- CONTENIDO -->
   <main>
     <h1 class="hero-title">Carrito de Compras</h1>
+    <div class="text-center mb-4">
+  <select id="moneda-selector" class="form-select w-auto d-inline-block">
+    <option value="CLP">CLP - Peso Chileno</option>
+    <option value="USD">USD - Dólar</option>
+    <option value="EUR">EUR - Euro</option>
+    <option value="BRL">BRL - Real</option>
+  </select>
+</div>
     <div class="cart-container">
       {% if mensaje %}
         <div class="alert alert-warning text-center">{{ mensaje }}</div>
@@ -253,6 +271,55 @@
     return cookieValue;
   }
 
+  document.addEventListener("DOMContentLoaded", async function () {
+    const monedaSelector = document.getElementById('moneda-selector');
+    const volverClpBtn = document.getElementById('volver-clp');
+    const monedaActual = localStorage.getItem("moneda") || "CLP";
+    let tasaCambio = 1;
+
+    if (monedaSelector) monedaSelector.value = monedaActual;
+
+    if (monedaSelector) {
+      monedaSelector.addEventListener("change", function () {
+        localStorage.setItem("moneda", this.value);
+        location.reload();
+      });
+    }
+
+    if (volverClpBtn) {
+      volverClpBtn.addEventListener("click", function () {
+        localStorage.setItem("moneda", "CLP");
+        location.reload();
+      });
+    }
+
+    async function obtenerTasa(monedaDestino) {
+      if (monedaDestino === "CLP") return;
+      try {
+        const res = await fetch("https://open.er-api.com/v6/latest/CLP");
+        const data = await res.json();
+        tasaCambio = data.rates[monedaDestino] || 1;
+      } catch {
+        tasaCambio = 1;
+      }
+    }
+
+    await obtenerTasa(monedaActual);
+
+    if (monedaActual !== "CLP") {
+      document.querySelectorAll("[id^='subtotal-']").forEach(td => {
+        const valorCLP = parseInt(td.innerText.replace(/\$|,/g, ""));
+        const convertido = valorCLP * tasaCambio;
+        td.innerText = `${monedaActual} $${convertido.toFixed(2)}`;
+      });
+
+      const totalSpan = document.getElementById("total-carrito");
+      const totalCLP = parseInt(totalSpan.innerText.replace(/\$|,/g, ""));
+      const totalConvertido = totalCLP * tasaCambio;
+      totalSpan.innerText = `${monedaActual} $${totalConvertido.toFixed(2)}`;
+    }
+  });
+
   async function actualizarCantidad(detalleId, operacion) {
     const cantidadElement = document.getElementById(`cantidad-${detalleId}`);
     let cantidad = parseInt(cantidadElement.innerText);
@@ -280,8 +347,31 @@
       const data = await response.json();
       if (response.ok) {
         cantidadElement.innerText = cantidad;
-        document.getElementById(`subtotal-${detalleId}`).innerText = '$' + (data.subtotal_venta).toLocaleString();
-        document.getElementById('total-carrito').innerText = (data.total_carrito).toLocaleString();
+
+        const monedaActual = localStorage.getItem("moneda") || "CLP";
+        let tasa = 1;
+        if (monedaActual !== "CLP") {
+          try {
+            const res = await fetch("https://open.er-api.com/v6/latest/CLP");
+            const dataTasa = await res.json();
+            tasa = dataTasa.rates[monedaActual] || 1;
+          } catch {
+            tasa = 1;
+          }
+        }
+
+        const subtotalConvertido = data.subtotal_venta * tasa;
+        const totalConvertido = data.total_carrito * tasa;
+
+        document.getElementById(`subtotal-${detalleId}`).innerText =
+          monedaActual === "CLP"
+            ? '$' + data.subtotal_venta.toLocaleString()
+            : `${monedaActual} $${subtotalConvertido.toFixed(2)}`;
+
+        document.getElementById('total-carrito').innerText =
+          monedaActual === "CLP"
+            ? data.total_carrito.toLocaleString()
+            : `${monedaActual} $${totalConvertido.toFixed(2)}`;
       } else {
         alert(data.detail || "Error al actualizar.");
       }
@@ -291,45 +381,60 @@
   }
 
   async function disminuirCantidad(detalleId) {
-  const cantidadElement = document.getElementById(`cantidad-${detalleId}`);
-  let cantidad = parseInt(cantidadElement.innerText);
+    const cantidadElement = document.getElementById(`cantidad-${detalleId}`);
+    let cantidad = parseInt(cantidadElement.innerText);
 
-  if (cantidad === 1) {
-    try {
-      const response = await fetch(`/api/carrito/detalle/${detalleId}/`, {
-        method: 'PUT',
-        headers: {
-          'Content-Type': 'application/json',
-          'X-CSRFToken': getCookie("csrftoken"),
-        },
-        body: JSON.stringify({ cantidad_producto: 0 })
-      });
+    if (cantidad === 1) {
+      try {
+        const response = await fetch(`/api/carrito/detalle/${detalleId}/`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie("csrftoken"),
+          },
+          body: JSON.stringify({ cantidad_producto: 0 })
+        });
 
-      const data = await response.json();
-      if (response.ok) {
-        document.getElementById(`detalle-row-${detalleId}`).remove();
-        document.getElementById('total-carrito').innerText = data.total_carrito.toLocaleString();
+        const data = await response.json();
+        if (response.ok) {
+          document.getElementById(`detalle-row-${detalleId}`).remove();
 
-        // 🔁 Si el total es 0, recarga para ocultar el botón de pago
-        if (data.total_carrito === 0) {
-          window.location.reload();
+          const monedaActual = localStorage.getItem("moneda") || "CLP";
+          let tasa = 1;
+          if (monedaActual !== "CLP") {
+            try {
+              const res = await fetch("https://open.er-api.com/v6/latest/CLP");
+              const dataTasa = await res.json();
+              tasa = dataTasa.rates[monedaActual] || 1;
+            } catch {
+              tasa = 1;
+            }
+          }
+
+          const totalConvertido = data.total_carrito * tasa;
+          document.getElementById('total-carrito').innerText =
+            monedaActual === "CLP"
+              ? data.total_carrito.toLocaleString()
+              : `${monedaActual} $${totalConvertido.toFixed(2)}`;
+
+          if (data.total_carrito === 0) {
+            window.location.reload();
+          }
+        } else {
+          alert(data.detail || "Error al eliminar.");
         }
-      } else {
-        alert(data.detail || "Error al eliminar.");
+      } catch (error) {
+        alert("Error al conectar.");
       }
-    } catch (error) {
-      alert("Error al conectar.");
+    } else {
+      actualizarCantidad(detalleId, '-');
     }
-  } else {
-    actualizarCantidad(detalleId, '-');
   }
-}
 
   function refreshPage() {
     window.location.reload();
   }
 </script>
-
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

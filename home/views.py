@@ -9,3 +9,6 @@ def index(request):
 @user_passes_test(lambda u: u.is_staff, login_url='/usuarios/iniciosesion/')
 def panel_administracion(request):
     return render(request, 'home/panel_admin.html')
+
+def contacto(request):
+    return render(request, 'home/contacto.html')

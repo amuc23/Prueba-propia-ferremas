@@ -85,15 +85,18 @@
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
       <span class="navbar-toggler-icon"></span>
     </button>
+
     <div class="collapse navbar-collapse" id="menu">
       <ul class="navbar-nav ms-auto align-items-center">
         <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
-        <li class="nav-item"><a class="nav-link active" href="/productos/">Productos</a></li>
+        <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
         <li class="nav-item"><a class="nav-link" href="{% url 'vista_ofertas' %}">Ofertas</a></li>
-        <li class="nav-item"><a class="nav-link" href="#">Contacto</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
 
         {% if user.is_authenticated %}
-          <li class="nav-item ms-3"><span class="text-white me-3">Hola, {{ user.username }}</span></li>
+          <li class="nav-item ms-3">
+            <span class="text-white me-3">Hola, {{ user.username }}</span>
+          </li>
           <li class="nav-item ms-2">
             <a class="btn btn-outline-light px-3 py-2" href="/usuarios/cerrar-sesion/">
               <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
@@ -117,6 +120,11 @@
           <li class="nav-item ms-2">
             <a class="nav-link" href="{% url 'vista_carrito' %}">
               <i class="fas fa-shopping-cart"></i> Carrito
+            </a>
+          </li>
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'mi_historial_compras' %}">
+              <i class="fas fa-history"></i> Mis Compras
             </a>
           </li>
         {% endif %}
