@@ -11,6 +11,8 @@ urlpatterns = [
     path('', include('carro_compras.urls')),
 ]
 
+handler404 = 'home.views.custom_404'  # Añade esta línea
+
 if settings.DEBUG:
     urlpatterns += static(settings.STATIC_URL, document_root=settings.STATIC_ROOT)
 

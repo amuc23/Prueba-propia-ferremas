@@ -12,3 +12,6 @@ def panel_administracion(request):
 
 def contacto(request):
     return render(request, 'home/contacto.html')
+
+def custom_404(request, exception):
+    return render(request, '404.html', status=404)
