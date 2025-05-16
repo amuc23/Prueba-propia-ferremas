@@ -15,6 +15,8 @@ urlpatterns = [
     path('api/usuarios/toggle-activo/<int:id>/', views.api_toggle_activo_usuario, name='api_toggle_activo_usuario'),
     path('usuarios/editar/<int:id>/', views.vista_editar_usuario, name='vista_editar_usuario'),
     path('api/usuarios/editar/<int:id>/', views.api_editar_usuario, name='api_editar_usuario'),
+    path('api/login/', LoginAPIView.as_view(), name='api_login'),
+    
 
 
 

@@ -15,28 +15,9 @@ from django.shortcuts import get_object_or_404
 from carro_compras.models import Venta
 from django.utils import timezone
 
+
 def iniciosesion(request):
-    if request.method == 'POST':
-        username = request.POST.get('username')
-        password = request.POST.get('password')
-        user = authenticate(username=username, password=password)
-        if user and user.is_active:
-            login(request, user)
-
-            # Crear un carrito (venta) automáticamente si no existe uno activo
-            if not Venta.objects.filter(id_usuario=user, estado_venta='carrito').exists():
-                Venta.objects.create(
-                    id_usuario=user,
-                    fecha_compra=timezone.now(),
-                    total_venta=0.00,
-                    estado_venta='carrito'
-                )
-
-            return redirect('index')
-        else:
-            messages.error(request, 'Credenciales inválidas o cuenta inactiva.')
     return render(request, 'usuarios/iniciosesion.html')
-
 def registro(request):
     return render(request, 'usuarios/registro.html')
 

@@ -56,30 +56,15 @@ class UsuarioSerializer(serializers.ModelSerializer):
 
 
 class LoginSerializer(serializers.Serializer):
-    username = serializers.CharField(required=True)
-    password = serializers.CharField(
-        write_only=True,
-        required=True,
-        style={'input_type': 'password'}
-    )
+    username = serializers.CharField()
+    password = serializers.CharField()
 
     def validate(self, data):
-        username = data.get('username')
-        password = data.get('password')
-
-        if username and password:
-            user = authenticate(username=username, password=password)
-            if not user:
-                raise serializers.ValidationError(
-                    "No se puede iniciar sesión con las credenciales proporcionadas"
-                )
-        else:
-            raise serializers.ValidationError(
-                "Debe incluir nombre de usuario y contraseña"
-            )
-
-        data['user'] = user
-        return data
+        user = authenticate(**data)
+        if user and user.is_active:
+            data['user'] = user
+            return data
+        raise serializers.ValidationError("Credenciales inválidas o cuenta inactiva")
 
 
 class UsuarioListaSerializer(serializers.ModelSerializer):
