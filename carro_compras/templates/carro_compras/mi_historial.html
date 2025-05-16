@@ -26,7 +26,6 @@
 </head>
 <body>
 
-
 <!-- Navbar -->
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2E7D32;">
   <div class="container">
@@ -83,6 +82,7 @@
     </div>
   </div>
 </nav>
+
 <!-- Contenido -->
 <div class="container mt-5">
   <h2 class="text-center mb-4">Mis Compras en FERREMAS</h2>
@@ -114,9 +114,9 @@
               <tbody>
               {% for d in venta.detalles_list %}
                 <tr>
-                  <td><img src="{{ d.producto.imagen }}" alt="{{ d.producto.nombre }}" class="producto-img"></td>
-                  <td>{{ d.producto.nombre }}</td>
-                  <td>${{ d.producto.precio }}</td>
+                  <td><img src="{{ d.imagen_producto }}" alt="{{ d.nombre_producto }}" class="producto-img"></td>
+                  <td>{{ d.nombre_producto }}</td>
+                  <td>${{ d.precio_unitario }}</td>
                   <td>{{ d.cantidad_producto }}</td>
                   <td>${{ d.subtotal_venta }}</td>
                 </tr>
@@ -153,9 +153,9 @@
               <tbody>
               {% for d in venta.detalles_list %}
                 <tr>
-                  <td><img src="{{ d.producto.imagen }}" alt="{{ d.producto.nombre }}" class="producto-img"></td>
-                  <td>{{ d.producto.nombre }}</td>
-                  <td>${{ d.producto.precio }}</td>
+                  <td><img src="{{ d.imagen_producto }}" alt="{{ d.nombre_producto }}" class="producto-img"></td>
+                  <td>{{ d.nombre_producto }}</td>
+                  <td>${{ d.precio_unitario }}</td>
                   <td>{{ d.cantidad_producto }}</td>
                   <td>${{ d.subtotal_venta }}</td>
                 </tr>
@@ -172,8 +172,6 @@
   {% else %}
     <div class="alert alert-info">No has realizado compras todavía.</div>
   {% endif %}
-
-  
 </div>
 
 <footer>

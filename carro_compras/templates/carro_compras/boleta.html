@@ -171,9 +171,9 @@
       <tbody>
         {% for d in detalles %}
         <tr>
-          <td>{{ d.producto.nombre }}</td>
+          <td>{{ d.nombre_producto }}</td>
           <td>{{ d.cantidad_producto }}</td>
-          <td>${{ d.producto.precio }}</td>
+          <td>${{ d.precio_unitario }}</td>
           <td>${{ d.subtotal_venta }}</td>
         </tr>
         {% endfor %}

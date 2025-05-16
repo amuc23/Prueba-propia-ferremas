@@ -37,21 +37,32 @@ class Venta(models.Model):
 
     def __str__(self):
         return f"Venta {self.id} - {self.id_usuario.username}"
-    
-    
-# Tabla Detalle
-class Detalle(models.Model):
-    cantidad_producto = models.PositiveIntegerField()  # Cantidad de productos en el carrito
-    subtotal_venta = models.IntegerField()  # Subtotal de la venta por producto
-    id_venta = models.ForeignKey(Venta, on_delete=models.CASCADE, related_name='detalles')  # Relación con Venta
-    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='detalles')  # Relación con Producto
+      # Campo de eliminación lógica
+    eliminado = models.BooleanField(default=False)
 
     def __str__(self):
-        return f"{self.id_venta} | {self.producto.nombre} | {self.cantidad_producto} | {self.subtotal_venta}"
+        return f"Venta {self.id} - {self.id_usuario.username}"
+    
+    
+class Detalle(models.Model):
+    cantidad_producto = models.PositiveIntegerField()
+    subtotal_venta = models.IntegerField()
+    id_venta = models.ForeignKey(Venta, on_delete=models.CASCADE, related_name='detalles')
+    producto = models.ForeignKey(Producto, on_delete=models.CASCADE, related_name='detalles')
+
+    # Congelados al momento de la compra
+    nombre_producto = models.CharField(max_length=200, default='Producto eliminado')
+    precio_unitario = models.IntegerField(default=0)
+    imagen_producto = models.URLField(max_length=500, blank=True, null=True)
+
+    def __str__(self):
+        return f"{self.id_venta} | {self.nombre_producto} | {self.cantidad_producto} | {self.subtotal_venta}"
 
     def save(self, *args, **kwargs):
-        # Calcular el subtotal de la venta al momento de guardarlo
-        self.subtotal_venta = self.producto.precio * self.cantidad_producto
-        super().save(*args, **kwargs)  # Llamamos al método save del padre
-
+        if not self.pk:
+            self.nombre_producto = self.producto.nombre
+            self.precio_unitario = self.producto.precio
+            self.imagen_producto = self.producto.imagen
+        self.subtotal_venta = self.precio_unitario * self.cantidad_producto
+        super().save(*args, **kwargs)
 

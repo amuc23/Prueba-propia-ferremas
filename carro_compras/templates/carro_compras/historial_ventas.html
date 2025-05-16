@@ -124,7 +124,7 @@
           <tbody>
             {% for detalle in venta.detalles.all %}
               <tr>
-                <td>{{ detalle.producto.nombre }}</td>
+                <td>{{ detalle.nombre_producto }}</td>
                 <td>{{ detalle.cantidad_producto }}</td>
                 <td>${{ detalle.subtotal_venta }}</td>
               </tr>
