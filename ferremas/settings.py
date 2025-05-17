@@ -1,6 +1,7 @@
 from pathlib import Path
 import os
-
+from dotenv import load_dotenv
+load_dotenv()
 
 
 # Configuración de las rutas dentro del proyecto. BASE_DIR es el directorio raíz.
@@ -167,8 +168,8 @@ EMAIL_HOST = 'smtp.gmail.com'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 
-EMAIL_HOST_USER = "ferremas40@gmail.com"
-EMAIL_HOST_PASSWORD = "ukulszuabhqchvqe"
+EMAIL_HOST_USER = os.getenv("EMAIL_HOST_USER")
+EMAIL_HOST_PASSWORD = os.getenv("EMAIL_HOST_PASSWORD")
 DEFAULT_FROM_EMAIL = f"FERREMAS <{EMAIL_HOST_USER}>"
 
 
