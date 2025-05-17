@@ -171,9 +171,6 @@ EMAIL_HOST_USER = "ferremas40@gmail.com"
 EMAIL_HOST_PASSWORD = "ukulszuabhqchvqe"
 DEFAULT_FROM_EMAIL = f"FERREMAS <{EMAIL_HOST_USER}>"
 
-import logging
 
-logging.basicConfig(
-    level=logging.DEBUG,
-    format='%(asctime)s %(levelname)s %(message)s',
-)
+
+PASSWORD_RESET_TIMEOUT = 7200

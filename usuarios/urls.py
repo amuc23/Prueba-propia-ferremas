@@ -39,4 +39,12 @@ urlpatterns = [
     path('usuarios/restablecer/completo/', auth_views.PasswordResetCompleteView.as_view(
         template_name='usuarios/restablecer_completo.html'
     ), name='password_reset_complete'),
+
+    path('usuarios/restablecer/<uidb64>/<token>/', auth_views.PasswordResetConfirmView.as_view(
+    template_name='usuarios/restablecer.html',
+    post_reset_login=False,
+    extra_context={"title": "Restablecer contraseña"},
+    success_url='/usuarios/restablecer/completo/',
+), name='password_reset_confirm'),
+
 ]
