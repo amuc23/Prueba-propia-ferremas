@@ -23,7 +23,8 @@
           <form method="post">
             {% csrf_token %}
             {{ form.as_p }}
-            <button type="submit" class="btn btn-success w-100">Enviar enlace</button>
+            <button type="submit" class="btn btn-success w-100 mb-2">Enviar enlace</button>
+            <a href="{% url 'iniciosesion' %}" class="btn btn-secondary w-100">Volver</a>
           </form>
 
         </div>
