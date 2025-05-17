@@ -82,104 +82,116 @@
         <input type="text" id="buscadorRut" class="form-control" placeholder="Buscar por RUT">
       </div>
       <div class="col-md-3">
-        <input type="date" id="fechaDesde" class="form-control" placeholder="Desde">
+        <input type="date" id="fechaDesde" class="form-control">
       </div>
       <div class="col-md-3">
-        <input type="date" id="fechaHasta" class="form-control" placeholder="Hasta">
+        <input type="date" id="fechaHasta" class="form-control">
       </div>
     </div>
   </div>
 
-  {% if ventas %}
-    {% for venta in ventas %}
-      <div class="venta-card"
-           data-usuario="{{ venta.id_usuario.first_name }} {{ venta.id_usuario.last_name }}"
-           data-rut="{{ venta.id_usuario.rut }}"
-           data-fecha="{{ venta.fecha_compra|date:'Y-m-d' }}">
-        <div class="row mb-3">
-          <div class="col-md-4">
-            <strong>Venta ID:</strong> {{ venta.id }}<br>
-            <strong>Fecha:</strong> {{ venta.fecha_compra|date:"d/m/Y H:i" }}
-          </div>
-          <div class="col-md-4">
-            <strong>Usuario:</strong> {{ venta.id_usuario.first_name }} {{ venta.id_usuario.last_name }} ({{ venta.id_usuario.rut }})
-          </div>
-          <div class="col-md-4">
-            <strong>Total:</strong> ${{ venta.total_venta }}
-          </div>
-        </div>
-        <div class="row mb-3">
-          <div class="col-md-6"><strong>Estado WebPay:</strong> {{ venta.webpay_payment_status|title }}</div>
-          <div class="col-md-6"><strong>ID Transacción:</strong> {{ venta.webpay_transaction_id }}</div>
-        </div>
+  <!-- Contenedor dinámico de ventas -->
+  <div id="ventasContainer"></div>
 
-        <table class="table table-sm table-bordered">
-          <thead class="table-light">
-            <tr>
-              <th>Producto</th>
-              <th>Cantidad</th>
-              <th>Subtotal</th>
-            </tr>
-          </thead>
-          <tbody>
-            {% for detalle in venta.detalles.all %}
-              <tr>
-                <td>{{ detalle.nombre_producto }}</td>
-                <td>{{ detalle.cantidad_producto }}</td>
-                <td>${{ detalle.subtotal_venta }}</td>
-              </tr>
-            {% endfor %}
-          </tbody>
-        </table>
-
-        <!-- Botón Ver Boleta -->
-        <div class="text-end mt-2">
-          <a href="{% url 'ver_boleta' venta.id %}" class="btn btn-outline-success btn-sm">
-            Ver Boleta
-          </a>
-        </div>
-      </div>
-    {% endfor %}
-  {% else %}
-    <div class="alert alert-info text-center">No hay ventas registradas.</div>
-  {% endif %}
+  <div id="mensajeVacio" class="alert alert-info text-center d-none">No hay ventas registradas.</div>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
-
-<!-- Script de filtros -->
 <script>
-  function filtrarVentas() {
-    const filtroNombre = document.getElementById("buscadorUsuario").value.toLowerCase();
-    const filtroRut = document.getElementById("buscadorRut").value.toLowerCase();
+  const apiUrl = "/api/historial-ventas/";
+
+  async function cargarVentas() {
+    const response = await fetch(apiUrl);
+    const ventas = await response.json();
+    const contenedor = document.getElementById("ventasContainer");
+    contenedor.innerHTML = "";
+
+    if (ventas.length === 0) {
+      document.getElementById("mensajeVacio").classList.remove("d-none");
+      return;
+    }
+
+    document.getElementById("mensajeVacio").classList.add("d-none");
+
+    ventas.forEach(venta => {
+      const ventaHTML = `
+        <div class="venta-card"
+             data-usuario="${venta.id_usuario.first_name} ${venta.id_usuario.last_name}"
+             data-rut="${venta.id_usuario.rut}"
+             data-fecha="${venta.fecha_compra.split('T')[0]}">
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <strong>Venta ID:</strong> ${venta.id}<br>
+              <strong>Fecha:</strong> ${new Date(venta.fecha_compra).toLocaleString()}
+            </div>
+            <div class="col-md-4">
+              <strong>Usuario:</strong> ${venta.id_usuario.first_name} ${venta.id_usuario.last_name} (${venta.id_usuario.rut})
+            </div>
+            <div class="col-md-4">
+              <strong>Total:</strong> $${venta.total_venta}
+            </div>
+          </div>
+          <div class="row mb-3">
+            <div class="col-md-6"><strong>Estado WebPay:</strong> ${venta.webpay_payment_status}</div>
+            <div class="col-md-6"><strong>ID Transacción:</strong> ${venta.webpay_transaction_id || '-'}</div>
+          </div>
+
+          <table class="table table-sm table-bordered">
+            <thead class="table-light">
+              <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+              </tr>
+            </thead>
+            <tbody>
+              ${venta.detalles.map(detalle => `
+                <tr>
+                  <td>${detalle.nombre_producto}</td>
+                  <td>${detalle.cantidad_producto}</td>
+                  <td>$${detalle.subtotal_venta}</td>
+                </tr>`).join('')}
+            </tbody>
+          </table>
+
+          <div class="text-end mt-2">
+            <a href="/boleta/${venta.id}/" class="btn btn-outline-success btn-sm">Ver Boleta</a>
+          </div>
+        </div>`;
+      contenedor.insertAdjacentHTML("beforeend", ventaHTML);
+    });
+
+    aplicarFiltros();
+  }
+
+  function aplicarFiltros() {
+    const nombreFiltro = document.getElementById("buscadorUsuario").value.toLowerCase();
+    const rutFiltro = document.getElementById("buscadorRut").value.toLowerCase();
     const fechaDesde = document.getElementById("fechaDesde").value;
     const fechaHasta = document.getElementById("fechaHasta").value;
 
-    const ventas = document.querySelectorAll(".venta-card");
-
-    ventas.forEach(card => {
+    const cards = document.querySelectorAll(".venta-card");
+    cards.forEach(card => {
       const nombre = card.dataset.usuario.toLowerCase();
       const rut = card.dataset.rut.toLowerCase();
       const fecha = card.dataset.fecha;
 
-      const cumpleNombre = nombre.includes(filtroNombre);
-      const cumpleRut = rut.includes(filtroRut);
+      const cumpleNombre = nombre.includes(nombreFiltro);
+      const cumpleRut = rut.includes(rutFiltro);
       const cumpleDesde = !fechaDesde || fecha >= fechaDesde;
       const cumpleHasta = !fechaHasta || fecha <= fechaHasta;
 
-      if (cumpleNombre && cumpleRut && cumpleDesde && cumpleHasta) {
-        card.style.display = "block";
-      } else {
-        card.style.display = "none";
-      }
+      card.style.display = (cumpleNombre && cumpleRut && cumpleDesde && cumpleHasta) ? "block" : "none";
     });
   }
 
-  document.getElementById("buscadorUsuario").addEventListener("input", filtrarVentas);
-  document.getElementById("buscadorRut").addEventListener("input", filtrarVentas);
-  document.getElementById("fechaDesde").addEventListener("change", filtrarVentas);
-  document.getElementById("fechaHasta").addEventListener("change", filtrarVentas);
+  document.getElementById("buscadorUsuario").addEventListener("input", aplicarFiltros);
+  document.getElementById("buscadorRut").addEventListener("input", aplicarFiltros);
+  document.getElementById("fechaDesde").addEventListener("change", aplicarFiltros);
+  document.getElementById("fechaHasta").addEventListener("change", aplicarFiltros);
+
+  window.addEventListener("DOMContentLoaded", cargarVentas);
 </script>
+
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
 </body>
 </html>

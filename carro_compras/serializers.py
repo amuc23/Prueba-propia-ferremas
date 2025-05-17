@@ -33,6 +33,9 @@ class VentaSerializer(serializers.ModelSerializer):
             'tipo_entrega',
             'direccion_despacho',
             'estado_entrega',
+            'webpay_transaction_id',
+            'webpay_payment_status',
+            'ultimos_digitos',
             'id_usuario',
             'detalles'
         ]

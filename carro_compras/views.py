@@ -20,6 +20,9 @@ from django.shortcuts import get_object_or_404, render
 from django.http import HttpResponseForbidden
 from django.contrib.auth.decorators import login_required
 from .models import Venta, Detalle
+from rest_framework.permissions import IsAdminUser
+from rest_framework.decorators import api_view, permission_classes
+from rest_framework.permissions import IsAuthenticated
 
 
 
@@ -315,9 +318,13 @@ def respuesta_pago_webpay(request):
             venta.estado_venta = 'pagado'
             venta.fecha_compra = timezone.now()
             venta.webpay_payment_status = 'completed'
+            
+            # ✅ Aquí se guarda el número de tarjeta (últimos 4 dígitos)
+            venta.ultimos_digitos = response.get('card_detail', {}).get('card_number', '')[-4:]
 
             venta.total_venta = sum(d.subtotal_venta for d in venta.detalles.all())
             venta.save()
+
 
             for detalle in venta.detalles.all():
                 producto = detalle.producto
@@ -357,9 +364,7 @@ def respuesta_pago_webpay(request):
     })
 
 
-def vista_historial_ventas(request):
-    ventas = Venta.objects.filter(estado_venta='pagado').order_by('-fecha_compra')
-    return render(request, 'carro_compras/historial_ventas.html', {'ventas': ventas})
+
 
 
 @login_required
@@ -435,3 +440,67 @@ def mi_historial_compras(request):
         venta.detalles_list = venta.detalles.all()  # ← relación desde related_name
 
     return render(request, 'carro_compras/mi_historial.html', {'ventas': ventas})
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def api_historial_ventas(request):
+    ventas = Venta.objects.filter(estado_venta='pagado').order_by('-fecha_compra')
+    serializer = VentaSerializer(ventas, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+def api_mis_compras(request):
+    if not request.user.is_authenticated:
+        return Response({'detail': 'No autenticado'}, status=401)
+
+    ventas = Venta.objects.filter(id_usuario=request.user, estado_venta='pagado').order_by('-fecha_compra')
+    serializer = VentaSerializer(ventas, many=True)
+    return Response(serializer.data)
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def api_retiros(request):
+    retiros = Venta.objects.filter(tipo_entrega='retiro').order_by('-fecha_compra')
+    serializer = VentaSerializer(retiros, many=True)
+    return Response(serializer.data)
+
+# Confirmar retiro (admin)
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def api_confirmar_retiro(request, venta_id):
+    rut = request.data.get('rut')
+    venta = get_object_or_404(Venta, id=venta_id, tipo_entrega='retiro', estado_entrega='pendiente')
+
+    if rut != venta.id_usuario.rut:
+        return Response({'detail': '❌ RUT incorrecto'}, status=400)
+
+    venta.estado_entrega = 'completado'
+    venta.save()
+    return Response({'mensaje': f"✅ Retiro confirmado para la venta #{venta.id}"})
+
+@api_view(['GET'])
+@permission_classes([IsAdminUser])
+def api_despachos(request):
+    despachos = Venta.objects.filter(tipo_entrega='despacho').order_by('-fecha_compra')
+    serializer = VentaSerializer(despachos, many=True)
+    return Response(serializer.data)
+
+@api_view(['POST'])
+@permission_classes([IsAdminUser])
+def api_confirmar_despacho(request, venta_id):
+    venta = get_object_or_404(Venta, id=venta_id, tipo_entrega='despacho', estado_entrega='pendiente')
+    venta.estado_entrega = 'completado'
+    venta.save()
+    return Response({'mensaje': f"✅ Despacho confirmado para la venta #{venta.id}"})
+
+@api_view(['GET'])
+@permission_classes([IsAuthenticated])
+def api_boleta(request, id):
+    venta = get_object_or_404(Venta, id=id)
+
+    # Seguridad: solo el dueño o un admin puede verla
+    if request.user != venta.id_usuario and not request.user.is_staff:
+        return Response({'detail': 'No autorizado'}, status=403)
+
+    serializer = VentaSerializer(venta)
+    return Response(serializer.data)

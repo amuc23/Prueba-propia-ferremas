@@ -3,7 +3,7 @@
 <html lang="es">
 <head>
   <meta charset="UTF-8">
-  <title>Boleta FERREMAS Nº{{ venta.id }}</title>
+  <title>Boleta FERREMAS</title>
   <style>
     body {
       margin: 0;
@@ -155,7 +155,13 @@
         <strong>Cliente:</strong><br>
         {{ venta.id_usuario.first_name }} {{ venta.id_usuario.last_name }}<br>
         ({{ venta.id_usuario.rut }})<br>
-        <strong>Método de Pago:</strong> WebPay
+        <strong>Método de Pago:</strong> WebPay<br>
+        <strong>Tarjeta:</strong>
+        {% if venta.ultimos_digitos %}
+        **** **** **** {{ venta.ultimos_digitos }}
+        {% else %}
+        No disponible
+        {% endif %}
       </div>
     </div>
 

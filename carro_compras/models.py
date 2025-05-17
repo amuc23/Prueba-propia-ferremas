@@ -19,6 +19,8 @@ class Venta(models.Model):
     # WebPay
     webpay_transaction_id = models.CharField(max_length=100, blank=True, null=True)
     webpay_payment_status = models.CharField(max_length=50, blank=True, null=True)
+    ultimos_digitos = models.CharField(max_length=4, blank=True, null=True)
+
 
     # Tipo de entrega: retiro o despacho
     tipo_entrega = models.CharField(
