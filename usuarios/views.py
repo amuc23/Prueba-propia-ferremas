@@ -14,7 +14,9 @@ from django.contrib.auth.decorators import user_passes_test
 from django.shortcuts import get_object_or_404
 from carro_compras.models import Venta
 from django.utils import timezone
-
+from django.contrib.auth.views import PasswordResetView
+from django.contrib.auth import get_user_model
+from django.urls import reverse_lazy
 
 def iniciosesion(request):
     return render(request, 'usuarios/iniciosesion.html')
@@ -125,3 +127,16 @@ def api_editar_usuario(request, id):
     return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
 
+class VistaRecuperarConValidacion(PasswordResetView):
+    template_name = 'usuarios/recuperar.html'
+    email_template_name = 'usuarios/password_reset_email.html'
+    subject_template_name = 'usuarios/password_reset_subject.txt'
+    success_url = reverse_lazy('password_reset_done')
+
+    def form_valid(self, form):
+        email = form.cleaned_data['email']
+        Usuario = get_user_model()
+        if not Usuario.objects.filter(email=email).exists():
+            messages.error(self.request, "El correo ingresado no está registrado.")
+            return self.form_invalid(form)
+        return super().form_valid(form)

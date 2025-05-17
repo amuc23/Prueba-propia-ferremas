@@ -2,6 +2,7 @@ from django.urls import path
 from . import views
 from .views import RegistroAPIView, LoginAPIView
 from django.contrib.auth import views as auth_views
+from .views import VistaRecuperarConValidacion
 
 urlpatterns = [
     path('usuarios/iniciosesion/', views.iniciosesion, name='iniciosesion'),
@@ -22,11 +23,8 @@ urlpatterns = [
     path('usuarios/editar/<int:id>/', views.vista_editar_usuario, name='vista_editar_usuario'),
 
     # Recuperar contraseña (con plantillas personalizadas)
-    path('usuarios/recuperar/', auth_views.PasswordResetView.as_view(
-        template_name='usuarios/recuperar.html',
-        email_template_name='usuarios/password_reset_email.html',
-        subject_template_name='usuarios/password_reset_subject.txt',
-    ), name='password_reset'),
+    path('usuarios/recuperar/', VistaRecuperarConValidacion.as_view(), name='password_reset'),
+
 
     path('usuarios/recuperar/enviado/', auth_views.PasswordResetDoneView.as_view(
         template_name='usuarios/recuperar_enviado.html'
