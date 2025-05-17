@@ -247,9 +247,11 @@ def iniciar_pago_webpay(request):
     if not venta:
         return Response({'error': 'No tienes un carrito activo'}, status=404)
 
-    venta.tipo_entrega = request.POST.get('tipo_entrega')
-    venta.direccion_despacho = request.POST.get('direccion_despacho') if venta.tipo_entrega == 'despacho' else ''
-    venta.save()
+    # NO guardar tipo_entrega ni dirección aquí porque el pago aún no está confirmado
+    # Los datos los puedes guardar luego en respuesta_pago_webpay solo si el pago es exitoso
+    # Pero si necesitas recibirlos aquí, guárdalos temporalmente en variables
+    tipo_entrega = request.POST.get('tipo_entrega')
+    direccion_despacho = request.POST.get('direccion_despacho') if tipo_entrega == 'despacho' else ''
 
     options = WebpayOptions(
         commerce_code='597055555532',
@@ -272,8 +274,11 @@ def iniciar_pago_webpay(request):
     venta.webpay_transaction_id = response['token']
     venta.save()
 
-    return redirect(response['url'] + "?token_ws=" + response['token'])
+    # Guardar temporalmente tipo_entrega y dirección en sesión para luego confirmar
+    request.session['tipo_entrega'] = tipo_entrega
+    request.session['direccion_despacho'] = direccion_despacho
 
+    return redirect(response['url'] + "?token_ws=" + response['token'])
     
 @csrf_exempt
 @require_http_methods(["GET", "POST"])
@@ -296,29 +301,50 @@ def respuesta_pago_webpay(request):
         id_venta = str(response['buy_order']).split("-")[0]
         venta = Venta.objects.get(id=int(id_venta))
 
-        # ❌ Validación: si no hay productos, no permitir continuar
         if not venta.detalles.exists():
             return HttpResponse("No puedes completar el pago: el carrito está vacío.")
 
         if response['status'] == 'AUTHORIZED':
+            # Obtener datos de entrega guardados en sesión
+            tipo_entrega = request.session.get('tipo_entrega', '')
+            direccion_despacho = request.session.get('direccion_despacho', '')
+
+            venta.tipo_entrega = tipo_entrega
+            venta.direccion_despacho = direccion_despacho
+            venta.estado_entrega = 'pendiente'
             venta.estado_venta = 'pagado'
             venta.fecha_compra = timezone.now()
             venta.webpay_payment_status = 'completed'
 
-            # ✅ Calcular total antes de guardar
             venta.total_venta = sum(d.subtotal_venta for d in venta.detalles.all())
             venta.save()
 
-            # ✅ Descontar stock
             for detalle in venta.detalles.all():
                 producto = detalle.producto
                 producto.stock -= detalle.cantidad_producto
                 producto.save()
 
+            # Limpiar sesión
+            request.session.pop('tipo_entrega', None)
+            request.session.pop('direccion_despacho', None)
+
             mensaje = "✅ Pago realizado con éxito"
+
         else:
-            venta.webpay_payment_status = 'failed'
+            # ❌ Pago rechazado: mantener como carrito y limpiar todo
+            venta.estado_venta = 'carrito'
+            venta.tipo_entrega = ''
+            venta.direccion_despacho = ''
+            venta.estado_entrega = ''
+            venta.webpay_payment_status = ''
+            venta.webpay_transaction_id = ''
+            venta.fecha_compra = None  # ← Para evitar errores al reintentar
             venta.save()
+
+            # Limpiar sesión
+            request.session.pop('tipo_entrega', None)
+            request.session.pop('direccion_despacho', None)
+
             mensaje = "❌ Pago rechazado"
 
     except Exception as e:
@@ -329,6 +355,7 @@ def respuesta_pago_webpay(request):
         'venta': venta,
         'response': response
     })
+
 
 def vista_historial_ventas(request):
     ventas = Venta.objects.filter(estado_venta='pagado').order_by('-fecha_compra')

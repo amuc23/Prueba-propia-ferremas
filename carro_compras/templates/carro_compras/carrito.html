@@ -139,13 +139,13 @@
   <main>
     <h1 class="hero-title">Carrito de Compras</h1>
     <div class="text-center mb-4">
-  <select id="moneda-selector" class="form-select w-auto d-inline-block">
-    <option value="CLP">CLP - Peso Chileno</option>
-    <option value="USD">USD - Dólar</option>
-    <option value="EUR">EUR - Euro</option>
-    <option value="BRL">BRL - Real</option>
-  </select>
-</div>
+      <select id="moneda-selector" class="form-select w-auto d-inline-block">
+        <option value="CLP">CLP - Peso Chileno</option>
+        <option value="USD">USD - Dólar</option>
+        <option value="EUR">EUR - Euro</option>
+        <option value="BRL">BRL - Real</option>
+      </select>
+    </div>
     <div class="cart-container">
       {% if mensaje %}
         <div class="alert alert-warning text-center">{{ mensaje }}</div>
@@ -162,28 +162,28 @@
               </tr>
             </thead>
             <tbody>
-                      {% for detalle in detalles %}
-        <tr id="detalle-row-{{ detalle.id }}">
-          <td><img src="{{ detalle.producto.imagen }}" class="product-img" alt=""></td>
-          <td>
-            <strong>{{ detalle.producto.nombre }}</strong><br>
-            <span class="badge-stock">Stock: {{ detalle.producto.stock }}</span>
-          </td>
-          <td>
-            <div class="d-flex justify-content-center align-items-center gap-2">
-              <button class="btn btn-success btn-cart" onclick="actualizarCantidad({{ detalle.id }}, '+')">+</button>
-              <span id="cantidad-{{ detalle.id }}">{{ detalle.cantidad_producto }}</span>
-              <button class="btn btn-danger btn-cart" onclick="disminuirCantidad({{ detalle.id }})">-</button>
-            </div>
+              {% for detalle in detalles %}
+                <tr id="detalle-row-{{ detalle.id }}">
+                  <td><img src="{{ detalle.producto.imagen }}" class="product-img" alt=""></td>
+                  <td>
+                    <strong>{{ detalle.producto.nombre }}</strong><br>
+                    <span class="badge-stock">Stock: {{ detalle.producto.stock }}</span>
+                  </td>
+                  <td>
+                    <div class="d-flex justify-content-center align-items-center gap-2">
+                      <button class="btn btn-success btn-cart" onclick="actualizarCantidad({{ detalle.id }}, '+')">+</button>
+                      <span id="cantidad-{{ detalle.id }}">{{ detalle.cantidad_producto }}</span>
+                      <button class="btn btn-danger btn-cart" onclick="disminuirCantidad({{ detalle.id }})">-</button>
+                    </div>
 
-            <!-- ✅ Inputs ocultos necesarios -->
-            <input type="hidden" id="producto-id-{{ detalle.id }}" value="{{ detalle.producto.id }}">
-            <input type="hidden" id="stock-{{ detalle.producto.id }}" value="{{ detalle.producto.stock }}">
-          </td>
-          <td id="subtotal-{{ detalle.id }}">${{ detalle.subtotal_venta }}</td>
-          <td></td>
-        </tr>
-        {% endfor %}
+                    <!-- ✅ Inputs ocultos necesarios -->
+                    <input type="hidden" id="producto-id-{{ detalle.id }}" value="{{ detalle.producto.id }}">
+                    <input type="hidden" id="stock-{{ detalle.producto.id }}" value="{{ detalle.producto.stock }}">
+                  </td>
+                  <td id="subtotal-{{ detalle.id }}">${{ detalle.subtotal_venta }}</td>
+                  <td></td>
+                </tr>
+              {% endfor %}
             </tbody>
           </table>
 
@@ -197,10 +197,10 @@
             <h5 class="text-danger text-center">Productos eliminados por falta de stock:</h5>
             <ul class="list-group">
               {% for detalle in productos_eliminados %}
-              <li class="list-group-item d-flex justify-content-between">
-                {{ detalle.producto.nombre }}
-                <span class="badge bg-danger">Eliminado</span>
-              </li>
+                <li class="list-group-item d-flex justify-content-between">
+                  {{ detalle.producto.nombre }}
+                  <span class="badge bg-danger">Eliminado</span>
+                </li>
               {% endfor %}
             </ul>
             <div class="text-center mt-3">
@@ -211,7 +211,7 @@
 
         {% if detalles and total_carrito > 0 %}
           <div class="text-center mt-5">
-            <form action="/api/webpay/iniciar/" method="POST">
+            <form action="/api/webpay/iniciar/" method="POST" id="form-pago">
               {% csrf_token %}
               <div class="mb-3 text-start">
                 <label class="form-label fw-bold">Tipo de entrega</label><br>
@@ -233,6 +233,18 @@
                 const div = document.getElementById("direccion_despacho_div");
                 div.style.display = valor === "despacho" ? "block" : "none";
               }
+
+              // Validación para que la dirección sea obligatoria cuando el tipo de entrega sea "despacho"
+              document.getElementById("form-pago").addEventListener("submit", function(event) {
+                const tipoEntrega = this.tipo_entrega.value;
+                const direccionDespacho = this.direccion_despacho.value.trim();
+
+                if (tipoEntrega === "despacho" && direccionDespacho === "") {
+                  event.preventDefault();
+                  alert("Por favor, ingresa la dirección de despacho para continuar con el pago.");
+                  this.direccion_despacho.focus();
+                }
+              });
             </script>
           </div>
         {% endif %}
@@ -251,9 +263,6 @@
       <p class="mb-0">© 2025 FERREMAS - Todos los derechos reservados</p>
     </div>
   </footer>
-</body>
-</html>
-
 
 <script>
   function getCookie(name) {
