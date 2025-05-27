@@ -1,0 +1,144 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>¿Quiénes Somos? - FERREMAS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <style>
+    body {
+      background-color: #f4f4f9;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    main { flex: 1; }
+
+    .info-box {
+      background: white;
+      padding: 30px;
+      border-radius: 15px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+    }
+
+    footer {
+      background-color: #2E7D32;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+    }
+
+    .title {
+      color: #2E7D32;
+      font-weight: bold;
+    }
+
+    .empresa-info p {
+      margin-bottom: 5px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2E7D32;">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="menu">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'vista_ofertas' %}">Ofertas</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+
+        {% if user.is_authenticated %}
+          <li class="nav-item ms-3">
+            <span class="text-white me-3">Hola, {{ user.username }}</span>
+          </li>
+          <li class="nav-item ms-2">
+            <a class="btn btn-outline-light px-3 py-2" href="/usuarios/cerrar-sesion/">
+              <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+            </a>
+          </li>
+        {% else %}
+          <li class="nav-item ms-3">
+            <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
+              <i class="fas fa-user me-2"></i> Iniciar Sesión
+            </a>
+          </li>
+        {% endif %}
+
+        {% if user.is_staff %}
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'panel_administracion' %}">Panel de Administración</a>
+          </li>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'vista_carrito' %}">
+              <i class="fas fa-shopping-cart"></i> Carrito
+            </a>
+          </li>
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'mi_historial_compras' %}">
+              <i class="fas fa-history"></i> Mis Compras
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container my-5">
+  <h2 class="text-center mb-4 title">¿Quiénes Somos?</h2>
+  <div class="row justify-content-center">
+    <div class="col-lg-10">
+      <div class="info-box">
+        <p>
+          <strong>FERREMAS</strong> es una empresa chilena dedicada a la venta de productos de ferretería,
+          construcción, electricidad, gasfitería y mucho más. Nos enfocamos en brindar soluciones reales a
+          nuestros clientes, tanto en el ámbito profesional como en el hogar.
+        </p>
+        <p>
+          Con años de experiencia y compromiso, en FERREMAS creemos en ofrecer productos de calidad,
+          atención personalizada y precios competitivos. Estamos aquí para acompañarte en tus proyectos
+          y entregarte las herramientas necesarias para concretarlos.
+        </p>
+
+        <hr class="my-4" />
+
+        <h5 class="mb-3">Datos de la Empresa</h5>
+        <div class="empresa-info">
+          <p><strong>FERREMAS</strong></p>
+          <p>RUT: 76.123.456-7</p>
+          <p>Av. Principal 123, Santiago, Chile</p>
+          <p>Email: contacto@ferremas.cl</p>
+          <p>Teléfono: +56 9 1234 5678</p>
+          <p>Horario: Lunes a Viernes, 9:00 a 18:00 hrs</p>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer>
+  <div class="container">
+    <p class="mb-0">© 2025 FERREMAS - Todos los derechos reservados</p>
+  </div>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

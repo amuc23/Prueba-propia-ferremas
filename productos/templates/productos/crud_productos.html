@@ -1,0 +1,283 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Administrar Productos - FERREMAS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'css/crud.css' %}">
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css" rel="stylesheet">
+
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .fondo {
+      background: url('https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1920,fit=crop/Yle55W6QKWSoQbE4/herramientas-manuales-basicas-02-2022-07-AE0vvPgGKDiqlZEX.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      padding: 30px 15px;
+    }
+
+    .container {
+      background-color: rgba(56, 142, 60, 0.95);
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      padding: 30px;
+      color: black;
+    }
+
+    .card-panel {
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .btn-agregar {
+      background: linear-gradient(to bottom, #2E7D32, #81C784);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 30px;
+      font-size: 1rem;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .btn-agregar:hover {
+      background: linear-gradient(to bottom, #45a049, #66bb6a);
+      transform: scale(1.05);
+    }
+
+    .btn-volver {
+      background: linear-gradient(to bottom, #2E7D32, #81C784);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 30px;
+      font-size: 1rem;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s, transform 0.3s;
+      text-decoration: none;
+      display: inline-block;
+    }
+
+    .btn-volver:hover {
+      background: linear-gradient(to bottom, #45a049, #66bb6a);
+      transform: scale(1.05);
+    }
+
+    .table th, .table td {
+      vertical-align: middle;
+      color: black;
+    }
+
+    .table tbody tr {
+      background-color: rgba(255, 255, 255, 0.95);
+    }
+
+    .img-preview {
+      max-width: 60px;
+      height: 60px;
+      object-fit: cover;
+      border-radius: 5px;
+    }
+
+    h1, h3 {
+      color: black;
+    }
+
+    .form-label {
+      font-weight: bold;
+    }
+
+    .btn:hover {
+      opacity: 0.9;
+    }
+
+    .form-select {
+      width: auto;
+      display: inline-block;
+    }
+  </style>
+</head>
+<body>
+<div class="fondo">
+  <main class="container my-5">
+    <h1 class="text-center mb-4">Panel de Administración de Productos</h1>
+
+    <div class="text-center mb-4">
+      <a href="{% url 'formulario_producto' %}" class="btn btn-agregar me-2">Agregar Producto</a>
+      <a href="/" class="btn btn-volver">Volver al Inicio</a>
+    </div>
+
+    <div class="card-panel">
+      <label class="form-label">Filtrar por Categoría:</label>
+      <select class="form-select mb-3" id="filtro-categoria">
+        <option value="">Todas</option>
+      </select>
+    </div>
+
+    <div class="card-panel">
+      <h3>Productos Activos</h3>
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="table-success text-center">
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Descripción</th>
+              <th>Imagen</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-productos" class="text-center"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="card-panel">
+      <h3>Productos Deshabilitados</h3>
+      <div class="table-responsive">
+        <table class="table table-bordered">
+          <thead class="table-secondary text-center">
+            <tr>
+              <th>Nombre</th>
+              <th>Categoría</th>
+              <th>Precio</th>
+              <th>Stock</th>
+              <th>Descripción</th>
+              <th>Imagen</th>
+              <th>Acciones</th>
+            </tr>
+          </thead>
+          <tbody id="tabla-deshabilitados" class="text-center"></tbody>
+        </table>
+      </div>
+    </div>
+  </main>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+const categoriasDisponibles = [
+  "Herramientas", "Construcción", "Electricidad", "Pinturas",
+  "Gasfitería", "Adhesivos", "Iluminación", "Ferretería", "Seguridad", "Otra"
+];
+
+const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+const apiUrl = isLocal
+  ? "http://127.0.0.1:8000/productos/api/admin/"
+  : "https://prueba-propia-ferremas-production.up.railway.app/productos/api/admin/";
+
+document.addEventListener("DOMContentLoaded", () => {
+  const filtro = document.getElementById("filtro-categoria");
+  categoriasDisponibles.forEach(cat => {
+    const option = document.createElement("option");
+    option.value = cat.toLowerCase();
+    option.textContent = cat;
+    filtro.appendChild(option);
+  });
+
+  fetch(apiUrl)
+    .then(response => response.json())
+    .then(productos => {
+      const tabla = document.getElementById("tabla-productos");
+      const tablaDeshabilitados = document.getElementById("tabla-deshabilitados");
+
+      function render() {
+        const filtroVal = filtro.value.toLowerCase();
+        tabla.innerHTML = "";
+        tablaDeshabilitados.innerHTML = "";
+
+        productos.forEach(producto => {
+          let categoria = producto.categoria?.trim() || "Otra";
+          if (!categoriasDisponibles.includes(categoria)) {
+            categoria = "Otra";
+          }
+
+          if (filtroVal && categoria.toLowerCase() !== filtroVal) return;
+
+          const fila = `
+            <tr>
+              <td>${producto.nombre}</td>
+              <td>${categoria}</td>
+              <td>$${producto.precio}</td>
+              <td>${producto.stock}</td>
+              <td>${producto.descripcion}</td>
+              <td><img src="${producto.imagen}" class="img-preview"></td>
+              <td>
+                <button class="btn btn-${producto.activo ? 'danger' : 'success'} btn-sm mb-1" onclick="toggleActivoProducto(${producto.id})">
+                  <i class="fas fa-${producto.activo ? 'trash' : 'undo'}"></i> ${producto.activo ? 'Desactivar' : 'Reactivar'}
+                </button>
+                ${producto.activo ? `<a href="/productos/editar/${producto.id}/" class="btn btn-warning btn-sm mb-1"><i class="fas fa-pencil-alt"></i> Editar</a>` : ''}
+              </td>
+            </tr>
+          `;
+
+          if (producto.activo) {
+            tabla.insertAdjacentHTML("beforeend", fila);
+          } else {
+            tablaDeshabilitados.insertAdjacentHTML("beforeend", fila);
+          }
+        });
+      }
+
+      filtro.addEventListener("change", render);
+      render();
+    });
+});
+
+function getCookie(name) {
+  let cookieValue = null;
+  if (document.cookie && document.cookie !== '') {
+    const cookies = document.cookie.split(';');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].trim();
+      if (cookie.substring(0, name.length + 1) === (name + '=')) {
+        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+        break;
+      }
+    }
+  }
+  return cookieValue;
+}
+const csrftoken = getCookie('csrftoken');
+
+function toggleActivoProducto(id) {
+  if (!confirm("¿Estás seguro de que quieres cambiar el estado de este producto?")) return;
+
+  const toggleUrl = isLocal
+    ? `http://127.0.0.1:8000/productos/api/toggle-activo/${id}/`
+    : `https://prueba-propia-ferremas-production.up.railway.app/productos/api/toggle-activo/${id}/`;
+
+  fetch(toggleUrl, {
+    method: "PATCH",
+    credentials: "same-origin",
+    headers: {
+      "X-CSRFToken": csrftoken
+    }
+  })
+  .then(response => response.json())
+  .then(data => {
+    alert(data.mensaje || "Estado actualizado");
+    location.reload();
+  })
+  .catch(error => {
+    console.error("Error al actualizar producto:", error);
+    alert("Error al conectar con el servidor.");
+  });
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,224 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Editar Producto</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Arial', sans-serif;
+    }
+
+    .fondo {
+      background: url('https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1920,fit=crop/Yle55W6QKWSoQbE4/herramientas-manuales-basicas-02-2022-07-AE0vvPgGKDiqlZEX.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      padding-top: 30px;
+    }
+
+    .logo-container {
+      text-align: center;
+      padding-top: 20px;
+    }
+
+    .logo-container img {
+      height: 80px;
+      border-radius: 15px;
+      background-color: white;
+      padding: 8px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .container {
+      background-color: rgba(255, 255, 255, 0.95);
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+      color: #333;
+      max-width: 700px;
+    }
+
+    h1 {
+      color: #333;
+    }
+
+    .btn-success, .btn-secondary {
+      font-weight: bold;
+      border-radius: 50px;
+      padding: 10px 25px;
+    }
+
+    .btn-success {
+      background: linear-gradient(to bottom, #2E7D32, #81C784);
+      border: none;
+    }
+
+    .btn-success:hover {
+      background: linear-gradient(to bottom, #45a049, #66bb6a);
+      transform: scale(1.05);
+    }
+
+    .btn-secondary {
+      background: linear-gradient(to bottom, #455A64, #90A4AE);
+      border: none;
+    }
+
+    .btn-secondary:hover {
+      background: linear-gradient(to bottom, #607D8B, #B0BEC5);
+      transform: scale(1.05);
+    }
+
+    .form-label {
+      font-weight: bold;
+    }
+
+    .form-control,
+    .form-select {
+      border-radius: 8px;
+    }
+
+    footer {
+      background-color: #2E7D32;
+      color: white;
+      padding: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="fondo">
+
+  <!-- LOGO SIN NAVBAR -->
+  <div class="logo-container">
+    <img src="{% static 'img/logo.png' %}" alt="FERREMAS Logo">
+  </div>
+
+  <main class="container my-5">
+    <h1 class="text-center mb-4">Editar Producto</h1>
+
+    <form id="formEditar">
+      {% csrf_token %}
+      <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="nombre" required>
+      </div>
+      <div class="mb-3">
+        <label for="precio" class="form-label">Precio</label>
+        <input type="number" class="form-control" id="precio" required>
+      </div>
+      <div class="mb-3">
+        <label for="descripcion" class="form-label">Descripción</label>
+        <textarea class="form-control" id="descripcion" rows="3" required></textarea>
+      </div>
+      <div class="mb-3">
+        <label for="imagen" class="form-label">URL de Imagen</label>
+        <input type="url" class="form-control" id="imagen">
+      </div>
+      <div class="mb-3">
+        <label for="stock" class="form-label">Stock</label>
+        <input type="number" class="form-control" id="stock" required>
+      </div>
+      <div class="mb-3">
+        <label for="categoria" class="form-label">Categoría</label>
+        <select class="form-select" id="categoria" required>
+          <option value="" disabled>Selecciona una categoría</option>
+        </select>
+      </div>
+      <div class="text-center">
+        <button type="submit" class="btn btn-success me-2">Guardar Cambios</button>
+        <a href="/productos/crud/" class="btn btn-secondary">Cancelar</a>
+      </div>
+    </form>
+  </main>
+
+  <footer class="text-center p-3 mt-5">
+    <p>© 2025 FERREMAS - Todos los derechos reservados</p>
+  </footer>
+</div>
+
+<script>
+const categoriasDisponibles = [
+  "Herramientas", "Construcción", "Electricidad", "Pinturas",
+  "Gasfitería", "Adhesivos", "Iluminación", "Ferretería", "Seguridad", "Otra"
+];
+
+document.addEventListener("DOMContentLoaded", () => {
+  const selectCategoria = document.getElementById("categoria");
+  categoriasDisponibles.forEach(cat => {
+    const option = document.createElement("option");
+    option.value = cat;
+    option.textContent = cat;
+    selectCategoria.appendChild(option);
+  });
+});
+
+const csrftoken = document.querySelector('[name=csrfmiddlewaretoken]').value;
+const idProducto = window.location.pathname.split("/").filter(p => p).pop();
+
+const isLocal = window.location.hostname === "127.0.0.1" || window.location.hostname === "localhost";
+const baseApiUrl = isLocal
+  ? "http://127.0.0.1:8000"
+  : "https://prueba-propia-ferremas-production.up.railway.app";
+
+const apiProductoURL = `${baseApiUrl}/productos/api/`;
+const apiEditarURL = `${baseApiUrl}/productos/api/editar/${idProducto}/`;
+
+fetch(apiProductoURL)
+  .then(res => res.json())
+  .then(productos => {
+    const producto = productos.find(p => p.id == idProducto);
+    if (!producto) return alert("Producto no encontrado");
+
+    document.getElementById("nombre").value = producto.nombre;
+    document.getElementById("precio").value = producto.precio;
+    document.getElementById("descripcion").value = producto.descripcion;
+    document.getElementById("imagen").value = producto.imagen;
+    document.getElementById("stock").value = producto.stock;
+
+    const selectCategoria = document.getElementById("categoria");
+    selectCategoria.value = categoriasDisponibles.includes(producto.categoria)
+      ? producto.categoria
+      : "Otra";
+  });
+
+document.getElementById("formEditar").addEventListener("submit", function(e) {
+  e.preventDefault();
+  const datos = {
+    nombre: document.getElementById("nombre").value,
+    precio: document.getElementById("precio").value,
+    descripcion: document.getElementById("descripcion").value,
+    imagen: document.getElementById("imagen").value,
+    stock: document.getElementById("stock").value,
+    categoria: document.getElementById("categoria").value,
+  };
+
+  fetch(apiEditarURL, {
+    method: "PUT",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRFToken": csrftoken
+    },
+    credentials: "same-origin",
+    body: JSON.stringify(datos)
+  })
+  .then(res => {
+    if (res.ok) {
+      alert("Producto actualizado correctamente");
+      window.location.href = "/productos/crud/";
+    } else {
+      return res.json().then(data => {
+        alert("Error al actualizar: " + JSON.stringify(data));
+      });
+    }
+  })
+  .catch(err => {
+    console.error("Error al enviar datos:", err);
+    alert("Error al conectar con el servidor");
+  });
+});
+</script>
+</body>
+</html>

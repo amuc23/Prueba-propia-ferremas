@@ -1,0 +1,278 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Productos - FERREMAS</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+
+    body {
+      display: flex;
+      flex-direction: column;
+      background-color: #f4f4f9;
+    }
+
+    main {
+      flex: 1;
+    }
+
+    .navbar { background-color: #2E7D32; }
+    .navbar .nav-link, .navbar-brand { color: white !important; }
+    .navbar .btn-outline-light { border-color: white; color: white; }
+
+    .product-card {
+      border-radius: 15px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.05);
+      transition: transform 0.2s ease;
+      background-color: white;
+      border: none;
+    }
+    .product-card:hover { transform: translateY(-5px); }
+    .product-card-body {
+      padding: 20px;
+      background-color: #fcfcfc;
+      border-radius: 0 0 15px 15px;
+    }
+    .product-img { height: 220px; object-fit: contain; border-radius: 15px 15px 0 0; }
+    .product-title { font-weight: bold; font-size: 1.1rem; margin-bottom: 5px; }
+    .product-price { font-size: 1.3rem; font-weight: 700; color: #e53935; }
+    .product-stock { font-size: 0.95rem; font-weight: 500; color: #555; }
+
+    footer {
+      background-color: #2E7D32;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      margin-top: 50px;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="menu">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'vista_ofertas' %}">Ofertas</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+
+        {% if user.is_authenticated %}
+          <li class="nav-item ms-3"><span class="text-white me-3">Hola, {{ user.username }}</span></li>
+          <li class="nav-item ms-2">
+            <a class="btn btn-outline-light px-3 py-2" href="/usuarios/cerrar-sesion/">
+              <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+            </a>
+          </li>
+        {% else %}
+          <li class="nav-item ms-3">
+            <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
+              <i class="fas fa-user me-2"></i> Iniciar Sesión
+            </a>
+          </li>
+        {% endif %}
+
+        {% if user.is_staff %}
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'panel_administracion' %}">Panel de Administración</a>
+          </li>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'vista_carrito' %}">
+              <i class="fas fa-shopping-cart"></i> Carrito
+            </a>
+          </li>
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'mi_historial_compras' %}">
+              <i class="fas fa-history"></i> Mis Compras
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<!-- Contenido -->
+<main>
+  <div class="container my-5">
+    <h2 class="text-center mb-4">Nuestros Productos</h2>
+
+    <div class="d-flex flex-wrap justify-content-center align-items-center gap-3 mb-4">
+      <input type="text" id="buscador-productos" class="form-control w-auto" placeholder="Buscar productos...">
+      <select id="filtro-categoria" class="form-select w-auto">
+        <option value="">Todas las categorías</option>
+        <option value="Herramientas">Herramientas</option>
+        <option value="Construcción">Construcción</option>
+        <option value="Electricidad">Electricidad</option>
+        <option value="Pinturas">Pinturas</option>
+        <option value="Gasfitería">Gasfitería</option>
+        <option value="Adhesivos">Adhesivos</option>
+        <option value="Iluminación">Iluminación</option>
+        <option value="Ferretería">Ferretería</option>
+        <option value="Seguridad">Seguridad</option>
+        <option value="Otra">Otra</option>
+      </select>
+      <select id="moneda-selector" class="form-select w-auto">
+        <option value="CLP">CLP - Peso Chileno</option>
+        <option value="USD">USD - Dólar</option>
+        <option value="EUR">EUR - Euro</option>
+        <option value="BRL">BRL - Real</option>
+      </select>
+      <button class="btn btn-outline-dark" id="volver-clp">Volver a CLP</button>
+    </div>
+
+    <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4" id="product-list"></div>
+  </div>
+</main>
+
+<!-- Footer fijo abajo -->
+<footer>
+  <div class="container">
+    <p class="mb-0">© 2025 FERREMAS - Todos los derechos reservados</p>
+  </div>
+</footer>
+
+<!-- Scripts -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.body.dataset.entorno = "{{ entorno }}";
+
+  document.addEventListener("DOMContentLoaded", async function () {
+    const entorno = document.body.dataset.entorno;
+    let apiUrl = entorno === "local"
+      ? "http://localhost:8000/productos/api/"
+      : "https://prueba-propia-ferremas-production.up.railway.app/productos/api/";
+
+    const monedaSelector = document.getElementById('moneda-selector');
+    const volverClpBtn = document.getElementById('volver-clp');
+    const buscador = document.getElementById('buscador-productos');
+    const filtroCategoria = document.getElementById('filtro-categoria');
+    const productList = document.getElementById('product-list');
+
+    let tasaCambio = 1;
+    let monedaActual = localStorage.getItem("moneda") || "CLP";
+    monedaSelector.value = monedaActual;
+
+    monedaSelector.addEventListener("change", function () {
+      localStorage.setItem("moneda", this.value);
+      location.reload();
+    });
+
+    volverClpBtn.addEventListener("click", function () {
+      localStorage.setItem("moneda", "CLP");
+      location.reload();
+    });
+
+    async function obtenerTasa(monedaDestino) {
+      if (monedaDestino === "CLP") {
+        tasaCambio = 1;
+        return;
+      }
+      try {
+        const res = await fetch("https://open.er-api.com/v6/latest/CLP");
+        const data = await res.json();
+        tasaCambio = data.rates[monedaDestino];
+      } catch (err) {
+        console.error("Error al obtener la tasa:", err);
+        tasaCambio = 1;
+      }
+    }
+
+    function convertirPrecio(precioCLP) {
+      if (monedaActual === "CLP") {
+        return `CLP $${Math.round(precioCLP).toLocaleString("es-CL")}`;
+      }
+      let convertido = precioCLP * tasaCambio;
+      return `${monedaActual} $${convertido.toFixed(2)}`;
+    }
+
+    function renderProductos(lista) {
+      productList.innerHTML = "";
+      lista.forEach(producto => {
+        const disponible = producto.stock > 0;
+
+        const categoria = [
+          "Herramientas", "Construcción", "Electricidad", "Pinturas",
+          "Gasfitería", "Adhesivos", "Iluminación", "Ferretería", "Seguridad"
+        ].includes(producto.categoria) ? producto.categoria : "Otra";
+
+        const stockHTML = disponible
+          ? (producto.stock <= 5
+              ? `<p class="product-stock text-warning">¡Últimas unidades (${producto.stock})!</p>`
+              : `<p class="product-stock">Stock disponible: ${producto.stock}</p>`)
+          : `<p class="product-stock text-danger">No disponible</p>`;
+
+        productList.innerHTML += `
+          <div class="col">
+            <div class="card product-card h-100">
+              <img src="${producto.imagen}" class="card-img-top product-img" alt="${producto.nombre}">
+              <div class="card-body product-card-body d-flex flex-column">
+                <h5 class="product-title">${producto.nombre}</h5>
+                <small class="text-muted mb-1">Categoría: ${categoria}</small>
+                <p class="product-price">${convertirPrecio(producto.precio)}</p>
+                ${stockHTML}
+                ${disponible
+                  ? `<a href="/productos/${producto.id}/" class="btn btn-primary mt-auto">Ver Producto</a>`
+                  : `<button class="btn btn-secondary mt-auto" disabled>Agotado</button>`}
+              </div>
+            </div>
+          </div>`;
+      });
+    }
+
+    let productos = [];
+    await obtenerTasa(monedaActual);
+
+    try {
+      const response = await fetch(apiUrl + '?nocache=' + new Date().getTime());
+      productos = await response.json();
+
+      const actualizarVista = () => {
+        const texto = buscador.value.toLowerCase();
+        const categoriaFiltro = filtroCategoria.value;
+
+        const filtrados = productos.filter(p => {
+          const categoria = [
+            "Herramientas", "Construcción", "Electricidad", "Pinturas",
+            "Gasfitería", "Adhesivos", "Iluminación", "Ferretería", "Seguridad"
+          ].includes(p.categoria) ? p.categoria : "Otra";
+
+          return (!categoriaFiltro || categoria === categoriaFiltro) &&
+                 (p.nombre.toLowerCase().includes(texto) || p.descripcion.toLowerCase().includes(texto));
+        });
+
+        renderProductos(filtrados);
+      };
+
+      buscador.addEventListener("input", actualizarVista);
+      filtroCategoria.addEventListener("change", actualizarVista);
+      actualizarVista();
+    } catch (error) {
+      console.error("Error al cargar productos:", error);
+    }
+  });
+</script>
+
+</body>
+</html>

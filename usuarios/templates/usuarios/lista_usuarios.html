@@ -1,0 +1,263 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <title>Usuarios - FERREMAS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+ body {
+      background: url('https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1920,fit=crop/Yle55W6QKWSoQbE4/herramientas-manuales-basicas-02-2022-07-AE0vvPgGKDiqlZEX.jpg') no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Arial', sans-serif;
+      margin: 0;
+      color: black;
+    }
+
+    .container {
+      background-color: #388E3C;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      margin-top: 50px;
+      color: black;
+    }
+
+    .usuarios-card {
+      background-color: rgba(255, 255, 255, 0.95);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+
+    .btn-volver {
+      background: linear-gradient(to bottom, #2E7D32, #81C784);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 30px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .btn-volver:hover {
+      background: linear-gradient(to bottom, #45a049, #66bb6a);
+      transform: scale(1.05);
+    }
+
+    .table th, .table td {
+      vertical-align: middle;
+      color: black;
+    }
+
+    .table tbody tr {
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+
+    .filtros input,
+    .filtros select {
+      max-width: 250px;
+      margin-right: 10px;
+    }
+
+    .alert,
+    .usuarios-card .alert {
+      margin-top: 20px;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+  <h2 class="mb-4 text-center">Panel de Usuarios</h2>
+
+  <!-- Botón Volver -->
+  <div class="text-center mb-4">
+    <a href="{% url 'panel_administracion' %}" class="btn btn-volver">
+      <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Administración
+    </a>
+  </div>
+
+  {% if messages %}
+    {% for message in messages %}
+      <div class="alert alert-warning alert-dismissible fade show" role="alert">
+        {{ message }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Cerrar"></button>
+      </div>
+    {% endfor %}
+  {% endif %}
+
+  <div id="alerta-error" class="alert alert-danger d-none" role="alert"></div>
+
+  <div class="usuarios-card">
+    <div class="d-flex justify-content-between flex-wrap align-items-center mb-3">
+      <div class="d-flex flex-wrap filtros mb-2">
+        <input type="text" id="filtro-nombre" class="form-control mb-2" placeholder="Buscar por nombre">
+        <input type="text" id="filtro-rut" class="form-control mb-2" placeholder="Buscar por RUT">
+        <select id="filtro-rol" class="form-select mb-2">
+          <option value="">Todos</option>
+          <option value="admin">Administradores</option>
+          <option value="usuario">Usuarios</option>
+        </select>
+      </div>
+      <a href="{% url 'vista_agregar_usuario' %}" class="btn btn-success mb-2">Agregar Usuario</a>
+    </div>
+  </div>
+
+  <input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+  <input type="hidden" id="usuario-actual-id" value="{{ request.user.id }}">
+
+  <!-- Usuarios activos -->
+  <div class="usuarios-card">
+    <h4>👤 Usuarios Activos</h4>
+    <table class="table table-bordered table-hover">
+      <thead class="table-success text-center">
+        <tr>
+          <th>RUT</th>
+          <th>Nombre</th>
+          <th>Usuario</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+          <th>Rol</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-activos" class="text-center"></tbody>
+    </table>
+  </div>
+
+  <!-- Usuarios baneados -->
+  <div class="usuarios-card">
+    <h4>🚫 Usuarios Baneados</h4>
+    <table class="table table-bordered table-hover">
+      <thead class="table-danger text-center">
+        <tr>
+          <th>RUT</th>
+          <th>Nombre</th>
+          <th>Usuario</th>
+          <th>Email</th>
+          <th>Teléfono</th>
+          <th>Rol</th>
+          <th>Acción</th>
+        </tr>
+      </thead>
+      <tbody id="tabla-baneados" class="text-center"></tbody>
+    </table>
+  </div>
+</div>
+
+<script>
+  let usuarios = [];
+
+  function mostrarAlerta(mensaje) {
+    const alerta = document.getElementById("alerta-error");
+    alerta.textContent = mensaje;
+    alerta.classList.remove("d-none");
+    setTimeout(() => {
+      alerta.classList.add("d-none");
+    }, 3000);
+  }
+
+  function renderTablas() {
+    const idActual = parseInt(document.getElementById("usuario-actual-id").value);
+    const activos = usuarios.filter(u => u.is_active);
+    const baneados = usuarios.filter(u => !u.is_active);
+    const filtroNombre = document.getElementById("filtro-nombre").value.toLowerCase();
+    const filtroRut = document.getElementById("filtro-rut").value.toLowerCase();
+    const filtroRol = document.getElementById("filtro-rol").value;
+
+    const coincide = (u) => {
+      const nombre = `${u.first_name} ${u.last_name}`.toLowerCase();
+      const rolOK = (filtroRol === "" || (filtroRol === "admin" && u.is_staff) || (filtroRol === "usuario" && !u.is_staff));
+      return nombre.includes(filtroNombre) && u.rut.toLowerCase().includes(filtroRut) && rolOK;
+    };
+
+    const tbodyActivos = document.getElementById("tabla-activos");
+    const tbodyBaneados = document.getElementById("tabla-baneados");
+    tbodyActivos.innerHTML = "";
+    tbodyBaneados.innerHTML = "";
+
+    activos.filter(coincide).forEach(u => {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${u.rut}</td>
+        <td>${u.first_name} ${u.last_name}</td>
+        <td>${u.username}</td>
+        <td>${u.email}</td>
+        <td>${u.telefono}</td>
+        <td>${u.is_staff ? 'Administrador' : 'Usuario'}</td>
+        <td>
+          ${u.id !== idActual ? ` 
+            <a href="/usuarios/editar/${u.id}/" class="btn btn-success btn-sm me-2">Editar</a>
+            <button class="btn btn-danger btn-sm btn-ban" data-id="${u.id}">Banear</button>
+          ` : `<span class="text-muted">Sesión actual</span>`}
+        </td>
+      `;
+      tbodyActivos.appendChild(fila);
+    });
+
+    baneados.filter(coincide).forEach(u => {
+      const fila = document.createElement("tr");
+      fila.innerHTML = `
+        <td>${u.rut}</td>
+        <td>${u.first_name} ${u.last_name}</td>
+        <td>${u.username}</td>
+        <td>${u.email}</td>
+        <td>${u.telefono}</td>
+        <td>${u.is_staff ? 'Administrador' : 'Usuario'}</td>
+        <td>
+          ${u.id !== idActual ? `
+            <button class="btn btn-success btn-sm btn-ban" data-id="${u.id}">Reactivar</button>
+          ` : `<span class="text-muted">Sin acciones</span>`}
+        </td>
+      `;
+      tbodyBaneados.appendChild(fila);
+    });
+
+    document.querySelectorAll(".btn-ban").forEach(btn => {
+      btn.addEventListener("click", function (event) {
+        event.preventDefault();
+        const id = this.dataset.id;
+        fetch(`/api/usuarios/toggle-activo/${id}/`, {
+          method: "PATCH",
+          headers: {
+            'X-CSRFToken': document.querySelector('[name=csrfmiddlewaretoken]').value
+          }
+        })
+        .then(response => response.json().then(data => ({ status: response.status, data })))
+        .then(result => {
+          if (result.status === 403 && result.data.error) {
+            mostrarAlerta(result.data.error);
+          } else {
+            cargarUsuarios();
+          }
+        });
+      });
+    });
+  }
+
+  function cargarUsuarios() {
+    fetch('/api/usuarios/')
+      .then(r => r.json())
+      .then(data => {
+        usuarios = data;
+        renderTablas();
+      });
+  }
+
+  document.addEventListener("DOMContentLoaded", function () {
+    cargarUsuarios();
+    document.getElementById("filtro-nombre").addEventListener("input", renderTablas);
+    document.getElementById("filtro-rut").addEventListener("input", renderTablas);
+    document.getElementById("filtro-rol").addEventListener("change", renderTablas);
+  });
+</script>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+
+</body>
+</html>

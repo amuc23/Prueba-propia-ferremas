@@ -1,0 +1,203 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Boleta FERREMAS</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: Arial, sans-serif;
+    }
+
+    .fondo {
+      background: url('https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1920,fit=crop/Yle55W6QKWSoQbE4/herramientas-manuales-basicas-02-2022-07-AE0vvPgGKDiqlZEX.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      padding: 40px 15px;
+    }
+
+    .logo-container {
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    .logo-container img {
+      height: 80px;
+      background-color: white;
+      padding: 10px;
+      border-radius: 15px;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+    }
+
+    .boleta-container {
+      background: rgba(255, 255, 255, 0.97);
+      padding: 40px;
+      border-radius: 10px;
+      max-width: 800px;
+      margin: auto;
+      box-shadow: 0 0 10px rgba(0,0,0,0.1);
+      color: black;
+    }
+
+    .header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 2px solid #ddd;
+      padding-bottom: 10px;
+      margin-bottom: 30px;
+    }
+
+    .empresa-info {
+      text-align: right;
+      font-size: 14px;
+    }
+
+    .datos-cliente {
+      margin-bottom: 30px;
+      font-size: 15px;
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-bottom: 20px;
+      font-size: 14px;
+    }
+
+    th, td {
+      padding: 10px;
+      border: 1px solid #ccc;
+    }
+
+    th {
+      background-color: #f0f0f0;
+      text-align: left;
+    }
+
+    .total {
+      text-align: right;
+      font-size: 18px;
+      font-weight: bold;
+    }
+
+    .print-btn {
+      text-align: center;
+      margin-top: 20px;
+    }
+
+    .print-btn button {
+      background: linear-gradient(to bottom, #2E7D32, #81C784);
+      color: white;
+      padding: 10px 30px;
+      font-size: 16px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s;
+      margin-bottom: 10px;
+    }
+
+    .print-btn button:hover {
+      background: linear-gradient(to bottom, #45a049, #66bb6a);
+      transform: scale(1.05);
+    }
+
+    .btn-volver {
+      background: linear-gradient(to bottom, #455A64, #90A4AE);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 30px;
+      font-size: 16px;
+      font-weight: bold;
+      text-decoration: none;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      display: inline-block;
+      transition: background-color 0.3s, transform 0.3s;
+    }
+
+    .btn-volver:hover {
+      background: linear-gradient(to bottom, #607D8B, #B0BEC5);
+      transform: scale(1.05);
+    }
+
+    @media print {
+      .print-btn {
+        display: none;
+      }
+    }
+  </style>
+</head>
+<body>
+<div class="fondo">
+
+  <!-- Logo flotante -->
+  <div class="logo-container">
+    <img src="{% static 'img/logo.png' %}" alt="FERREMAS">
+  </div>
+
+  <div class="boleta-container">
+    <div class="header">
+      <div>
+        <strong>FERREMAS</strong><br>
+        RUT: 76.123.456-7<br>
+        Av. Principal 123, Santiago<br>
+        contacto@ferremas.cl<br>
+        +56 9 1234 5678
+      </div>
+      <div class="empresa-info">
+        <strong>Boleta Nº:</strong> {{ venta.id }}<br>
+        <strong>Fecha:</strong> {{ venta.fecha_compra|date:"d/m/Y H:i" }}<br>
+        <strong>Cliente:</strong><br>
+        {{ venta.id_usuario.first_name }} {{ venta.id_usuario.last_name }}<br>
+        ({{ venta.id_usuario.rut }})<br>
+        <strong>Método de Pago:</strong> WebPay<br>
+        <strong>Tarjeta:</strong>
+        {% if venta.ultimos_digitos %}
+        **** **** **** {{ venta.ultimos_digitos }}
+        {% else %}
+        No disponible
+        {% endif %}
+      </div>
+    </div>
+
+    <table>
+      <thead>
+        <tr>
+          <th>Producto</th>
+          <th>Cantidad</th>
+          <th>Precio Unitario</th>
+          <th>Subtotal</th>
+        </tr>
+      </thead>
+      <tbody>
+        {% for d in detalles %}
+        <tr>
+          <td>{{ d.nombre_producto }}</td>
+          <td>{{ d.cantidad_producto }}</td>
+          <td>${{ d.precio_unitario }}</td>
+          <td>${{ d.subtotal_venta }}</td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+
+    <div class="total">
+      Total: ${{ venta.total_venta }}
+    </div>
+
+    <div class="print-btn">
+      <button onclick="window.print()">Imprimir / Guardar como PDF</button>
+    </div>
+
+    <div class="print-btn">
+      <a href="{% url 'historial_ventas' %}" class="btn-volver">Volver a Historial</a>
+    </div>
+  </div>
+</div>
+</body>
+</html>

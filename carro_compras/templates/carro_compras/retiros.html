@@ -1,0 +1,207 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Retiros en Tienda - FERREMAS</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    html, body {
+      margin: 0;
+      padding: 0;
+      font-family: 'Arial', sans-serif;
+    }
+    .fondo {
+      background: url('https://assets.zyrosite.com/cdn-cgi/image/format=auto,w=1920,fit=crop/Yle55W6QKWSoQbE4/herramientas-manuales-basicas-02-2022-07-AE0vvPgGKDiqlZEX.jpg') no-repeat center center fixed;
+      background-size: cover;
+      min-height: 100vh;
+      padding-top: 40px;
+      padding-bottom: 40px;
+    }
+    .container {
+      background-color: #388E3C;
+      border-radius: 10px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      margin-top: 50px;
+      color: black;
+    }
+    .retiro-card {
+      background-color: rgba(255, 255, 255, 0.9);
+      border-radius: 10px;
+      padding: 20px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .btn-volver {
+      background: linear-gradient(to bottom, #2E7D32, #81C784);
+      color: white;
+      border: none;
+      border-radius: 50px;
+      padding: 10px 30px;
+      font-size: 1.1rem;
+      font-weight: bold;
+      box-shadow: 0 4px 6px rgba(0, 0, 0, 0.2);
+      transition: background-color 0.3s, transform 0.3s;
+    }
+    .btn-volver:hover {
+      background: linear-gradient(to bottom, #45a049, #66bb6a);
+      transform: scale(1.05);
+    }
+    .table th, .table td {
+      vertical-align: middle;
+      color: black;
+    }
+    .table tbody tr {
+      background-color: rgba(255, 255, 255, 0.9);
+    }
+    .form-inline {
+      display: flex;
+      gap: 10px;
+    }
+    #buscador {
+      max-width: 400px;
+      margin: 20px auto;
+    }
+    footer {
+      text-align: center;
+      margin-top: 40px;
+      font-size: 0.9rem;
+      color: #777;
+    }
+  </style>
+</head>
+<body>
+
+<!-- CSRF token oculto -->
+<input type="hidden" name="csrfmiddlewaretoken" value="{{ csrf_token }}">
+
+<div class="fondo">
+  <div class="container">
+    <h2 class="text-center mb-4">Retiros en Tienda</h2>
+
+    <div class="text-center mb-4">
+      <a href="{% url 'panel_administracion' %}" class="btn btn-volver">
+        <i class="fas fa-arrow-left me-2"></i> Volver al Panel de Administración
+      </a>
+    </div>
+
+    <input type="text" id="buscador" class="form-control text-center" placeholder="Buscar por nombre o RUT..." onkeyup="filtrarTablas()">
+
+    <div id="mensaje" class="mt-3"></div>
+
+    <div class="retiro-card">
+      <h4>🔸 Retiros Pendientes</h4>
+      <div id="tablaPendientes"></div>
+    </div>
+
+    <div class="retiro-card">
+      <h4>✅ Retiros Completados</h4>
+      <div id="tablaCompletados"></div>
+    </div>
+  </div>
+
+  <footer>
+    <p>© 2025 FERREMAS - Gestión de Retiros</p>
+  </footer>
+</div>
+
+<!-- Scripts -->
+<script>
+  function getCSRFToken() {
+    return document.querySelector('[name=csrfmiddlewaretoken]')?.value;
+  }
+
+  async function cargarRetiros() {
+    const res = await fetch('/api/retiros/');
+    const datos = await res.json();
+
+    const pendientes = datos.filter(v => v.estado_entrega === 'pendiente' && v.total_venta > 0);
+    const completados = datos.filter(v => v.estado_entrega === 'completado' && v.total_venta > 0);
+
+    renderTabla(pendientes, 'tablaPendientes', true);
+    renderTabla(completados, 'tablaCompletados', false);
+  }
+
+  function renderTabla(ventas, idContenedor, permitirConfirmar) {
+    const contenedor = document.getElementById(idContenedor);
+    if (ventas.length === 0) {
+      contenedor.innerHTML = '<div class="alert alert-info">No hay retiros ' + (permitirConfirmar ? 'pendientes' : 'completados') + '.</div>';
+      return;
+    }
+
+    let tabla = `<div class="table-responsive"><table class="table table-hover table-bordered align-middle">
+      <thead class="${permitirConfirmar ? 'table-success' : 'table-light'}">
+        <tr>
+          <th>ID</th><th>Cliente</th><th>RUT</th><th>Total</th><th>Fecha</th>${permitirConfirmar ? '<th>Verificación</th>' : ''}
+        </tr>
+      </thead><tbody>`;
+
+    ventas.forEach(v => {
+      tabla += `<tr>
+        <td>${v.id}</td>
+        <td>${v.id_usuario.first_name} ${v.id_usuario.last_name}</td>
+        <td>${v.id_usuario.rut}</td>
+        <td>$${v.total_venta}</td>
+        <td>${new Date(v.fecha_compra).toLocaleString()}</td>`;
+      if (permitirConfirmar) {
+        tabla += `
+          <td>
+            <form class="form-inline" onsubmit="confirmarRetiro(event, ${v.id})">
+              <input type="text" name="rut" class="form-control form-control-sm" placeholder="RUT del cliente" required>
+              <button type="submit" class="btn btn-success btn-sm">Confirmar</button>
+            </form>
+          </td>`;
+      }
+      tabla += `</tr>`;
+    });
+
+    tabla += '</tbody></table></div>';
+    contenedor.innerHTML = tabla;
+  }
+
+  async function confirmarRetiro(event, ventaId) {
+    event.preventDefault();
+    const form = event.target;
+    const rut = form.rut.value;
+
+    const res = await fetch(`/api/retiros/confirmar/${ventaId}/`, {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'X-CSRFToken': getCSRFToken()
+      },
+      body: JSON.stringify({ rut: rut })
+    });
+
+    const msgDiv = document.getElementById('mensaje');
+    const data = await res.json();
+
+    if (res.ok) {
+      msgDiv.innerHTML = `<div class="alert alert-success">${data.mensaje}</div>`;
+      cargarRetiros();
+    } else {
+      msgDiv.innerHTML = `<div class="alert alert-danger">${data.detail || 'Error al confirmar retiro'}</div>`;
+    }
+
+    setTimeout(() => { msgDiv.innerHTML = ''; }, 4000);
+  }
+
+  function filtrarTablas() {
+    const input = document.getElementById("buscador").value.toLowerCase();
+    const tablas = document.querySelectorAll("table tbody");
+    tablas.forEach(tbody => {
+      const filas = tbody.querySelectorAll("tr");
+      filas.forEach(fila => {
+        const textoFila = fila.innerText.toLowerCase();
+        fila.style.display = textoFila.includes(input) ? "" : "none";
+      });
+    });
+  }
+
+  window.addEventListener('DOMContentLoaded', cargarRetiros);
+</script>
+
+<script src="https://kit.fontawesome.com/a076d05399.js" crossorigin="anonymous"></script>
+</body>
+</html>

@@ -1,0 +1,449 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Carrito de Compras</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+    }
+    body {
+      background: url('https://images.unsplash.com/photo-1570129477492-45c003edd2be?crop=entropy&cs=tinysrgb&fit=crop&h=700&w=1600') center center/cover no-repeat;
+      background-attachment: fixed;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      flex-direction: column;
+    }
+    main { flex: 1; }
+    .hero-title {
+      font-size: 2.7rem;
+      font-weight: 700;
+      text-align: center;
+      padding: 50px 20px 10px;
+      color: rgb(0, 0, 0);
+    }
+    .cart-container {
+      max-width: 1000px;
+      margin: auto;
+      background: #fff;
+      border-radius: 10px;
+      box-shadow: 0 0 15px rgba(0, 0, 0, 0.05);
+      padding: 30px;
+    }
+    .product-img {
+      width: 80px;
+      height: 80px;
+      object-fit: cover;
+      border-radius: 10px;
+      border: 1px solid #ddd;
+    }
+    .table th { color: #555; }
+    .btn-cart {
+      border-radius: 20px;
+      padding: 6px 12px;
+    }
+    .badge-stock {
+      background-color: #d1e7dd;
+      color: #0f5132;
+      font-size: 0.8rem;
+      padding: 5px 10px;
+      border-radius: 12px;
+    }
+    .btn-pay {
+      background-color: #ffc107;
+      border: none;
+      font-weight: bold;
+      font-size: 1.1rem;
+      padding: 12px 40px;
+      border-radius: 8px;
+    }
+    .btn-pay:hover { background-color: #ffb300; }
+    .total-price {
+      font-size: 1.5rem;
+      font-weight: 600;
+      color: #2e7d32;
+    }
+    footer {
+      background-color: #2e7d32;
+      color: white;
+      text-align: center;
+      padding: 20px 0;
+      margin-top: 20px;
+    }
+  </style>
+</head>
+
+<body>
+<!-- Navbar -->
+<nav class="navbar navbar-expand-lg navbar-dark" style="background-color: #2E7D32;">
+  <div class="container">
+    <a class="navbar-brand" href="/">
+      <img src="{% static 'img/logo.png' %}" alt="logo" style="height: 70px; border-radius: 15px 0 15px 0;">
+    </a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#menu">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="menu">
+      <ul class="navbar-nav ms-auto align-items-center">
+        <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link" href="/productos/">Productos</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'vista_ofertas' %}">Ofertas</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'contacto' %}">Contacto</a></li>
+
+        {% if user.is_authenticated %}
+          <li class="nav-item ms-3">
+            <span class="text-white me-3">Hola, {{ user.username }}</span>
+          </li>
+          <li class="nav-item ms-2">
+            <a class="btn btn-outline-light px-3 py-2" href="/usuarios/cerrar-sesion/">
+              <i class="fas fa-sign-out-alt me-2"></i> Cerrar Sesión
+            </a>
+          </li>
+        {% else %}
+          <li class="nav-item ms-3">
+            <a class="btn btn-outline-light d-flex align-items-center px-3 py-2" href="/usuarios/iniciosesion/">
+              <i class="fas fa-user me-2"></i> Iniciar Sesión
+            </a>
+          </li>
+        {% endif %}
+
+        {% if user.is_staff %}
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'panel_administracion' %}">Panel de Administración</a>
+          </li>
+        {% endif %}
+
+        {% if user.is_authenticated %}
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'vista_carrito' %}">
+              <i class="fas fa-shopping-cart"></i> Carrito
+            </a>
+          </li>
+          <li class="nav-item ms-2">
+            <a class="nav-link" href="{% url 'mi_historial_compras' %}">
+              <i class="fas fa-history"></i> Mis Compras
+            </a>
+          </li>
+        {% endif %}
+      </ul>
+    </div>
+  </div>
+</nav>
+  <!-- CONTENIDO -->
+  <main>
+    <h1 class="hero-title">Carrito de Compras</h1>
+    <div class="text-center mb-4">
+      <select id="moneda-selector" class="form-select w-auto d-inline-block">
+        <option value="CLP">CLP - Peso Chileno</option>
+        <option value="USD">USD - Dólar</option>
+        <option value="EUR">EUR - Euro</option>
+        <option value="BRL">BRL - Real</option>
+      </select>
+    </div>
+    <div class="cart-container">
+      {% if mensaje %}
+        <div class="alert alert-warning text-center">{{ mensaje }}</div>
+      {% else %}
+        {% if detalles %}
+          <table class="table align-middle">
+            <thead>
+              <tr>
+                <th>Imagen</th>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Subtotal</th>
+                <th></th>
+              </tr>
+            </thead>
+            <tbody>
+              {% for detalle in detalles %}
+                <tr id="detalle-row-{{ detalle.id }}">
+                  <td><img src="{{ detalle.producto.imagen }}" class="product-img" alt=""></td>
+                  <td>
+                    <strong>{{ detalle.producto.nombre }}</strong><br>
+                    <span class="badge-stock">Stock: {{ detalle.producto.stock }}</span>
+                  </td>
+                  <td>
+                    <div class="d-flex justify-content-center align-items-center gap-2">
+                      <button class="btn btn-success btn-cart" onclick="actualizarCantidad({{ detalle.id }}, '+')">+</button>
+                      <span id="cantidad-{{ detalle.id }}">{{ detalle.cantidad_producto }}</span>
+                      <button class="btn btn-danger btn-cart" onclick="disminuirCantidad({{ detalle.id }})">-</button>
+                    </div>
+
+                    <!-- ✅ Inputs ocultos necesarios -->
+                    <input type="hidden" id="producto-id-{{ detalle.id }}" value="{{ detalle.producto.id }}">
+                    <input type="hidden" id="stock-{{ detalle.producto.id }}" value="{{ detalle.producto.stock }}">
+                  </td>
+                  <td id="subtotal-{{ detalle.id }}">${{ detalle.subtotal_venta }}</td>
+                  <td></td>
+                </tr>
+              {% endfor %}
+            </tbody>
+          </table>
+
+          <div class="text-end mt-4">
+            <span class="total-price">Total: $<span id="total-carrito">{{ total_carrito }}</span></span>
+          </div>
+        {% endif %}
+
+        {% if productos_eliminados %}
+          <div class="mt-5">
+            <h5 class="text-danger text-center">Productos eliminados por falta de stock:</h5>
+            <ul class="list-group">
+              {% for detalle in productos_eliminados %}
+                <li class="list-group-item d-flex justify-content-between">
+                  {{ detalle.producto.nombre }}
+                  <span class="badge bg-danger">Eliminado</span>
+                </li>
+              {% endfor %}
+            </ul>
+            <div class="text-center mt-3">
+              <button class="btn btn-warning" onclick="refreshPage()">Actualizar</button>
+            </div>
+          </div>
+        {% endif %}
+
+        {% if detalles and total_carrito > 0 %}
+          <div class="text-center mt-5">
+            <form action="/api/webpay/iniciar/" method="POST" id="form-pago">
+              {% csrf_token %}
+              <div class="mb-3 text-start">
+                <label class="form-label fw-bold">Tipo de entrega</label><br>
+                <select name="tipo_entrega" class="form-select" required onchange="toggleDireccion(this.value)">
+                  <option value="retiro">Retiro en tienda</option>
+                  <option value="despacho">Despacho a domicilio</option>
+                </select>
+              </div>
+              <div class="mb-3 text-start" id="direccion_despacho_div" style="display: none;">
+                <label class="form-label fw-bold">Dirección de despacho</label>
+                <textarea name="direccion_despacho" class="form-control" rows="2" placeholder="Ej: Calle 123, Santiago"></textarea>
+              </div>
+              <button type="submit" class="btn btn-pay mt-3">
+                <i class="fas fa-credit-card me-2"></i> Pagar con WebPay
+              </button>
+            </form>
+            <script>
+              function toggleDireccion(valor) {
+                const div = document.getElementById("direccion_despacho_div");
+                div.style.display = valor === "despacho" ? "block" : "none";
+              }
+
+              // Validación para que la dirección sea obligatoria cuando el tipo de entrega sea "despacho"
+              document.getElementById("form-pago").addEventListener("submit", function(event) {
+                const tipoEntrega = this.tipo_entrega.value;
+                const direccionDespacho = this.direccion_despacho.value.trim();
+
+                if (tipoEntrega === "despacho" && direccionDespacho === "") {
+                  event.preventDefault();
+                  alert("Por favor, ingresa la dirección de despacho para continuar con el pago.");
+                  this.direccion_despacho.focus();
+                }
+              });
+            </script>
+          </div>
+        {% endif %}
+      {% endif %}
+
+      {% if not detalles %}
+        <div class="alert alert-info text-center mt-5">
+          Tu carrito está vacío.
+        </div>
+      {% endif %}
+    </div>
+  </main>
+
+  <footer>
+    <div class="container text-center">
+      <p class="mb-0">© 2025 FERREMAS - Todos los derechos reservados</p>
+    </div>
+  </footer>
+
+<script>
+  function getCookie(name) {
+    let cookieValue = null;
+    if (document.cookie && document.cookie !== "") {
+      const cookies = document.cookie.split(";");
+      for (let i = 0; i < cookies.length; i++) {
+        const cookie = cookies[i].trim();
+        if (cookie.substring(0, name.length + 1) === (name + "=")) {
+          cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+          break;
+        }
+      }
+    }
+    return cookieValue;
+  }
+
+  document.addEventListener("DOMContentLoaded", async function () {
+    const monedaSelector = document.getElementById('moneda-selector');
+    const volverClpBtn = document.getElementById('volver-clp');
+    const monedaActual = localStorage.getItem("moneda") || "CLP";
+    let tasaCambio = 1;
+
+    if (monedaSelector) monedaSelector.value = monedaActual;
+
+    if (monedaSelector) {
+      monedaSelector.addEventListener("change", function () {
+        localStorage.setItem("moneda", this.value);
+        location.reload();
+      });
+    }
+
+    if (volverClpBtn) {
+      volverClpBtn.addEventListener("click", function () {
+        localStorage.setItem("moneda", "CLP");
+        location.reload();
+      });
+    }
+
+    async function obtenerTasa(monedaDestino) {
+      if (monedaDestino === "CLP") return;
+      try {
+        const res = await fetch("https://open.er-api.com/v6/latest/CLP");
+        const data = await res.json();
+        tasaCambio = data.rates[monedaDestino] || 1;
+      } catch {
+        tasaCambio = 1;
+      }
+    }
+
+    await obtenerTasa(monedaActual);
+
+    if (monedaActual !== "CLP") {
+      document.querySelectorAll("[id^='subtotal-']").forEach(td => {
+        const valorCLP = parseInt(td.innerText.replace(/\$|,/g, ""));
+        const convertido = valorCLP * tasaCambio;
+        td.innerText = `${monedaActual} $${convertido.toFixed(2)}`;
+      });
+
+      const totalSpan = document.getElementById("total-carrito");
+      const totalCLP = parseInt(totalSpan.innerText.replace(/\$|,/g, ""));
+      const totalConvertido = totalCLP * tasaCambio;
+      totalSpan.innerText = `${monedaActual} $${totalConvertido.toFixed(2)}`;
+    }
+  });
+
+  async function actualizarCantidad(detalleId, operacion) {
+    const cantidadElement = document.getElementById(`cantidad-${detalleId}`);
+    let cantidad = parseInt(cantidadElement.innerText);
+    if (operacion === '+') cantidad++;
+    else if (operacion === '-' && cantidad > 1) cantidad--;
+
+    const productoId = document.getElementById(`producto-id-${detalleId}`).value;
+    const stockDisponible = parseInt(document.getElementById(`stock-${productoId}`).value);
+
+    if (cantidad > stockDisponible) {
+      alert(`No se puede agregar más, solo hay ${stockDisponible} unidades disponibles.`);
+      return;
+    }
+
+    try {
+      const response = await fetch(`/api/carrito/detalle/${detalleId}/`, {
+        method: 'PUT',
+        headers: {
+          'Content-Type': 'application/json',
+          'X-CSRFToken': getCookie("csrftoken"),
+        },
+        body: JSON.stringify({ cantidad_producto: cantidad })
+      });
+
+      const data = await response.json();
+      if (response.ok) {
+        cantidadElement.innerText = cantidad;
+
+        const monedaActual = localStorage.getItem("moneda") || "CLP";
+        let tasa = 1;
+        if (monedaActual !== "CLP") {
+          try {
+            const res = await fetch("https://open.er-api.com/v6/latest/CLP");
+            const dataTasa = await res.json();
+            tasa = dataTasa.rates[monedaActual] || 1;
+          } catch {
+            tasa = 1;
+          }
+        }
+
+        const subtotalConvertido = data.subtotal_venta * tasa;
+        const totalConvertido = data.total_carrito * tasa;
+
+        document.getElementById(`subtotal-${detalleId}`).innerText =
+          monedaActual === "CLP"
+            ? '$' + data.subtotal_venta.toLocaleString()
+            : `${monedaActual} $${subtotalConvertido.toFixed(2)}`;
+
+        document.getElementById('total-carrito').innerText =
+          monedaActual === "CLP"
+            ? data.total_carrito.toLocaleString()
+            : `${monedaActual} $${totalConvertido.toFixed(2)}`;
+      } else {
+        alert(data.detail || "Error al actualizar.");
+      }
+    } catch (error) {
+      alert("Error de red.");
+    }
+  }
+
+  async function disminuirCantidad(detalleId) {
+    const cantidadElement = document.getElementById(`cantidad-${detalleId}`);
+    let cantidad = parseInt(cantidadElement.innerText);
+
+    if (cantidad === 1) {
+      try {
+        const response = await fetch(`/api/carrito/detalle/${detalleId}/`, {
+          method: 'PUT',
+          headers: {
+            'Content-Type': 'application/json',
+            'X-CSRFToken': getCookie("csrftoken"),
+          },
+          body: JSON.stringify({ cantidad_producto: 0 })
+        });
+
+        const data = await response.json();
+        if (response.ok) {
+          document.getElementById(`detalle-row-${detalleId}`).remove();
+
+          const monedaActual = localStorage.getItem("moneda") || "CLP";
+          let tasa = 1;
+          if (monedaActual !== "CLP") {
+            try {
+              const res = await fetch("https://open.er-api.com/v6/latest/CLP");
+              const dataTasa = await res.json();
+              tasa = dataTasa.rates[monedaActual] || 1;
+            } catch {
+              tasa = 1;
+            }
+          }
+
+          const totalConvertido = data.total_carrito * tasa;
+          document.getElementById('total-carrito').innerText =
+            monedaActual === "CLP"
+              ? data.total_carrito.toLocaleString()
+              : `${monedaActual} $${totalConvertido.toFixed(2)}`;
+
+          if (data.total_carrito === 0) {
+            window.location.reload();
+          }
+        } else {
+          alert(data.detail || "Error al eliminar.");
+        }
+      } catch (error) {
+        alert("Error al conectar.");
+      }
+    } else {
+      actualizarCantidad(detalleId, '-');
+    }
+  }
+
+  function refreshPage() {
+    window.location.reload();
+  }
+</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
