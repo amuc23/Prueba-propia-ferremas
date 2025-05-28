@@ -1,0 +1,106 @@
+[
+  {
+    "model": "productos.producto",
+    "pk": 9,
+    "fields": {
+      "nombre": "Clavos 2kg",
+      "descripcion": "Clavos para construcci\u00f3n",
+      "precio": 4000,
+      "imagen": "https://ferrobal.cl/wp-content/uploads/2023/10/clavo-4-1kg.png",
+      "stock": 3,
+      "categoria": "Construcci\u00f3n",
+      "activo": true
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 10,
+    "fields": {
+      "nombre": "Martillo",
+      "descripcion": "Martillo de alta calidad",
+      "precio": 2400,
+      "imagen": "https://dojiw2m9tvv09.cloudfront.net/11907/product/martillomangomadera25mm_v14364.png",
+      "stock": 6,
+      "categoria": "Herramientas",
+      "activo": true
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 14,
+    "fields": {
+      "nombre": "Perno",
+      "descripcion": "Perno para la construcci\u00f3n",
+      "precio": 5000,
+      "imagen": "https://europer.cl/wp-content/uploads/2020/07/B7-PERNOS-METRICO.jpg",
+      "stock": 9,
+      "categoria": "Construcci\u00f3n",
+      "activo": true
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 15,
+    "fields": {
+      "nombre": "Taladro Bauker",
+      "descripcion": "Taladro de la m\u00e1s alta calidad",
+      "precio": 39990,
+      "imagen": "https://media.falabella.com/sodimacCL/8739455_001/w=800,h=800,fit=pad",
+      "stock": 18,
+      "categoria": "Herramientas",
+      "activo": true
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 16,
+    "fields": {
+      "nombre": "Prueba de testeo de compras",
+      "descripcion": "a",
+      "precio": 5000,
+      "imagen": "https://static.wikia.nocookie.net/digimon/images/7/72/Agumon.jpg/revision/latest?cb=20130523112744&path-prefix=es",
+      "stock": 0,
+      "categoria": "Herramientas",
+      "activo": false
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 17,
+    "fields": {
+      "nombre": "Pintura Latex",
+      "descripcion": "Pintura para el exterior",
+      "precio": 29000,
+      "imagen": "https://imagedelivery.net/4fYuQyy-r8_rpBpcY7lH_A/sodimacCL/974552_01/w=1500,h=1500,fit=pad",
+      "stock": 43,
+      "categoria": "Pinturas",
+      "activo": true
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 18,
+    "fields": {
+      "nombre": "Cinta M\u00e9trica",
+      "descripcion": "Cinta para medir",
+      "precio": 12990,
+      "imagen": "https://cdnx.jumpseller.com/my-toolbox-chile/image/42833863/d_nq_np_2x_820651-mlc40854154766_022020-f-8cff2697-107e-4579-baa7-b830d0424250.jpg?1732308296",
+      "stock": 3,
+      "categoria": "Herramientas",
+      "activo": true
+    }
+  },
+  {
+    "model": "productos.producto",
+    "pk": 19,
+    "fields": {
+      "nombre": "Palo 2x3",
+      "descripcion": "Palo de medidas 2 x 3",
+      "precio": 5900,
+      "imagen": "https://media.falabella.com/sodimacCL/376256_01/w=800,h=800,fit=pad",
+      "stock": 4992,
+      "categoria": "Construcci\u00f3n",
+      "activo": true
+    }
+  }
+]
