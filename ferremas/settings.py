@@ -79,8 +79,12 @@ WSGI_APPLICATION = 'ferremas.wsgi.application'
 # Base de datos para el entorno de producción (usamos SQLite por ahora)
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.sqlite3',  # Usamos SQLite en este caso
-        'NAME': BASE_DIR / 'db.sqlite3',  # Ubicación de la base de datos SQLite
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': os.getenv('MYSQLDATABASE'),
+        'USER': os.getenv('MYSQLUSER'),
+        'PASSWORD': os.getenv('MYSQLPASSWORD'),
+        'HOST': os.getenv('MYSQLHOST'),
+        'PORT': os.getenv('MYSQLPORT'),
     }
 }
 
@@ -134,8 +138,8 @@ CORS_ALLOW_CREDENTIALS = True
 MEDIA_URL = '/media/'
 MEDIA_ROOT = BASE_DIR / 'media'
 
-#ENTORNO = 'local'
-ENTORNO = 'produccion'
+ENTORNO = 'local'
+#ENTORNO = 'produccion'
 
 #cambiar de local a produccion antes de subir o al bajarlo para mantener conexion de la api
 
