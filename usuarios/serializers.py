@@ -23,26 +23,18 @@ class UsuarioSerializer(serializers.ModelSerializer):
         }
 
     def validate(self, data):
-        # Validar contraseñas coincidan
+        # Validar solo si están presentes
         if 'password' in data and 'password2' in data:
             if data['password'] != data['password2']:
                 raise serializers.ValidationError({"password": "Las contraseñas no coinciden."})
 
-        # Validar email
         if 'email' in data:
             try:
                 validate_email(data['email'])
             except ValidationError:
                 raise serializers.ValidationError({"email": "Ingrese un correo electrónico válido."})
-            if Usuario.objects.filter(email=data['email']).exists():
-                raise serializers.ValidationError({"email": "Ya existe un usuario con este correo."})
 
-        # Validar username único
-        if 'username' in data:
-            if Usuario.objects.filter(username=data['username']).exists():
-                raise serializers.ValidationError({"Usuario": "El nombre de usuario ya está en uso."})
-
-      
+        return data
 
     def create(self, validated_data):
         validated_data.pop('password2', None)
