@@ -45,4 +45,9 @@ urlpatterns = [
     success_url='/usuarios/restablecer/completo/',
 ), name='password_reset_confirm'),
 
+path('usuarios/activar/<str:token>/', views.activar_cuenta, name='activar_cuenta'),
+
+path('usuarios/registro/pendiente/', views.vista_registro_pendiente, name='registro_pendiente'),
+
+
 ]

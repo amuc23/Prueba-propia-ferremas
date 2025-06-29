@@ -138,24 +138,28 @@
             return response.json();
         })
         .then(data => {
-            const mensajeDiv = document.getElementById('mensaje');
-            if (data.status === 'success') {
-                mensajeDiv.innerHTML = '<div class="alert alert-success">¡Registro exitoso! Redirigiendo...</div>';
-                setTimeout(() => {
-                    window.location.href = data.redirect_url || '/';
-                }, 1500);
+    const mensajeDiv = document.getElementById('mensaje');
+    if (data.status === 'success') {
+        mensajeDiv.innerHTML = '<div class="alert alert-success">¡Registro exitoso! Redirigiendo...</div>';
+        setTimeout(() => {
+            window.location.href = data.redirect_url || '/';
+        }, 1500);
+    } else {
+        let errores = '<ul class="mb-0">';
+        for (const [key, value] of Object.entries(data)) {
+            if (Array.isArray(value)) {
+                value.forEach(msg => {
+                    errores += `<li>${msg}</li>`;
+                });
             } else {
-                let errores = '';
-                for (const [key, value] of Object.entries(data)) {
-                    if (Array.isArray(value)) {
-                        errores += `<p>${key}: ${value.join(', ')}</p>`;
-                    } else {
-                        errores += `<p>${key}: ${value}</p>`;
-                    }
-                }
-                mensajeDiv.innerHTML = `<div class="alert alert-danger">${errores}</div>`;
+                errores += `<li>${value}</li>`;
             }
-        })
+        }
+        errores += '</ul>';
+        mensajeDiv.innerHTML = `<div class="alert alert-danger">${errores}</div>`;
+    }
+})
+
         .catch(error => {
             console.error('Error:', error);
             let errorMessage = 'Error al registrar. Intente nuevamente.';

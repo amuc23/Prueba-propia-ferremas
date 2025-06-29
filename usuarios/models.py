@@ -27,6 +27,8 @@ class Usuario(AbstractUser):
         ],
         verbose_name='Teléfono'
     )
+
+    email_confirmado = models.BooleanField(default=False)  # 👈 Campo nuevo para verificación de correo
     
     # Campos requeridos
     REQUIRED_FIELDS = ['rut', 'email', 'telefono']
